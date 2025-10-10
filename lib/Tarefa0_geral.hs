@@ -131,7 +131,7 @@ matrizExemplo2 = [[1, 2, 3],[4, 5, 6],[7, 8, 9]]
 -- | Modifica um elemento numa dada posição de uma matriz.
 --
 -- __NB:__ Devolve a própria matriz se o elemento não existir.
-atualizaPosicaoMatriz :: Posicao -> a -> Matriz a -> Matriz a
+atualizaPosicaoMatriz :: (Eq a) => Posicao -> a -> Matriz a -> Matriz a
 atualizaPosicaoMatriz (l,c) a m
     | ((m !! l) !! c) == a = m -- se o elemento que queremos atualizar for igual ao que ja existe na matriz, devolve a propria matriz
     | otherwise = atualizaIndiceLista l novaLinha m

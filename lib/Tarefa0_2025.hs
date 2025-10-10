@@ -11,17 +11,28 @@ module Tarefa0_2025 where
 import Labs2025
 
 
+minhocaExemplo :: Minhoca
+minhocaExemplo = Minhoca
+    { posicaoMinhoca = Just (1,1)
+    , vidaMinhoca = Viva 100
+    , jetpackMinhoca = 3
+    , escavadoraMinhoca = 2
+    , bazucaMinhoca = 5
+    , minaMinhoca = 1
+    , dinamiteMinhoca = 0
+}
+
 -- | Retorna a quantidade de munições disponíveis de uma minhoca para uma dada arma.
 encontraQuantidadeArmaMinhoca :: TipoArma -> Minhoca -> Int
 encontraQuantidadeArmaMinhoca Jetpack minhoca = jetpackMinhoca minhoca 
-encontraQuantidadeArmaMinhoca Escavadora minhoca =  escavadoraMinhoca minhoca
-encontraQuantidadeArmaMinhoca Bazuca minhoca =  bazucaMinhoca inhoca
+encontraQuantidadeArmaMinhoca Escavadora minhoca = escavadoraMinhoca minhoca
+encontraQuantidadeArmaMinhoca Bazuca minhoca =  bazucaMinhoca minhoca
 encontraQuantidadeArmaMinhoca Mina minhoca = minaMinhoca minhoca
 encontraQuantidadeArmaMinhoca Dinamite minhoca = dinamiteMinhoca minhoca
 
 -- | Atualia a quantidade de munições disponíveis de uma minhoca para uma dada arma.
 atualizaQuantidadeArmaMinhoca :: TipoArma -> Minhoca -> Int -> Minhoca
-atualizaQuantidadeArmaMinhoca arma Minhoca novasBalas =
+atualizaQuantidadeArmaMinhoca arma minhoca novasBalas =
     case arma of
         Jetpack -> minhoca {jetpackMinhoca = jetpackMinhoca + novasBalas} -- atualizo apenas o campo da municao da arma que estou a usar para a nova quantidade de balas?
         Escavadora -> minhoca {escavadoraMinhoca = escavadoraMinhoca + novasBalas}
@@ -37,9 +48,7 @@ eTerrenoDestrutivel :: Terreno -> Bool
 eTerrenoDestrutivel terreno =
     case terreno of
         Terra -> True
-        Agua -> False
-        Pedra -> False
-        Ar -> False  
+        _ -> False
 
 -- | Verifica se um tipo de terreno é opaco, i.e., não permite que objetos ou minhocas se encontrem por cima dele.
 --
