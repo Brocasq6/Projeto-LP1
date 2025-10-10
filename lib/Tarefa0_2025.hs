@@ -68,7 +68,7 @@ ePosicaoMapaLivre :: Posicao -> Mapa -> Bool
 ePosicaoMapaLivre pos mapa =  
     case encontraPosicaoMatriz pos mapa of
         Just terreno -> not (eTerrenoOpaco terreno)
-        Nothing      -> False
+        Nothing      -> False -- heloo
 -- vamos ter de verificar se a posicao existe no mapa, e se o terreno nessa posicao é opaco ou nao
 
 -- | Verifica se uma posição do estado está livre, i.e., pode ser ocupada por um objeto ou minhoca.
