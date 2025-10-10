@@ -10,25 +10,47 @@ module Tarefa0_2025 where
     
 import Labs2025
 
+
 -- | Retorna a quantidade de munições disponíveis de uma minhoca para uma dada arma.
 encontraQuantidadeArmaMinhoca :: TipoArma -> Minhoca -> Int
-encontraQuantidadeArmaMinhoca = undefined
+encontraQuantidadeArmaMinhoca Jetpack minhoca = jetpackMinhoca minhoca 
+encontraQuantidadeArmaMinhoca Escavadora minhoca =  escavadoraMinhoca minhoca
+encontraQuantidadeArmaMinhoca Bazuca minhoca =  bazucaMinhoca inhoca
+encontraQuantidadeArmaMinhoca Mina minhoca = minaMinhoca minhoca
+encontraQuantidadeArmaMinhoca Dinamite minhoca = dinamiteMinhoca minhoca
 
 -- | Atualia a quantidade de munições disponíveis de uma minhoca para uma dada arma.
 atualizaQuantidadeArmaMinhoca :: TipoArma -> Minhoca -> Int -> Minhoca
-atualizaQuantidadeArmaMinhoca = undefined
+atualizaQuantidadeArmaMinhoca arma Minhoca novasBalas =
+    case arma of
+        Jetpack -> minhoca {jetpackMinhoca = jetpackMinhoca + novasBalas} -- atualizo apenas o campo da municao da arma que estou a usar para a nova quantidade de balas?
+        Escavadora -> minhoca {escavadoraMinhoca = escavadoraMinhoca + novasBalas}
+        Bazuca -> minhoca {bazucaMinhoca = bazucaMinhoca + novasBalas}
+        Mina -> minhoca {minaMinhoca = minaMinhoca + novasBalas}
+        Dinamite -> minhoca {dinamiteMinhoca = dinamiteMinhoca + novasBalas}
+
 
 -- | Verifica se um tipo de terreno é destrutível, i.e., pode ser destruído por explosões.
 --
 -- __NB:__ Apenas @Terra@ é destrutível.
 eTerrenoDestrutivel :: Terreno -> Bool
-eTerrenoDestrutivel = undefined
+eTerrenoDestrutivel terreno =
+    case terreno of
+        Terra -> True
+        Agua -> False
+        Pedra -> False
+        Ar -> False  
 
 -- | Verifica se um tipo de terreno é opaco, i.e., não permite que objetos ou minhocas se encontrem por cima dele.
 --
 -- __NB:__ Apenas @Terra@ ou @Pedra@ são opacos.
 eTerrenoOpaco :: Terreno -> Bool
-eTerrenoOpaco = undefined
+eTerrenoOpaco terreno =
+    case terreno of
+        Terra -> True
+        Pedra -> True
+        _ -> False
+         
 
 -- | Verifica se uma posição do mapa está livre, i.e., pode ser ocupada por um objeto ou minhoca.
 --
@@ -39,17 +61,19 @@ ePosicaoMapaLivre = undefined
 -- | Verifica se uma posição do estado está livre, i.e., pode ser ocupada por um objeto ou minhoca.
 --
 -- __NB:__ Uma posição está livre se o mapa estiver livre e se não estiver já uma minhoca ou um barril nessa posição.
+
 ePosicaoEstadoLivre :: Posicao -> Estado -> Bool
 ePosicaoEstadoLivre = undefined
 
 -- | Verifica se numa lista de objetos já existe um disparo feito para uma dada arma por uma dada minhoca.
-minhocaTemDisparo :: TipoArma -> NumMinhoca -> [Objeto] -> Bool
+minhocaTemDisparo :: TipoArma -> NumMinhoca -> [Objeto] -> Bool 
 minhocaTemDisparo = undefined
+-- vamos ter de verificar se o objeto é um disparo, e se o disparo é da arma e da minhoca que estamos a procurar
 
 -- | Destrói uma dada posição no mapa (tipicamente como consequência de uma explosão).
 --
 -- __NB__: Só terrenos @Terra@ pode ser destruídos.
-destroiPosicao :: Posicao -> Mapa -> Mapa
+destroiPosicao :: Posicao -> Mapa -> Mapa -- vamos ter de verificar se o terreno é destrutivel, se for, atualizamos a posicao para Ar
 destroiPosicao = undefined
 
 -- Adiciona um novo objeto a um estado.
@@ -57,6 +81,4 @@ destroiPosicao = undefined
 -- __NB__: A posição onde é inserido não é relevante.
 adicionaObjeto :: Objeto -> Estado -> Estado
 adicionaObjeto = undefined
-
-
 
