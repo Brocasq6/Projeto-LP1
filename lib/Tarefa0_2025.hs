@@ -86,7 +86,17 @@ ePosicaoMapaLivre pos mapa =
 -- __NB:__ Uma posição está livre se o mapa estiver livre e se não estiver já uma minhoca ou um barril nessa posição.
 
 ePosicaoEstadoLivre :: Posicao -> Estado -> Bool
-ePosicaoEstadoLivre pos = undefined
+ePosicaoEstadoLivre pos estado = let 
+        -- lista de posições ocupadas por barris
+        posBarris = [posicaoBarril b | b@Barril{} <- objetosEstado estado]
+
+        -- lista de posições ocupadas por minhocas vivas
+        posMinhocas = [p | m <- minhocasEstado estado
+                         , Viva _ <- [vidaMinhoca m]   -- apenas vivas
+                         , Just p <- [posicaoMinhoca m]]
+
+        -- posição está livre se não aparece em nenhuma das listas
+    in pos `notElem` posBarris && pos `notElem` posMinhocas 
 
 
 -- funcao que verifica se a posicao se encontra livre de minhicas
