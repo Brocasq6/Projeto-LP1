@@ -98,6 +98,12 @@ ePosicaoEstadoLivre pos estado = let
         -- posição está livre se não aparece em nenhuma das listas
     in pos `notElem` posBarris && pos `notElem` posMinhocas 
 
+estadoExemplo = Estado
+  { mapaEstado = undefined
+  , objetosEstado = [Barril (2,3) False]
+  , minhocasEstado = [Minhoca (Just (1,1)) (Viva 100) 0 0 0 0 0]
+  }
+
 
 -- funcao que verifica se a posicao se encontra livre de minhicas
 
