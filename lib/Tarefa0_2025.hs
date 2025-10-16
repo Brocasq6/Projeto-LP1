@@ -113,7 +113,10 @@ estadoExemplo = Estado
 -- | Verifica se numa lista de objetos já existe um disparo feito para uma dada arma por uma dada minhoca.
 minhocaTemDisparo :: TipoArma -> NumMinhoca -> [Objeto] -> Bool 
 minhocaTemDisparo _ _ [] = False -- se a lista de objetos estiver vazia, retorna False
-minhocaTemDisparo arma num (objeto:objetos) = undefined
+minhocaTemDisparo arma num (objeto:objetos) =  case objeto of
+            Disparo { tipoDisparo = a, donoDisparo = n } ->
+            (a == arma && n == num) || minhocaTemDisparo arma num objetos
+            _ -> minhocaTemDisparo arma num objetos
 
 -- vamos ter de verificar se o objeto é um disparo, e se o disparo é da arma e da minhoca que estamos a procurar
 
@@ -130,5 +133,15 @@ destroiPosicao pos mapa =
 --
 -- __NB__: A posição onde é inserido não é relevante.
 adicionaObjeto :: Objeto -> Estado -> Estado
-adicionaObjeto = undefined
+adicionaObjeto obj estado =
+    estado { objetosEstado = obj : objetosEstado estado }
+
+estadoExemplo =
+  Estado
+    { mapaEstado = undefined
+    , objetosEstado = [Barril (2,3) False]
+    , minhocasEstado = [Minhoca (Just (1,1)) (Viva 100) 0 0 0 0 0]
+    }
+
+novoEstado = adicionaObjeto (Disparo (3,3) (1,0) Bazuca Nothing 0) estadoExemplo
 
