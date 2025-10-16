@@ -146,12 +146,12 @@ adicionaObjeto :: Objeto -> Estado -> Estado
 adicionaObjeto obj estado =
     estado { objetosEstado = obj : objetosEstado estado }
 
-estadoExemplo =
+estadoExemplo2 =
   Estado
     { mapaEstado = undefined
     , objetosEstado = [Barril (2,3) False]
     , minhocasEstado = [Minhoca (Just (1,1)) (Viva 100) 0 0 0 0 0]
     }
 
-novoEstado = adicionaObjeto (Disparo (3,3) (1,0) Bazuca Nothing 0) estadoExemplo
+novoEstado = adicionaObjeto (Disparo (3,3) (1,0) Bazuca Nothing 0) estadoExemplo2
 
