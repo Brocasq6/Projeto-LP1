@@ -125,7 +125,7 @@ minhocaTemDisparo :: TipoArma -> NumMinhoca -> [Objeto] -> Bool
 minhocaTemDisparo _ _ [] = False -- se a lista de objetos estiver vazia, retorna False
 minhocaTemDisparo arma num (objeto:objetos) =  case objeto of
             Disparo { tipoDisparo = a, donoDisparo = n } ->
-            (a == arma && n == num) || minhocaTemDisparo arma num objetos
+             (a == arma && n == num) || minhocaTemDisparo arma num objetos
             _ -> minhocaTemDisparo arma num objetos
 
 -- vamos ter de verificar se o objeto é um disparo, e se o disparo é da arma e da minhoca que estamos a procurar
