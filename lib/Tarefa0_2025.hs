@@ -153,5 +153,5 @@ estadoExemplo2 =
     , minhocasEstado = [Minhoca (Just (1,1)) (Viva 100) 0 0 0 0 0]
     }
 
-novoEstado = adicionaObjeto (Disparo (3,3) (1,0) Bazuca Nothing 0) estadoExemplo2
+novoEstado = adicionaObjeto (Disparo (3,3) D Bazuca Nothing 0) estadoExemplo2
 
