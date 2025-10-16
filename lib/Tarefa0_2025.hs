@@ -49,6 +49,16 @@ atualizaQuantidadeArmaMinhoca arma minhoca novasBalas =
         Mina -> minhoca { minaMinhoca = minaMinhoca minhoca + novasBalas }
         Dinamite -> minhoca { dinamiteMinhoca = dinamiteMinhoca minhoca + novasBalas }
 
+atualizaQuantidadeArmaMinhoca_ :: TipoArma -> Minhoca -> Int -> Minhoca
+atualizaQuantidadeArmaMinhoca_ arma minhoca novasBalas =
+    case arma of
+        Jetpack -> minhoca { jetpackMinhoca = novasBalas } -- atualizo apenas o campo da municao da arma que estou a usar para a nova quantidade de balas?
+        Escavadora -> minhoca { escavadoraMinhoca = novasBalas }
+        Bazuca -> minhoca { bazucaMinhoca = novasBalas }
+        Mina -> minhoca { minaMinhoca = novasBalas }
+        Dinamite -> minhoca { dinamiteMinhoca = novasBalas }
+
+
 
 -- | Verifica se um tipo de terreno é destrutível, i.e., pode ser destruído por explosões.
 --
