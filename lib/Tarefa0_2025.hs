@@ -146,6 +146,7 @@ adicionaObjeto :: Objeto -> Estado -> Estado
 adicionaObjeto obj estado =
     estado { objetosEstado = obj : objetosEstado estado }
 
+estadoExemplo :: Estado
 estadoExemplo =
   Estado
     { mapaEstado = undefined
@@ -153,5 +154,6 @@ estadoExemplo =
     , minhocasEstado = [Minhoca (Just (1,1)) (Viva 100) 0 0 0 0 0]
     }
 
+novoEstado :: Estado
 novoEstado = adicionaObjeto (Disparo (3,3) (1,0) Bazuca Nothing 0) estadoExemplo
 
