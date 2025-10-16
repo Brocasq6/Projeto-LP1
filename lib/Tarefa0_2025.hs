@@ -52,11 +52,11 @@ atualizaQuantidadeArmaMinhoca arma minhoca novasBalas =
 atualizaQuantidadeArmaMinhoca_ :: TipoArma -> Minhoca -> Int -> Minhoca
 atualizaQuantidadeArmaMinhoca_ arma minhoca novasBalas =
     case arma of
-        Jetpack -> minhoca { jetpackMinhoca = jetpackMinhoca minhoca + novasBalas } -- atualizo apenas o campo da municao da arma que estou a usar para a nova quantidade de balas?
-        Escavadora -> minhoca { escavadoraMinhoca = escavadoraMinhoca minhoca + novasBalas }
-        Bazuca -> minhoca { bazucaMinhoca = bazucaMinhoca minhoca + novasBalas }
-        Mina -> minhoca { minaMinhoca = minaMinhoca minhoca + novasBalas }
-        Dinamite -> minhoca { dinamiteMinhoca = dinamiteMinhoca minhoca + novasBalas }
+        Jetpack -> minhoca { jetpackMinhoca = novasBalas } -- atualizo apenas o campo da municao da arma que estou a usar para a nova quantidade de balas?
+        Escavadora -> minhoca { escavadoraMinhoca = novasBalas }
+        Bazuca -> minhoca { bazucaMinhoca = novasBalas }
+        Mina -> minhoca { minaMinhoca = novasBalas }
+        Dinamite -> minhoca { dinamiteMinhoca = novasBalas }
 
 
 
