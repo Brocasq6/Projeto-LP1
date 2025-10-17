@@ -19,12 +19,12 @@ livreDeMinhocas posi estado = livre posi (minhocasEstado estado)
 
 -- Verifica se uma posição está livre de barris
 livreDeBarris :: Posicao -> Estado -> Bool
-livreDeBarris pos estado = livre pos (objetosEstado estado)
+livreDeBarris posi estado = livre posi (objetosEstado estado)
   where
     livre _ [] = True
-    livre pos (o:os)
-        | ehBarril o && posicaoBarril o == pos = False
-        | otherwise = livre pos os
+    livre posi (o:os)
+        | ehBarril o && posicaoBarril o == posi = False
+        | otherwise = livre posi os
 
     ehBarril (Barril _ _) = True
     ehBarril _ = False
@@ -34,8 +34,8 @@ verificaMinhocas :: [Minhoca] -> Estado -> Bool
 verificaMinhocas [] _ = True
 verificaMinhocas (m:ms) est =
     case posicaoMinhoca m of
-        Just p  ->
-            if livreDeMinhocas p (est { minhocasEstado = ms })
+        Just posi  ->
+            if livreDeMinhocas posi (est { minhocasEstado = ms })
             then verificaMinhocas ms est
             else False
         Nothing -> verificaMinhocas ms est
