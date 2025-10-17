@@ -10,30 +10,24 @@ testesTarefa1 = [estadoExemplo2]
 
 estadoExemplo2 :: Estado
 estadoExemplo2 =
-  Estado
     { mapaEstado =
-        replicate 10 (replicate 20 Ar)
+        [[Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar]
+        ,[Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar]
+        ,[Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Terra,Ar,Ar]
+        ,[Ar,Terra,Terra,Terra,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Terra,Terra,Terra,Ar]
+        ,[Terra,Terra,Terra,Terra,Terra,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Terra,Terra,Terra,Terra,Terra]
+        ,[Pedra,Pedra,Pedra,Pedra,Pedra,Agua,Agua,Agua,Agua,Agua,Agua,Agua,Agua,Agua,Pedra,Pedra,Pedra,Pedra,Pedra,Pedra]
+        ,[Pedra,Pedra,Pedra,Pedra,Pedra,Pedra,Agua,Agua,Agua,Agua,Agua,Agua,Agua,Pedra,Pedra,Pedra,Pedra,Pedra,Pedra,Pedra]
+        ,[Pedra,Pedra,Pedra,Pedra,Pedra,Pedra,Pedra,Agua,Agua,Agua,Agua,Agua,Pedra,Pedra,Pedra,Pedra,Pedra,Pedra,Pedra,Pedra]
+        ,[Pedra,Pedra,Pedra,Pedra,Pedra,Pedra,Pedra,Pedra,Pedra,Pedra,Pedra,Pedra,Pedra,Pedra,Pedra,Pedra,Pedra,Pedra,Pedra,Pedra]
+        ,[Pedra,Pedra,Pedra,Pedra,Pedra,Pedra,Pedra,Pedra,Pedra,Pedra,Pedra,Pedra,Pedra,Pedra,Pedra,Pedra,Pedra,Pedra,Pedra,Pedra]
+        ]
     , objetosEstado =
-        [Barril (2,2) False]  -- barril na mesma posição da segunda minhoca
+        [Barril {posicaoBarril = (2,2), explodeBarril = False}
+        ]
     , minhocasEstado =
-        [ Minhoca
-            { posicaoMinhoca = Just (0,0)
-            , vidaMinhoca = Viva 100
-            , jetpackMinhoca = 2
-            , escavadoraMinhoca = 1
-            , bazucaMinhoca = 3
-            , minaMinhoca = 1
-            , dinamiteMinhoca = 0
-            }
-        , Minhoca
-            { posicaoMinhoca = Just (2,2)
-            , vidaMinhoca = Viva 100
-            , jetpackMinhoca = 1
-            , escavadoraMinhoca = 1
-            , bazucaMinhoca = 1
-            , minaMinhoca = 1
-            , dinamiteMinhoca = 1
-            }
+        [Minhoca {posicaoMinhoca = Just (3,0), vidaMinhoca = Viva 100, jetpackMinhoca = 1, escavadoraMinhoca = 1, bazucaMinhoca = 1, minaMinhoca = 1, dinamiteMinhoca = 1}
+        ,Minhoca {posicaoMinhoca = Just (3,15), vidaMinhoca = Viva 100, jetpackMinhoca = 1, escavadoraMinhoca = 1, bazucaMinhoca = 1, minaMinhoca = 1, dinamiteMinhoca = 1}
         ]
     }
 
