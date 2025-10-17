@@ -8,37 +8,48 @@ module Tarefa1 where
 
 import Labs2025
 
--- | Função principal da Tarefa 1. Recebe um estado e retorna se este é válido ou não.
-validaEstado :: Estado -> Bool
-validaEstado e
-    | null (mapaEstado e) = False  -- mapa vazio
-    | not (verificaMinhocas (minhocasEstado e) e) = False
-    | not (verificaBarris [b | b@Barril{} <- objetosEstado e] e) = False --filtra apenas os objetos do tipo Barril
-    | otherwise = True
-
 -- Verifica se uma posição está livre de minhocas
 livreDeMinhocas :: Posicao -> Estado -> Bool
-livreDeMinhocas pos est
-    | minhocasOcupam pos (minhocasEstado est) = False
-    | otherwise = True
+livreDeMinhocas pos estado = livre pos (minhocasEstado estado)
   where
-    minhocasOcupam :: Posicao -> [Minhoca] -> Bool
-    minhocasOcupam _ [] = False
-    minhocasOcupam p (m:ms) =
-        case posicaoMinhoca m of
-            Just posM -> posM == p || minhocasOcupam p ms
-            Nothing   -> minhocasOcupam p ms
+    livre _ [] = True
+    livre pos (m:ms)
+        | posicaoMinhoca m == Just pos = False
+        | otherwise = livre pos ms
 
 
 -- Verifica se uma posição está livre de barris
 livreDeBarris :: Posicao -> Estado -> Bool
-livreDeBarris pos est
-    | barrisOcupam pos (objetosEstado est) = False
-    | otherwise = True
+livreDeBarris pos estado = livre pos (objetosEstado estado)
   where
-    barrisOcupam :: Posicao -> [Objeto] -> Bool
-    barrisOcupam _ [] = False
-    barrisOcupam p (b:bs) =
-        case b of
-            Barril { posicaoBarril = pb } -> pb == p || barrisOcupam p bs
-            _ -> barrisOcupam p bs
+    livre _ [] = True
+    livre pos (o:os)
+        | ehBarril o && posicaoBarril o == pos = False
+        | otherwise = livre pos os
+
+    ehBarril (Barril _ _) = True
+    ehBarril _ = False
+
+-- Verifica recursivamente se todas as posições de minhocas estão livres
+verificaMinhocas :: [Minhoca] -> Estado -> Bool
+verificaMinhocas [] _ = True
+verificaMinhocas (m:ms) est =
+    case posicaoMinhoca m of
+        Just p  -> if livreDeMinhocas p est then verificaMinhocas ms est else False
+        Nothing -> verificaMinhocas ms est
+
+
+-- Verifica recursivamente se todas as posições de barris estão livres
+verificaBarris :: [Objeto] -> Estado -> Bool
+verificaBarris [] _ = True
+verificaBarris (b:bs) e
+    | livreDeBarris (posicaoBarril b) e = verificaBarris bs e
+    | otherwise = False
+
+-- Verifica se o estado é válido
+validaEstado :: Estado -> Bool
+validaEstado e
+    | null (mapaEstado e) = False
+    | not (verificaMinhocas (minhocasEstado e) e) = False
+    | not (verificaBarris [b | b@Barril{} <- objetosEstado e] e) = False
+    | otherwise = True
