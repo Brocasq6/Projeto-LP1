@@ -10,12 +10,12 @@ import Labs2025
 
 -- Verifica se uma posição está livre de minhocas
 livreDeMinhocas :: Posicao -> Estado -> Bool
-livreDeMinhocas p estado = livre p (minhocasEstado estado)
+livreDeMinhocas posi estado = livre posi (minhocasEstado estado)
   where
     livre _ [] = True
-    livre p (m:ms)
-        | posicaoMinhoca m == Just p = False
-        | otherwise = livre p ms
+    livre posi (m:ms)
+        | posicaoMinhoca m == Just posi = False
+        | otherwise = livre posi ms
 
 -- Verifica se uma posição está livre de barris
 livreDeBarris :: Posicao -> Estado -> Bool
