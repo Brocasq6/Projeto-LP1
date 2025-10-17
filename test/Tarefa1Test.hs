@@ -9,7 +9,7 @@ testesTarefa1 :: [Estado]
 testesTarefa1 = [estadoExemplo2]
 
 estadoExemplo2 :: Estado
-estadoExemplo2 =
+Estado 
     { mapaEstado =
         [[Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar]
         ,[Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar]
