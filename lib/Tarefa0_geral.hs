@@ -58,14 +58,17 @@ matrizExemplo = [[1, 2, 3],[4, 5, 6],[7, 8, 9]]
 -- | Move uma posição uma unidade no sentido de uma direção.
 
 movePosicao :: Direcao -> Posicao -> Posicao
-movePosicao Norte (l,c) = (l,c-1)
-movePosicao Nordeste (l,c) = (l-1,c+1)
-movePosicao Este (l,c) = (l,c+1)
-movePosicao Sudeste (l,c) = (l+1,c+1)
-movePosicao Sul (l,c) = (l+1,c)
-movePosicao Sudoeste (l,c) = (l+1,c-1)
-movePosicao Oeste (l,c) = (l,c-1)
-movePosicao Noroeste (l,c) = (l-1,c-1)
+movePosicao direcao (l,c) = 
+    case direcao of
+        Norte -> (l, c-1)
+        Nordeste -> (l-1, c+1)
+        Este -> (l, c+1)
+        Sudeste -> (l+1, c+1)
+        Sul -> (l+1, c)
+        Sudoeste -> (l+1, c-1)
+        Oeste -> (l, c-1)
+        Noroeste -> (l-1, c-1)
+
 
 -- | Versão da função 'movePosicao' que garante que o movimento não se desloca para fora de uma janela.
 
@@ -82,16 +85,18 @@ origemAoCentro (d1,d2) (l,c)  = undefined
 
 -- | Roda um par (posição,direção) 45% para a direita.
 
-rodaPosicaoDirecao :: (Posicao,Direcao) -> (Posicao,Direcao)
-rodaPosicaoDirecao ((l,c), Norte) = (movePosicao Norte (l,c), Nordeste)
-rodaPosicaoDirecao ((l,c), Nordeste) = (movePosicao Nordeste (l,c), Este)
-rodaPosicaoDirecao ((l,c), Este) = (movePosicao Este (l,c), Sudeste)
-rodaPosicaoDirecao ((l,c), Sudeste) = (movePosicao Sudeste (l,c), Sul)
-rodaPosicaoDirecao ((l,c), Sul) = (movePosicao Sul (l,c), Sudoeste)
-rodaPosicaoDirecao ((l,c), Sudoeste) = (movePosicao Sudoeste (l,c), Oeste)
-rodaPosicaoDirecao ((l,c), Oeste) = (movePosicao Oeste (l,c), Noroeste)
-rodaPosicaoDirecao ((l,c), Noroeste) = (movePosicao Noroeste (l,c), Norte)
-
+rodaPosicaoDirecao :: (Posicao, Direcao) -> (Posicao, Direcao)
+rodaPosicaoDirecao (pos, direcao) = 
+    case direcao of
+        Norte -> (movePosicao Norte pos, Nordeste)
+        Nordeste -> (movePosicao Nordeste pos, Este)
+        Este -> (movePosicao Este pos, Sudeste)
+        Sudeste -> (movePosicao Sudeste pos, Sul)
+        Sul -> (movePosicao Sul pos, Sudoeste)
+        Sudoeste -> (movePosicao Sudoeste pos, Oeste)
+        Oeste -> (movePosicao Oeste pos, Noroeste)
+        Noroeste -> (movePosicao Noroeste pos, Norte)
+        
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 -- * Funções recursivas.
