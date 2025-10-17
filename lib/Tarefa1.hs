@@ -35,9 +35,11 @@ verificaMinhocas :: [Minhoca] -> Estado -> Bool
 verificaMinhocas [] _ = True
 verificaMinhocas (m:ms) est =
     case posicaoMinhoca m of
-        Just p  -> if livreDeMinhocas p est then verificaMinhocas ms est else False
+        Just p  ->
+            if livreDeMinhocas p (est { minhocasEstado = ms })
+            then verificaMinhocas ms est
+            else False
         Nothing -> verificaMinhocas ms est
-
 
 -- Verifica recursivamente se todas as posições de barris estão livres
 verificaBarris :: [Objeto] -> Estado -> Bool
