@@ -8,23 +8,21 @@ module Tarefa1 where
 
 import Labs2025
 
--- Verifica se uma posição está livre de minhocas
 livreDeMinhocas :: Posicao -> Estado -> Bool
 livreDeMinhocas posi estado = livre posi (minhocasEstado estado)
   where
     livre _ [] = True
-    livre posi (m:ms)
-        | posicaoMinhoca m == Just posi = False
-        | otherwise = livre posi ms
+    livre posAtual (m:ms)
+        | posicaoMinhoca m == Just posAtual = False
+        | otherwise = livre posAtual ms
 
--- Verifica se uma posição está livre de barris
 livreDeBarris :: Posicao -> Estado -> Bool
 livreDeBarris posi estado = livre posi (objetosEstado estado)
   where
     livre _ [] = True
-    livre posi (o:os)
-        | ehBarril o && posicaoBarril o == posi = False
-        | otherwise = livre posi os
+    livre posAtual (o:os)
+        | ehBarril o && posicaoBarril o == posAtual = False
+        | otherwise = livre posAtual os
 
     ehBarril (Barril _ _) = True
     ehBarril _ = False
