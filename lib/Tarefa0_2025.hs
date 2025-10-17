@@ -1,32 +1,49 @@
--module Tarefa0_2025 where
+module Tarefa0_2025 where
     
 import Labs2025
 
 
-minhocaExemplo :: Minhoca
-minhocaExemplo = Minhoca
+minhoca1 :: Minhoca
+minhoca1 = Minhoca
     { posicaoMinhoca = Just (1,1)
-    , vidaMinhoca = Viva 100
+    , vidaMinhoca    = Viva 100
     , jetpackMinhoca = 3
     , escavadoraMinhoca = 2
-    , bazucaMinhoca = 5
-    , minaMinhoca = 1
+    , bazucaMinhoca  = 5
+    , minaMinhoca    = 1
     , dinamiteMinhoca = 0
-}
+    }
 
-mapaExemplo :: [[Terreno]]
+minhoca2 :: Minhoca
+minhoca2 = Minhoca
+    { posicaoMinhoca = Just (2,2)
+    , vidaMinhoca    = Viva 50
+    , jetpackMinhoca = 1
+    , escavadoraMinhoca = 0
+    , bazucaMinhoca  = 2
+    , minaMinhoca    = 0
+    , dinamiteMinhoca = 1
+    }
+
+mapaExemplo :: Mapa
 mapaExemplo =
-    [ [Terra, Agua, Agua]
-    , [Terra, Terra, Terra]
-    , [Pedra, Pedra, Pedra]
+    [ [Terra, Agua, Ar]
+    , [Pedra, Terra, Terra]
+    , [Ar, Agua, Pedra]
     ]
-    
 
-estadoExemplo = Estado
-  { mapaEstado = undefined
-  , objetosEstado = [Barril (2,3) False]
-  , minhocasEstado = [Minhoca (Just (1,1)) (Viva 100) 0 0 0 0 0]
-  }
+barril1 :: Objeto
+barril1 = Barril (0,2) False
+
+disparo1 :: Objeto
+disparo1 = Disparo
+    { posicaoDisparo = (1,2)
+    , direcaoDisparo = Sul
+    , tipoDisparo = Bazuca
+    , tempoDisparo = Just 3
+    , donoDisparo = 0
+    }
+
 
 -- | Retorna a quantidade de munições disponíveis de uma minhoca para uma dada arma.
 encontraQuantidadeArmaMinhoca :: TipoArma -> Minhoca -> Int
@@ -72,31 +89,40 @@ ePosicaoMapaLivre pos mapa =
 
 -- | Verifica se uma posição do estado está livre, i.e., pode ser ocupada por um objeto ou minhoca.
 ePosicaoEstadoLivre :: Posicao -> Estado -> Bool
-ePosicaoEstadoLivre pos estado = let 
-        -- lista de posições ocupadas por barris
-        posBarris = [posicaoBarril b | b@Barril{} <- objetosEstado estado]
-        -- lista de posições ocupadas por minhocas vivas
-        posMinhocas = [p | m <- minhocasEstado estado
-                         , Viva _ <- [vidaMinhoca m]   -- apenas vivas
-                         , Just p <- [posicaoMinhoca m]]
+ePosicaoEstadoLivre pos estado
+    | livreDeMinhocas pos estado && livreDeBarris pos estado = True
+    | otherwise = False
 
-        -- posição está livre se não aparece em nenhuma das listas
-    in pos `notElem` posBarris && pos `notElem` posMinhocas 
+livreDeMinhocas :: Posicao -> Estado -> Bool
+livreDeMinhocas pos estado = livre pos (minhocasEstado estado)
+  where
+    livre _ [] = True  -- lista vazia -> posição livre
+    livre pos (m:ms)
+        | posicaoMinhoca m == Just pos = False -- a posição já se encontra ocupada
+        | otherwise = livre pos ms              -- verifica o resto da lista
 
+livreDeBarris :: Posicao -> Estado -> Bool
+livreDeBarris pos estado = livre pos (objetosEstado estado)
+  where
+    livre _ [] = True  -- lista vazia -> posição livre
+    livre pos (o:os)
+        | ehBarril o && posicaoBarril o == pos = False  -- posição ocupada por barril
+        | otherwise = livre pos os                    -- verifica o resto da lista
 
--- funcao que verifica se a posicao se encontra livre de minhicas
-livreDeMinhocas :: Posicao -> Minhoca -> Bool
-
--- funcao que verifica se a posicao se encontra livre de barris
-
+    -- Função auxiliar para identificar se o objeto é um Barril
+    ehBarril (Barril _ _) = True
+    ehBarril _ = False
 
 -- | Verifica se numa lista de objetos já existe um disparo feito para uma dada arma por uma dada minhoca.
-minhocaTemDisparo :: TipoArma -> NumMinhoca -> [Objeto] -> Bool 
-minhocaTemDisparo _ _ [] = False -- se a lista de objetos estiver vazia, retorna False
-minhocaTemDisparo arma num (objeto:objetos) =  case objeto of
-            Disparo { tipoDisparo = a, donoDisparo = n } ->
-             (a == arma && n == num) || minhocaTemDisparo arma num objetos
-            _ -> minhocaTemDisparo arma num objetos
+minhocaTemDisparo :: TipoArma -> NumMinhoca -> [Objeto] -> Bool
+minhocaTemDisparo _ _ [] = False
+minhocaTemDisparo arma num (obj:objs)
+    | ehDisparo && tipoDisparo obj == arma && donoDisparo obj == num = True
+    | otherwise = minhocaTemDisparo arma num objs
+  where
+    ehDisparo = case obj of
+                  Disparo{} -> True
+                  _ -> False
 
 -- | Destrói uma dada posição no mapa (tipicamente como consequência de uma explosão).
 destroiPosicao :: Posicao -> Mapa -> Mapa -- vamos ter de verificar se o terreno é destrutivel, se for, atualizamos a posicao para Ar
@@ -109,13 +135,3 @@ destroiPosicao pos mapa =
 adicionaObjeto :: Objeto -> Estado -> Estado
 adicionaObjeto obj estado =
     estado { objetosEstado = obj : objetosEstado estado }
-
-estadoExemplo2 =
-  Estado
-    { mapaEstado = undefined
-    , objetosEstado = [Barril (2,3) False]
-    , minhocasEstado = [Minhoca (Just (1,1)) (Viva 100) 0 0 0 0 0]
-    }
-
-novoEstado = adicionaObjeto (Disparo (3,3) Sul Bazuca Nothing 0) estadoExemplo2
-
