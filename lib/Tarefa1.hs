@@ -27,9 +27,6 @@ verificaMinhocas (m:ms) est =
 -- Verifica recursivamente se todas as posições de barris estão livres
 verificaBarris :: [Objeto] -> Estado -> Bool
 verificaBarris [] _ = True
-verificaBarris (b:bs) est =
-    | livreDeBarris (posicaoBarril b) e = verificaBarris bs est
-    | otherwise = False 
-
-
-    
+verificaBarris (b:bs) e
+    | livreDeBarris (posicaoBarril b) e = verificaBarris bs e
+    | otherwise = False
