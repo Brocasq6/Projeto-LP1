@@ -125,11 +125,12 @@ minhocaTemDisparo arma num (obj:objs)
                   _ -> False
 
 -- | Destrói uma dada posição no mapa (tipicamente como consequência de uma explosão).
-destroiPosicao :: Posicao -> Mapa -> Mapa -- vamos ter de verificar se o terreno é destrutivel, se for, atualizamos a posicao para Ar
-destroiPosicao pos mapa = 
+destroiPosicao :: Posicao -> Mapa -> Mapa
+destroiPosicao pos mapa =
     case encontraPosicaoMatriz pos mapa of
-        Just Terra -> atualizaPosicaoMatriz pos Ar mapa  
-        Nothing -> mapa
+        Just t | eTerrenoDestrutivel t -> atualizaPosicaoMatriz pos Ar mapa
+        _ -> mapa
+
 
 -- Adiciona um novo objeto a um estado.
 adicionaObjeto :: Objeto -> Estado -> Estado
