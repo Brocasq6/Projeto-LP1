@@ -16,17 +16,29 @@ validaEstado e
     | not (verificaBarris [b | b@Barril{} <- objetosEstado e] e) = False --filtra apenas os objetos do tipo Barril
     | otherwise = True
 
--- Verifica recursivamente se todas as posições de minhocas estão livres
-verificaMinhocas :: [Minhoca] -> Estado -> Bool
-verificaMinhocas [] _ = True
-verificaMinhocas (m:ms) est =
-    case posicaoMinhoca m of
-        Just p  -> if livreDeMinhocas p est then verificaMinhocas ms est else False
-        Nothing -> verificaMinhocas ms est  -- minhoca sem posição é considerada válida
+-- Verifica se uma posição está livre de minhocas
+livreDeMinhocas :: Posicao -> Estado -> Bool
+livreDeMinhocas pos est
+    | minhocasOcupam pos (minhocasEstado est) = False
+    | otherwise = True
+  where
+    minhocasOcupam :: Posicao -> [Minhoca] -> Bool
+    minhocasOcupam _ [] = False
+    minhocasOcupam p (m:ms) =
+        case posicaoMinhoca m of
+            Just posM -> posM == p || minhocasOcupam p ms
+            Nothing   -> minhocasOcupam p ms
 
--- Verifica recursivamente se todas as posições de barris estão livres
-verificaBarris :: [Objeto] -> Estado -> Bool
-verificaBarris [] _ = True
-verificaBarris (b:bs) e
-    | livreDeBarris (posicaoBarril b) e = verificaBarris bs e
-    | otherwise = False
+
+-- Verifica se uma posição está livre de barris
+livreDeBarris :: Posicao -> Estado -> Bool
+livreDeBarris pos est
+    | barrisOcupam pos (objetosEstado est) = False
+    | otherwise = True
+  where
+    barrisOcupam :: Posicao -> [Objeto] -> Bool
+    barrisOcupam _ [] = False
+    barrisOcupam p (b:bs) =
+        case b of
+            Barril { posicaoBarril = pb } -> pb == p || barrisOcupam p bs
+            _ -> barrisOcupam p bs
