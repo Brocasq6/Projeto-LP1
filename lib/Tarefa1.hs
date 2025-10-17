@@ -44,13 +44,13 @@ verificaMinhocas (m:ms) est =
 verificaBarris :: [Objeto] -> Estado -> Bool
 verificaBarris [] _ = True
 verificaBarris (b:bs) e
-    | livreDeBarris (posicaoBarril b) e = verificaBarris bs e
+    | livreDeBarris (posicaoBarril b) (e { objetosEstado = bs }) = verificaBarris bs e
     | otherwise = False
 
 -- Verifica se o estado é válido
 validaEstado :: Estado -> Bool
 validaEstado e
-    | null (mapaEstado e) = False
+    | null (mapaEstado e) || null (head (mapaEstado e)) = False
     | not (verificaMinhocas (minhocasEstado e) e) = False
     | not (verificaBarris [b | b@Barril{} <- objetosEstado e] e) = False
     | otherwise = True
