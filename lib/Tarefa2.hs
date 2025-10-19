@@ -8,6 +8,10 @@ module Tarefa2 where
 
 import Labs2025
 
+data Direcao = Norte | Nordeste | Este | Sudeste | Sul | Sudoeste | Oeste | Noroeste
+    deriving (Eq,Ord,Show,Read,Enum)
+
+
 {-
 
 efetuaJogada
@@ -33,11 +37,20 @@ efetuaJogada
 moveMinhoca :: Direcao -> Mapa -> Minhoca -> Minhoca
 moveMinhoca dir mapa minhoca = undefined
 
-proximaPosicao :: Direcao -> Posicao -> Posicao
-proximaPosicao dir (x,y) = undefined
+movePosicao :: Direcao -> Posicao -> Posicao
+movePosicao direcao (x,y) = 
+    case direcao of
+        Norte -> (x, y-1)
+        Nordeste -> (x-1, y+1)
+        Este -> (x, y+1)
+        Sudeste -> (x+1, y+1)
+        Sul -> (x+1, y)
+        Sudoeste -> (x+1, y-1)
+        Oeste -> (x, y-1)
+        Noroeste -> (x-1, y-1)
 
 terrenoNaPosicao :: Mapa -> Posicao -> Terreno
-terrenoNaPosicao = undefined
+terrenoNaPosicao mapa (x,y) = (mapa !! y) !! x
 
 aplicaEfeitoTerreno :: Minhoca -> Posicao -> Terreno -> Minhoca
 aplicaEfeitoTerreno minhoca pos terreno = undefined
@@ -48,16 +61,28 @@ efetuaJogadaMove n dir est = undefined
 --------------------------------------- funcoes relacionadas com a funcao efetuaJogadaDisparo -------------------------------------------------
 
 temMunicao :: TipoArma -> Bool
-temMunicao arma mun = undefined
+temMunicao arma mun = 
+    case arma of 
+        Jetpack -> jetpackMinhoca municao > 0 
+        Escavadora -> escavadoraMinhoca municao > 0 
+        Bazuca -> bazucaMinhoca municao > 0 
+        Mina -> minaMinhoca municao > 0 
+        Dinamite -> dinamiteMinhoca municao > 0 
 
 consomeMunicao :: TipoArma -> Minhoca -> Minhoca
-consomeMunicao arma minhoca = undefined
+consomeMunicao arma municao = 
+    case arma of
+        Jetpack -> municao { jetpackMinhoca = jetpackMinhoca municao - 1 }
+        Escavadora -> municao { escavadoraMinhoca = escavadoraMinhoca municao - 1 }
+        Bazuca -> municao { bazucaMinhoca = bazucaMinhoca municao - 1 }
+        Mina -> municao { minaMinhoca = minaMinhoca municao - 1 }
+        Dinamite -> municao {dinamiteMinhoca = dinamiteMinhoca municao - 1 }
 
 criaDisparo :: TipoArma -> Direcao -> NumMinhoca -> Minhoca -> Objeto
-criaDisparo arma dir dono minhoca = undefined
+criaDisparo arma dir dono minhoca = 
 
 atualizaLista :: Int -> a -> [a] -> [a]
-atualizaLista i novo l = undefined 
+atualizaLista i novo l = take i l ++ [novo] ++ drop (i + 1) l 
 
 efetuaJogadaDisparo :: NumMinhoca -> TipoArma -> Direcao -> Estado -> Estado
 efetuaJogadaDisparo n arma dir estado = undefined 
