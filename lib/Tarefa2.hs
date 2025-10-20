@@ -68,11 +68,11 @@ aplicaEfeitoTerreno m pos terreno =
 
 efetuaJogadaMove :: NumMinhoca -> Direcao -> Estado -> Estado
 efetuaJogadaMove n dir est = 
-    let minhocas = minhocasEstado est
-      alvo = minhocas !! n
-      nova = moveMinhoca dir (mapaEstado est) alvo
-      novasMinhocas = atualizaLista n nova minhocas
-    in est { minhocasEstado = novasMinhocas }
+    let minhocas       = minhocasEstado est
+      alvo           = minhocas !! n
+      nova           = moveMinhoca dir (mapaEstado est) alvo
+      novasMinhocas  = atualizaLista n nova minhocas
+  in est { minhocasEstado = novasMinhocas }
 
 --------------------------------------- funcoes relacionadas com a funcao efetuaJogadaDisparo -------------------------------------------------
 
