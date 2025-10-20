@@ -37,9 +37,9 @@ moveMinhoca dir mapa m =
   case posicaoMinhoca m of
     Nothing -> m  -- se não tiver posição (fora do mapa)
     Just p ->
-      let   novaPos = movePosicao dir p
+        let novaPos = movePosicao dir p
             terreno = terrenoNaPosicao mapa novaPos
-      in aplicaEfeitoTerreno m novaPos terreno
+        in aplicaEfeitoTerreno m novaPos terreno
 
 movePosicao :: Direcao -> Posicao -> Posicao
 movePosicao direcao (x,y) = 
