@@ -35,7 +35,13 @@ efetuaJogada
 --------------------------------------- funcoes relacionadas com a funcao efetuaJogadaMove -------------------------------------------------
 
 moveMinhoca :: Direcao -> Mapa -> Minhoca -> Minhoca
-moveMinhoca dir mapa minhoca = undefined
+moveMinhoca dir mapa m =
+  case posicaoMinhoca m of
+    Nothing -> m  -- se não tiver posição (fora do mapa)
+    Just p ->
+      let novaPos = movePosicao dir p
+          terreno = terrenoNaPosicao mapa novaPos
+      in aplicaEfeitoTerreno m novaPos terreno
 
 movePosicao :: Direcao -> Posicao -> Posicao
 movePosicao direcao (x,y) = 
@@ -53,10 +59,20 @@ terrenoNaPosicao :: Mapa -> Posicao -> Terreno
 terrenoNaPosicao mapa (x,y) = (mapa !! y) !! x
 
 aplicaEfeitoTerreno :: Minhoca -> Posicao -> Terreno -> Minhoca
-aplicaEfeitoTerreno minhoca pos terreno = undefined
+aplicaEfeitoTerreno m pos terreno =
+  case terreno of
+    Ar    -> m { posicaoMinhoca = Just pos }
+    Terra -> m { posicaoMinhoca = Just pos }
+    Pedra -> m  -- não se move
+    Agua  -> m { vidaMinhoca = Morta, posicaoMinhoca = Just pos }
 
 efetuaJogadaMove :: NumMinhoca -> Direcao -> Estado -> Estado
-efetuaJogadaMove n dir est = undefined
+efetuaJogadaMove n dir est = 
+    let minhocas = minhocasEstado est
+      alvo = minhocas !! n
+      nova = moveMinhoca dir (mapaEstado est) alvo
+      novasMinhocas = atualizaLista n nova minhocas
+  in est { minhocasEstado = novasMinhocas }
 
 --------------------------------------- funcoes relacionadas com a funcao efetuaJogadaDisparo -------------------------------------------------
 
@@ -79,13 +95,28 @@ consomeMunicao arma municao =
         Dinamite -> municao {dinamiteMinhoca = dinamiteMinhoca municao - 1 }
 
 criaDisparo :: TipoArma -> Direcao -> NumMinhoca -> Minhoca -> Objeto
-criaDisparo arma dir dono minhoca = 
+criaDisparo arma dir dono m =
+  case posicaoMinhoca m of
+    Nothing -> error "Minhoca fora do mapa"
+    Just p  -> Disparo { posicaoDisparo = p
+                       , direcaoDisparo = dir
+                       , tipoDisparo = arma
+                       , tempoDisparo = Nothing
+                       , donoDisparo = dono }
 
 atualizaLista :: Int -> a -> [a] -> [a]
 atualizaLista i novo l = take i l ++ [novo] ++ drop (i + 1) l 
 
 efetuaJogadaDisparo :: NumMinhoca -> TipoArma -> Direcao -> Estado -> Estado
-efetuaJogadaDisparo n arma dir estado = undefined 
+efetuaJogadaDisparo n arma dir est =
+  let minhocas = minhocasEstado est
+      m = minhocas !! n
+  in if temMunicao arma m
+     then let m' = consomeMunicao arma m
+              disparo = criaDisparo arma dir n m'
+          in est { objetosEstado = disparo : objetosEstado est
+                 , minhocasEstado = atualizaLista n m' minhocas }
+     else est  -- sem munição, nada acontece 
 
 ----------------------------------------------------------------------------------------------------------------
 
