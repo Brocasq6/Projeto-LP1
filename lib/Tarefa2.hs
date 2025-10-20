@@ -47,17 +47,17 @@ terrenoNaPosicao mapa (x,y) = (mapa !! y) !! x
 aplicaEfeitoTerreno :: Minhoca -> Posicao -> Terreno -> Minhoca
 aplicaEfeitoTerreno m pos terreno =
   case terreno of
-    Ar    -> m { posicaoMinhoca = Just pos }
+    Ar -> m { posicaoMinhoca = Just pos }
     Terra -> m { posicaoMinhoca = Just pos }
     Pedra -> m  -- não se move
-    Agua  -> m { vidaMinhoca = Morta, posicaoMinhoca = Just pos }
+    Agua -> m { vidaMinhoca = Morta, posicaoMinhoca = Just pos }
 
 efetuaJogadaMove :: NumMinhoca -> Direcao -> Estado -> Estado
 efetuaJogadaMove n dir est = 
-        let minhocas       = minhocasEstado est
-            alvo           = minhocas !! n
-            nova           = moveMinhoca dir (mapaEstado est) alvo
-            novasMinhocas  = atualizaLista n nova minhocas
+        let minhocas = minhocasEstado est
+            alvo = minhocas !! n
+            nova = moveMinhoca dir (mapaEstado est) alvo
+            novasMinhocas = atualizaLista n nova minhocas
         in est { minhocasEstado = novasMinhocas }
 
 --------------------------------------- funcoes relacionadas com a funcao efetuaJogadaDisparo -------------------------------------------------
