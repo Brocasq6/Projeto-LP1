@@ -41,18 +41,6 @@ moveMinhoca dir mapa m =
             terreno = terrenoNaPosicao mapa novaPos
         in aplicaEfeitoTerreno m novaPos terreno
 
-movePosicao :: Direcao -> Posicao -> Posicao
-movePosicao direcao (x,y) = 
-    case direcao of
-        Norte -> (x, y-1)
-        Nordeste -> (x-1, y+1)
-        Este -> (x, y+1)
-        Sudeste -> (x+1, y+1)
-        Sul -> (x+1, y)
-        Sudoeste -> (x+1, y-1)
-        Oeste -> (x, y-1)
-        Noroeste -> (x-1, y-1)
-
 terrenoNaPosicao :: Mapa -> Posicao -> Terreno
 terrenoNaPosicao mapa (x,y) = (mapa !! y) !! x
 
