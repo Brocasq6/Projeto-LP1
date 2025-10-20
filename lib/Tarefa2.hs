@@ -8,8 +8,6 @@ module Tarefa2 where
 
 import Labs2025
 
-data Direcao = Norte | Nordeste | Este | Sudeste | Sul | Sudoeste | Oeste | Noroeste
-    deriving (Eq,Ord,Show,Read,Enum)
 
 
 {-
