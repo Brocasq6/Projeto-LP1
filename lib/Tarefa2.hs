@@ -63,7 +63,7 @@ efetuaJogadaMove n dir est =
 --------------------------------------- funcoes relacionadas com a funcao efetuaJogadaDisparo -------------------------------------------------
 
 temMunicao :: TipoArma -> Minhoca -> Bool
-temMunicao arma mun = 
+temMunicao arma municao = 
     case arma of 
         Jetpack -> jetpackMinhoca municao > 0 
         Escavadora -> escavadoraMinhoca municao > 0 
