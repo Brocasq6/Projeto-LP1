@@ -35,29 +35,7 @@ estadoBase = Estado
 
 -- | Definir aqui os testes do grupo para a Tarefa 2
 testesTarefa2 :: [(NumMinhoca, Jogada, Estado)]
-testesTarefa2 =
-  [ -- 1️⃣ Movimento simples para a direita (Ar → pode mover)
-    (0, Move Este, estadoBase)
-
-  , -- 2️⃣ Movimento para cima (Ar → pode mover)
-    (0, Move Norte, estadoBase)
-
-  , -- 3️⃣ Movimento para a esquerda (Ar → pode mover)
-    (0, Move Oeste, estadoBase)
-
-  , -- 4️⃣ Movimento para baixo (Agua → morre)
-    (0, Move Sul, estadoBase)
-
-  , -- 5️⃣ Movimento bloqueado (Pedra à direita)
-    (0, Move Este, estadoBase { mapaEstado =
-        [ [Ar, Ar, Pedra]
-        , [Ar, Ar, Pedra]
-        , [Ar, Ar, Pedra]
-        ] })
-
-  , -- 6️⃣ Disparo com Bazuca (cria um novo Disparo)
-    (0, Dispara Bazuca Este, estadoBase)
-  ]
+testesTarefa2 = undefined
 
 dataTarefa2 :: IO TaskData
 dataTarefa2 = do
