@@ -76,9 +76,16 @@ validaMapa (h:t) =
 -- Verifica se uma posição está dentro dos limites do mapa
 dentroMapa :: Posicao -> Mapa -> Bool
 dentro (x,y) [] = False
+dentroMapa (x,y) mapa =
+    | ( x >= 0 && x < length(head m) ) && ( y >= 0 && y <= length m ) = True
+    | otherwise = False
 
 -- Obtém o terreno existente numa posição (se for válida)
 terrenoEm :: Posicao -> Mapa -> Maybe Terreno
+terrenoEm (x,y) [] = Nothing
+terrenoEm (x,y) mapa =
+    | dentroMapa (x,y) mapa = Just ((mapa!!y)!!x) 
+    | otherwise = Nothing
 
 -- Determina se o terreno é opaco (não atravessável) 
 eTerrenoOpaco :: Terreno -> Bool --(retirada do ficheiro: Tarefa0_2025.hs)
