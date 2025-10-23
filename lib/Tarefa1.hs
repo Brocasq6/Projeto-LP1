@@ -68,9 +68,14 @@ validaEstado e
 
 -- Verifica se o mapa é retangular e não vazio
 validaMapa :: Mapa -> Bool
+validaMapa [] = False
+validaMapa (h:t) =
+    | -- condicao para que um mapa seja valide = True
+    | otherwise = False
 
 -- Verifica se uma posição está dentro dos limites do mapa
 dentroMapa :: Posicao -> Mapa -> Bool
+dentro (x,y) [] = False
 
 -- Obtém o terreno existente numa posição (se for válida)
 terrenoEm :: Posicao -> Mapa -> Maybe Terreno
