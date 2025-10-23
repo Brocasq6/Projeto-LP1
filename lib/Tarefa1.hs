@@ -52,3 +52,33 @@ validaEstado e
     | not (verificaMinhocas (minhocasEstado e) e) = False
     | not (verificaBarris [b | b@Barril{} <- objetosEstado e] e) = False
     | otherwise = True
+
+
+
+
+
+{-
+ Apos ler o guiao do projeto percebemos de que as funcoes que se encontram acima
+ percebemos que ainda que ao rodar "cabal run t1-feedback" com um estado teste, o nosso codigo aparecia como correto
+ o unico problema é que nao respeitava as condicoes impostas pelo corpo docente da UC
+
+ para que tal acontece necessitamos das seguintes funcoes:
+-}
+
+
+-- Verifica se o mapa é retangular e não vazio
+validaMapa :: Mapa -> Bool
+
+-- Verifica se uma posição está dentro dos limites do mapa
+dentroMapa :: Posicao -> Mapa -> Bool
+
+-- Obtém o terreno existente numa posição (se for válida)
+terrenoEm :: Posicao -> Mapa -> Maybe Terreno
+
+-- Determina se o terreno é opaco (não atravessável) 
+eTerrenoOpaco :: Terreno -> Bool --(retirada do ficheiro: Tarefa0_2025.hs)
+eTerrenoOpaco terreno =
+    case terreno of
+        Terra -> True
+        Pedra -> True
+        _ -> False
