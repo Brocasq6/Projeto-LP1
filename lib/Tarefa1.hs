@@ -45,13 +45,22 @@ verificaBarris (b:bs) e
     | livreDeBarris (posicaoBarril b) (e { objetosEstado = bs }) = verificaBarris bs e
     | otherwise = False
 
+
+-- valida Minhoca
+validaMinhoca :: Minhoca -> Estado -> Bool
+validaMinhoca m e = undefined
+
+-- valida Objeto
+validaObjeto :: Objeto -> Estado -> Bool
+validaObjeto o e = undefined
+
+-- Disparo Valido
+tipoDisparoValido :: TipoArma -> Maybe Int -> NumMinhoca -> Estado -> Bool
+tipoDisparoValido tipo tempo dono e = undefined
+
 -- Verifica se o estado é válido
 validaEstado :: Estado -> Bool
-validaEstado e
-    | null (mapaEstado e) || null (head (mapaEstado e)) = False
-    | not (verificaMinhocas (minhocasEstado e) e) = False
-    | not (verificaBarris [b | b@Barril{} <- objetosEstado e] e) = False
-    | otherwise = True
+validaEstado e = undefined
 
 
 
