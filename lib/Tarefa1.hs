@@ -48,15 +48,30 @@ verificaBarris (b:bs) e
 
 -- valida Minhoca
 validaMinhoca :: Minhoca -> Estado -> Bool
-validaMinhoca m e = undefined
+validaMinhoca m e = 
+    case posicaoMinhoca m of 
+        Nothing -> vidaMorta m
+        Just p -> dentroMapa p (mapaEstado e)
+                  && not (maybe False (eTerrenoOpaco (terrenoNaPosicao p (mapaEstado e))))
+                  && livreDeBarris posicao estado
+                  && livreDeMinhocas posicao estado
+                  && vidaValida minhoca
+                  && municoesValidas minhoca
+                  && | terrenoNaPosicao p (mapaEstado e) == Just Agua = vidaMorta minhoca
+                     | otherwise = True
 
 -- valida Objeto
 validaObjeto :: Objeto -> Estado -> Bool
-validaObjeto o e = undefined
+validaObjeto o e = 
+    case o of
+        Barril p _ -> undefined -- caso em que é um barril
+        Disparo p _ arma tempo dono -> undefined -- caso em que é um disparo
+        _ -> True -- casos que nao sejam nem barril nem disparo
 
 -- Disparo Valido
 tipoDisparoValido :: TipoArma -> Maybe Int -> NumMinhoca -> Estado -> Bool
 tipoDisparoValido arma tempo dono e = undefined
+    dono >= 0 && dono < length (minhocasEstado e) &&
     case arma of 
         Jetpack -> False
         Escavadora -> False
