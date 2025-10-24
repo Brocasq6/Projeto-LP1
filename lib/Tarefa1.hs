@@ -8,6 +8,14 @@ module Tarefa1 where
 
 import Labs2025
 
+
+
+
+
+
+
+--------------- funcoes que verificam se uma posicao se encontram livres de minhocas ou barris -----------------------------------
+
 livreDeMinhocas :: Posicao -> Estado -> Bool
 livreDeMinhocas posi estado = livre posi (minhocasEstado estado)
   where
@@ -27,6 +35,22 @@ livreDeBarris posi estado = livre posi (objetosEstado estado)
     ehBarril (Barril _ _) = True
     ehBarril _ = False
 
+-----------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+-------------------- funcoes que verificam se todas as posicoes se encontram livres de minhocas ou barris -----------------------------------------
+
+
 -- Verifica recursivamente se todas as posições de minhocas estão livres
 verificaMinhocas :: [Minhoca] -> Estado -> Bool
 verificaMinhocas [] _ = True
@@ -44,6 +68,26 @@ verificaBarris [] _ = True
 verificaBarris (b:bs) e
     | livreDeBarris (posicaoBarril b) (e { objetosEstado = bs }) = verificaBarris bs e
     | otherwise = False
+
+
+
+---------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+----------------------- funcoes de validacao -----------------------
 
 
 -- valida Minhoca
@@ -82,6 +126,63 @@ tipoDisparoValido arma tempo dono e = undefined
 -- Verifica se o estado é válido
 validaEstado :: Estado -> Bool
 validaEstado e = undefined
+
+----------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- funcoes auxiliares à funcao validaMinhoca ----------
+
+vidaMorta :: Minhoca -> Bool
+vidaMorta minhoca =
+    case vidaMinhoca minhoca of
+        Morta -> True
+        _ -> False
+
+vidaValida :: Minhoca -> Bool
+vidaValida minhoca =
+    case vidaMinhoca minhoca of
+        Viva n -> n >= 0 && n <= 100
+        Morta -> True
+
+municoesValidas :: Minhoca -> Bool
+municoesValidas minh =
+    all (>= 0)
+    [ jetpackMinhoca minhoca
+     , escavadoraMinhoca minhoca
+     , bazucaMinhoca minhoca
+     , minaMinhoca minhoca
+     , dinamiteMinhoca minhoca
+    ]
+
+----------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
