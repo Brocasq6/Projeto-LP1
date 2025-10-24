@@ -56,7 +56,13 @@ validaObjeto o e = undefined
 
 -- Disparo Valido
 tipoDisparoValido :: TipoArma -> Maybe Int -> NumMinhoca -> Estado -> Bool
-tipoDisparoValido tipo tempo dono e = undefined
+tipoDisparoValido arma tempo dono e = undefined
+    case arma of 
+        Jetpack -> False
+        Escavadora -> False
+        Bazuca -> tempo == Nothing
+        Mina -> tempo == Nothing || maybe True (`elem` [0..2]) tempo
+        Dinamite -> tempo == maybe True (`elem` [0..4]) tempo
 
 -- Verifica se o estado é válido
 validaEstado :: Estado -> Bool
