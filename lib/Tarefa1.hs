@@ -17,7 +17,7 @@ import Labs2025
 --------------- funcoes que verificam se uma posicao se encontram livres de minhocas ou barris -----------------------------------
 
 livreDeMinhocas :: Posicao -> Estado -> Bool
-livreDeMinhocas posi estado = livre posi (minhocasEstado estado)
+livreDeMinhocas posicao estado = livre posicao (minhocasEstado estado)
   where
     livre _ [] = True
     livre posAtual (m:ms)
@@ -25,7 +25,7 @@ livreDeMinhocas posi estado = livre posi (minhocasEstado estado)
         | otherwise = livre posAtual ms
 
 livreDeBarris :: Posicao -> Estado -> Bool
-livreDeBarris posi estado = livre posi (objetosEstado estado)
+livreDeBarris posicao estado = livre posicao (objetosEstado estado)
   where
     livre _ [] = True
     livre posAtual (o:os)
@@ -54,19 +54,19 @@ livreDeBarris posi estado = livre posi (objetosEstado estado)
 -- Verifica recursivamente se todas as posições de minhocas estão livres
 verificaMinhocas :: [Minhoca] -> Estado -> Bool
 verificaMinhocas [] _ = True
-verificaMinhocas (m:ms) est =
-    case posicaoMinhoca m of
+verificaMinhocas (m:ms) estado =
+    case posicaoMinhoca minhoca of
         Just posi  ->
-            if livreDeMinhocas posi (est { minhocasEstado = ms })
-            then verificaMinhocas ms est
+            if livreDeMinhocas posicao (estado { minhocasEstado = ms })
+            then verificaMinhocas ms estado
             else False
-        Nothing -> verificaMinhocas ms est
+        Nothing -> verificaMinhocas ms estado
 
 -- Verifica recursivamente se todas as posições de barris estão livres
 verificaBarris :: [Objeto] -> Estado -> Bool
 verificaBarris [] _ = True
-verificaBarris (b:bs) e
-    | livreDeBarris (posicaoBarril b) (e { objetosEstado = bs }) = verificaBarris bs e
+verificaBarris (b:bs) estado
+    | livreDeBarris (posicaoBarril b) (estado { objetosEstado = bs }) = verificaBarris bs estado
     | otherwise = False
 
 
@@ -92,31 +92,31 @@ verificaBarris (b:bs) e
 
 -- valida Minhoca
 validaMinhoca :: Minhoca -> Estado -> Bool
-validaMinhoca m e = 
-    case posicaoMinhoca m of 
-        Nothing -> vidaMorta m
-        Just p -> dentroMapa p (mapaEstado e)
-                  && not (maybe False eTerrenoOpaco (terrenoNaPosicao p (mapaEstado e)))
+validaMinhoca minhoca estado = 
+    case posicaoMinhoca minhoca of 
+        Nothing -> vidaMorta minhoca
+        Just p -> dentroMapa posicao (mapaEstado estado)
+                  && not (maybe False eTerrenoOpaco (terrenoNaPosicao posicao (mapaEstado estado)))
                   && livreDeBarris posicao estado
                   && livreDeMinhocas posicao estado
                   && vidaValida minhoca
                   && municoesValidas minhoca
-                  && | terrenoNaPosicao p (mapaEstado e) == Just Agua = vidaMorta minhoca
+                  && | terrenoNaPosicao posicao (mapaEstado estado) == Just Agua = vidaMorta minhoca
                      | otherwise = True
 
 -- valida Objeto
 validaObjeto :: Objeto -> Estado -> Bool
-validaObjeto o e = 
-    case o of
-        Barril p _ ->  -- caso em que é um barril
-            dentroMapa p (mapaEstado e)
-            && not (maybe False eTerrenoOpaco (terrenoNaPosicao p (mapaEstado e)))
-            && livreDeMinhocas p e
-            && livreDeBarris p (e {objetosEstado = filter (/= o) (objetosEstado e)})
+validaObjeto objeto estado = 
+    case oobjeto of
+        Barril posicao _ ->  -- caso em que é um barril
+            dentroMapa posicao (mapaEstado estado)
+            && not (maybe False eTerrenoOpaco (terrenoNaPosicao posicao (mapaEstado estado)))
+            && livreDeMinhocas posicao estado
+            && livreDeBarris posicao (estado {objetosEstado = filter (/= o) (objetosEstado estado)})
         
-        Disparo p _ arma tempo dono ->  -- caso em que é um disparo
-            dentroMapa p (mapaEstado e) &&
-            tipoDisparoValido arma tempo dono e
+        Disparo posicao _ arma tempo dono ->  -- caso em que é um disparo
+            dentroMapa posicao (mapaEstado estado) &&
+            tipoDisparoValido arma tempo dono estado
 
         _ -> True -- casos que nao sejam nem barril nem disparo
 
@@ -133,7 +133,7 @@ tipoDisparoValido arma tempo dono e = undefined
 
 -- Verifica se o estado é válido
 validaEstado :: Estado -> Bool
-validaEstado e = undefined
+validaEstado estado = undefined
 
 ----------------------------------------------
 
@@ -164,7 +164,7 @@ vidaValida minhoca =
         Morta -> True
 
 municoesValidas :: Minhoca -> Bool
-municoesValidas minh =
+municoesValidas minhoca =
     all (>= 0)
     [ jetpackMinhoca minhoca
      , escavadoraMinhoca minhoca
