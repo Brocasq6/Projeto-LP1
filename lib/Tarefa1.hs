@@ -95,7 +95,7 @@ validaMinhoca :: Minhoca -> Estado -> Bool
 validaMinhoca minhoca estado = 
     case posicaoMinhoca minhoca of 
         Nothing -> vidaMorta minhoca
-        Just p -> dentroMapa posicao (mapaEstado estado)
+        Just posicao -> dentroMapa posicao (mapaEstado estado)
                   && not (maybe False eTerrenoOpaco (terrenoNaPosicao posicao (mapaEstado estado)))
                   && livreDeBarris posicao estado
                   && livreDeMinhocas posicao estado
@@ -107,7 +107,7 @@ validaMinhoca minhoca estado =
 -- valida Objeto
 validaObjeto :: Objeto -> Estado -> Bool
 validaObjeto objeto estado = 
-    case oobjeto of
+    case objeto of
         Barril posicao _ ->  -- caso em que é um barril
             dentroMapa posicao (mapaEstado estado)
             && not (maybe False eTerrenoOpaco (terrenoNaPosicao posicao (mapaEstado estado)))
