@@ -123,7 +123,7 @@ validaObjeto objeto estado =
 -- Disparo Valido
 tipoDisparoValido :: TipoArma -> Maybe Int -> NumMinhoca -> Estado -> Bool
 tipoDisparoValido arma tempo dono e = undefined
-    dono >= 0 && dono < length (minhocasEstado e) &&
+    dono >= 0 && dono < length (minhocasEstado estado) &&
     case arma of 
         Jetpack -> False
         Escavadora -> False
@@ -208,9 +208,10 @@ municoesValidas minhoca =
 -- Verifica se o mapa é retangular e não vazio
 validaMapa :: Mapa -> Bool
 validaMapa [] = False
-validaMapa (h:t) =
-    | -- condicao para que um mapa seja valide = True
-    | otherwise = False
+validaMapa mapa =
+    not (null mapa) --verifica se o mapa nao é vazio 
+    && not null (head mapa) -- verifica se a primeira linha do mapa nao é vazia
+    && all (\linha -> length linha == length (head mapa)) mapa --percorre todas as linhas do mapa e compara tamanhos.
 
 -- Verifica se uma posição está dentro dos limites do mapa
 dentroMapa :: Posicao -> Mapa -> Bool
