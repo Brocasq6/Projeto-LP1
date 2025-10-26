@@ -20,17 +20,17 @@ livreDeMinhocas :: Posicao -> Estado -> Bool
 livreDeMinhocas posicao estado = livre posicao (minhocasEstado estado)
   where
     livre _ [] = True
-    livre posAtual (m:ms)
-        | posicaoMinhoca m == Just posAtual = False
-        | otherwise = livre posAtual ms
+    livre posAtual (minhoca:minhocas)
+        | posicaoMinhoca minhoca == Just posAtual = False
+        | otherwise = livre posAtual minhocas
 
 livreDeBarris :: Posicao -> Estado -> Bool
 livreDeBarris posicao estado = livre posicao (objetosEstado estado)
   where
     livre _ [] = True
-    livre posAtual (o:os)
-        | ehBarril o && posicaoBarril o == posAtual = False
-        | otherwise = livre posAtual os
+    livre posAtual (objeto:objetos)
+        | ehBarril objeto && posicaoBarril objeto == posAtual = False
+        | otherwise = livre posAtual objetos
 
     ehBarril (Barril _ _) = True
     ehBarril _ = False
@@ -54,19 +54,19 @@ livreDeBarris posicao estado = livre posicao (objetosEstado estado)
 -- Verifica recursivamente se todas as posições de minhocas estão livres
 verificaMinhocas :: [Minhoca] -> Estado -> Bool
 verificaMinhocas [] _ = True
-verificaMinhocas (m:ms) estado =
+verificaMinhocas (minhoca:minhocas) estado =
     case posicaoMinhoca minhoca of
-        Just posi  ->
-            if livreDeMinhocas posicao (estado { minhocasEstado = ms })
-            then verificaMinhocas ms estado
+        Just posicao ->
+            if livreDeMinhocas posicao (estado { minhocasEstado = minhocas })
+            then verificaMinhocas minhocas estado
             else False
-        Nothing -> verificaMinhocas ms estado
+        Nothing -> verificaMinhocas minhocas estado
 
 -- Verifica recursivamente se todas as posições de barris estão livres
 verificaBarris :: [Objeto] -> Estado -> Bool
 verificaBarris [] _ = True
-verificaBarris (b:bs) estado
-    | livreDeBarris (posicaoBarril b) (estado { objetosEstado = bs }) = verificaBarris bs estado
+verificaBarris (barril:barris) estado
+    | livreDeBarris (posicaoBarril barril) (estado { objetosEstado = barris }) = verificaBarris barris estado
     | otherwise = False
 
 
@@ -95,14 +95,16 @@ validaMinhoca :: Minhoca -> Estado -> Bool
 validaMinhoca minhoca estado = 
     case posicaoMinhoca minhoca of 
         Nothing -> vidaMorta minhoca
-        Just posicao -> dentroMapa posicao (mapaEstado estado)
-                  && not (maybe False eTerrenoOpaco (terrenoNaPosicao posicao (mapaEstado estado)))
-                  && livreDeBarris posicao estado
-                  && livreDeMinhocas posicao estado
-                  && vidaValida minhoca
-                  && municoesValidas minhoca
-                  && | terrenoNaPosicao posicao (mapaEstado estado) == Just Agua = vidaMorta minhoca
-                     | otherwise = True
+        Just posicao -> 
+            dentroMapa posicao (mapaEstado estado)
+            && not (maybe False eTerrenoOpaco (terrenoNaPosicao posicao (mapaEstado estado)))
+            && livreDeBarris posicao estado
+            && livreDeMinhocas posicao (estado {minhocasEstado = filter (/= minhoca) (minhocasEstado estado)})
+            && vidaValida minhoca
+            && municoesValidas minhoca
+            && (case terrenoNaPosicao posicao (mapaEstado estado) of
+                    Just Agua -> vidaMorta minhoca
+                    _ -> True) -- devo colocar TRUE ou not (vidaMorta minhoca)?
 
 -- valida Objeto
 validaObjeto :: Objeto -> Estado -> Bool
@@ -112,17 +114,17 @@ validaObjeto objeto estado =
             dentroMapa posicao (mapaEstado estado)
             && not (maybe False eTerrenoOpaco (terrenoNaPosicao posicao (mapaEstado estado)))
             && livreDeMinhocas posicao estado
-            && livreDeBarris posicao (estado {objetosEstado = filter (/= o) (objetosEstado estado)})
+            && livreDeBarris posicao (estado {objetosEstado = filter (/= objeto) (objetosEstado estado)})
         
         Disparo posicao _ arma tempo dono ->  -- caso em que é um disparo
-            dentroMapa posicao (mapaEstado estado) &&
-            tipoDisparoValido arma tempo dono estado
+            dentroMapa posicao (mapaEstado estado) 
+            && tipoDisparoValido arma tempo dono estado
 
         _ -> True -- casos que nao sejam nem barril nem disparo
 
 -- Disparo Valido
 tipoDisparoValido :: TipoArma -> Maybe Int -> NumMinhoca -> Estado -> Bool
-tipoDisparoValido arma tempo dono e = undefined
+tipoDisparoValido arma tempo dono estado = 
     dono >= 0 && dono < length (minhocasEstado estado) &&
     case arma of 
         Jetpack -> False
@@ -133,7 +135,12 @@ tipoDisparoValido arma tempo dono e = undefined
 
 -- Verifica se o estado é válido
 validaEstado :: Estado -> Bool
-validaEstado estado = undefined
+validaEstado estado =
+    validaMapa (mapaEstado estado)
+    && verificaMinhocas (minhocasEstado estado) estado
+    && verificaBarris [b | b@Barril{} <- objetosEstado estado] estado
+    && all (`validaObjeto` estado) (objetosEstado estado)
+    && all (`validaMinhoca` estado) (minhocasEstado estado)
 
 ----------------------------------------------
 
@@ -165,14 +172,12 @@ vidaValida minhoca =
 
 municoesValidas :: Minhoca -> Bool
 municoesValidas minhoca =
-    all (>= 0)
-    [ jetpackMinhoca minhoca
-     , escavadoraMinhoca minhoca
-     , bazucaMinhoca minhoca
-     , minaMinhoca minhoca
-     , dinamiteMinhoca minhoca
-    ]
-
+    if jetpackMinhoca minhoca < 0 then False
+    else if escavadoraMinhoca minhoca < 0 then False
+    else if bazucaMinhoca minhoca < 0 then False
+    else if minaMinhoca minhoca < 0 then False
+    else if dinamiteMinhoca minhoca < 0 then False
+    else True
 ----------------------------------------------
 
 
@@ -210,13 +215,14 @@ validaMapa :: Mapa -> Bool
 validaMapa [] = False
 validaMapa mapa =
     not (null mapa) --verifica se o mapa nao é vazio 
-    && not null (head mapa) -- verifica se a primeira linha do mapa nao é vazia
+    && not (null (head mapa)) -- verifica se a primeira linha do mapa nao é vazia
     && all (\linha -> length linha == length (head mapa)) mapa --percorre todas as linhas do mapa e compara tamanhos.
 
 -- Verifica se uma posição está dentro dos limites do mapa
 dentroMapa :: Posicao -> Mapa -> Bool
 dentroMapa (x,y) mapa =
-    x >= 0 && x < length (head mapa) && y >= 0 && y < length mapa
+    x >= 0 && x < length (head mapa) 
+    && y >= 0 && y < length mapa
 
 -- Obtém o terreno existente numa posição (se for válida)
 terrenoNaPosicao :: Posicao -> Mapa -> Maybe Terreno
