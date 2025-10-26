@@ -96,7 +96,7 @@ validaMinhoca m e =
     case posicaoMinhoca m of 
         Nothing -> vidaMorta m
         Just p -> dentroMapa p (mapaEstado e)
-                  && not (maybe False (eTerrenoOpaco (terrenoNaPosicao p (mapaEstado e))))
+                  && not (maybe False eTerrenoOpaco (terrenoNaPosicao p (mapaEstado e)))
                   && livreDeBarris posicao estado
                   && livreDeMinhocas posicao estado
                   && vidaValida minhoca
@@ -108,8 +108,16 @@ validaMinhoca m e =
 validaObjeto :: Objeto -> Estado -> Bool
 validaObjeto o e = 
     case o of
-        Barril p _ -> undefined -- caso em que é um barril
-        Disparo p _ arma tempo dono -> undefined -- caso em que é um disparo
+        Barril p _ ->  -- caso em que é um barril
+            dentroMapa p (mapaEstado e)
+            && not (maybe False eTerrenoOpaco (terrenoNaPosicao p (mapaEstado e)))
+            && livreDeMinhocas p e
+            && livreDeBarris p (e {objetosEstado = filter (/= o) (objetosEstado e)})
+        
+        Disparo p _ arma tempo dono ->  -- caso em que é um disparo
+            dentroMapa p (mapaEstado e) &&
+            tipoDisparoValido arma tempo dono e
+
         _ -> True -- casos que nao sejam nem barril nem disparo
 
 -- Disparo Valido
