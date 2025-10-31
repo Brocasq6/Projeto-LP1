@@ -115,7 +115,7 @@ validaObjeto objeto estado =
             && livreDeMinhocas posicao estado
             && livreDeBarris posicao (estado {objetosEstado = filter (/= objeto) (objetosEstado estado)})
         
-            Disparo posicao _ arma tempo dono ->
+        Disparo posicao _ arma tempo dono ->
              dentroMapa posicao (mapaEstado estado)
           && not (maybe False eTerrenoOpaco (terrenoNaPosicao posicao (mapaEstado estado)))
           && livreDeMinhocas posicao estado
