@@ -91,19 +91,19 @@ verificaBarris (barril:barris) estado
 
 -- | valida Minhoca
 validaMinhoca :: Minhoca -> Estado -> Bool
-validaMinhoca minhoca estado = 
-    case posicaoMinhoca minhoca of 
-        Nothing -> vidaMorta minhoca
-        Just posicao -> 
-            dentroMapa posicao (mapaEstado estado)
-            && not (maybe False eTerrenoOpaco (terrenoNaPosicao posicao (mapaEstado estado)))
-            && livreDeBarris posicao estado
-            && livreDeMinhocas posicao (estado {minhocasEstado = filter (/= minhoca) (minhocasEstado estado)})
-            && vidaValida minhoca
-            && municoesValidas minhoca
-            && (case terrenoNaPosicao posicao (mapaEstado estado) of
-                    Just Agua -> vidaMorta minhoca
-                    _ -> True) -- devo colocar TRUE ou not (vidaMorta minhoca)?
+validaMinhoca minhoca estado =
+  case posicaoMinhoca minhoca of
+    Nothing     -> vidaMorta minhoca
+    Just posicao ->
+         dentroMapa posicao (mapaEstado estado)
+      && not (maybe False eTerrenoOpaco (terrenoNaPosicao posicao (mapaEstado estado)))
+      && livreDeBarris posicao estado
+      && livreDeMinhocas posicao (estado { minhocasEstado = filter (/= minhoca) (minhocasEstado estado) })
+      && vidaValida minhoca
+      && municoesValidas minhoca
+      && case terrenoNaPosicao posicao (mapaEstado estado) of
+           Just Agua -> vidaMorta minhoca
+           _         -> True
 
 -- | A célula é Ar?
 eAr :: Posicao -> Mapa -> Bool
@@ -126,7 +126,6 @@ validaObjeto objeto estado =
   case objeto of
         Barril posicao _ ->
          dentroMapa posicao (mapaEstado estado)
-          && not (maybe False eTerrenoOpaco (terrenoNaPosicao posicao (mapaEstado estado)))
           && suporteBarrilOK posicao (mapaEstado estado)
           && livreDeMinhocas posicao estado
           && livreDeBarris posicao (estado { objetosEstado = filter (/= objeto) (objetosEstado estado) })
