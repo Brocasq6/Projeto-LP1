@@ -113,12 +113,12 @@ eAr p m = case terrenoNaPosicao p m of
 
 -- | O barril está bem suportado? (em Ar e com Terra/Pedra imediatamente abaixo, ou na última linha)
 suporteBarrilOK :: Posicao -> Mapa -> Bool
-suporteBarrilOK (x,y) m =
+suporteBarrilOK (l,c) m =
   let h = length m
-  in  dentroMapa (x,y) m
-      && eAr (x,y) m
-      && ( y == h - 1
-           || maybe False eTerrenoOpaco (terrenoNaPosicao (x, y+1) m) )
+  in  dentroMapa (l,c) m
+      && case terrenoNaPosicao (l,c) m of { Just Ar -> True; _ -> False }
+      && ( l == h - 1
+           || maybe False eTerrenoOpaco (terrenoNaPosicao (l+1, c) m) )
 
 -- | valida Objeto
 validaObjeto :: Objeto -> Estado -> Bool
@@ -254,16 +254,17 @@ validaMapa mapa =
 
 -- | Verifica se uma posição está dentro dos limites do mapa
 dentroMapa :: Posicao -> Mapa -> Bool
-dentroMapa (x,y) mapa =
-    x >= 0 && x < length (head mapa) 
-    && y >= 0 && y < length mapa
+dentroMapa (l,c) m =
+  l >= 0 && c >= 0
+  && l < length m              -- l = índice da linha
+  && not (null m)
+  && c < length (head m)       -- c = índice da coluna
 
 -- | Obtém o terreno existente numa posição (se for válida)
 terrenoNaPosicao :: Posicao -> Mapa -> Maybe Terreno
-terrenoNaPosicao (_,_) [] = Nothing
-terrenoNaPosicao (x,y) mapa 
-    | dentroMapa (x,y) mapa = Just ((mapa!!y)!!x) 
-    | otherwise = Nothing
+terrenoNaPosicao (l,c) m
+  | dentroMapa (l,c) m = Just ((m !! l) !! c)
+  | otherwise          = Nothing
 
 -- | Determina se o terreno é opaco (não atravessável) 
 eTerrenoOpaco :: Terreno -> Bool --(retirada do ficheiro: Tarefa0_2025.hs)
