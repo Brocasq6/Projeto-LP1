@@ -162,11 +162,10 @@ tipoDisparoValido arma tempo dono estado =
 validaEstado :: Estado -> Bool
 validaEstado estado =
     validaMapa (mapaEstado estado)
-    && not (null (minhocasEstado estado))
-    && verificaMinhocas (minhocasEstado estado) estado
-    && verificaBarris [b | b@Barril{} <- objetosEstado estado] estado
-    && all (`validaObjeto` estado) (objetosEstado estado)
-    && all (`validaMinhoca` estado) (minhocasEstado estado)
+ && verificaMinhocas (minhocasEstado estado) estado
+ && verificaBarris [b | b@Barril{} <- objetosEstado estado] estado
+ && all (`validaObjeto` estado) (objetosEstado estado)
+ && all (`validaMinhoca` estado) (minhocasEstado estado)
 
 ----------------------------------------------
 
