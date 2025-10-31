@@ -232,7 +232,7 @@ dentroMapa (x,y) mapa =
 
 -- | Obtém o terreno existente numa posição (se for válida)
 terrenoNaPosicao :: Posicao -> Mapa -> Maybe Terreno
-terrenoNaPosicao (x,y) [] = Nothing
+terrenoNaPosicao (_,_) [] = Nothing
 terrenoNaPosicao (x,y) mapa 
     | dentroMapa (x,y) mapa = Just ((mapa!!y)!!x) 
     | otherwise = Nothing
