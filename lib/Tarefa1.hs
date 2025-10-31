@@ -105,15 +105,30 @@ validaMinhoca minhoca estado =
                     Just Agua -> vidaMorta minhoca
                     _ -> True) -- devo colocar TRUE ou not (vidaMorta minhoca)?
 
+-- | A célula é Ar?
+eAr :: Posicao -> Mapa -> Bool
+eAr p m = case terrenoNaPosicao p m of
+            Just Ar -> True
+            _       -> False
+
+-- | O barril está bem suportado? (em Ar e com Terra/Pedra imediatamente abaixo, ou na última linha)
+suporteBarrilOK :: Posicao -> Mapa -> Bool
+suporteBarrilOK (x,y) m =
+  let h = length m
+  in  dentroMapa (x,y) m
+      && eAr (x,y) m
+      && ( y == h - 1
+           || maybe False eTerrenoOpaco (terrenoNaPosicao (x, y+1) m) )
+
 -- | valida Objeto
 validaObjeto :: Objeto -> Estado -> Bool
-validaObjeto objeto estado = 
-    case objeto of
-        Barril posicao _ ->  -- caso em que é um barril
-            dentroMapa posicao (mapaEstado estado)
-            && not (maybe False eTerrenoOpaco (terrenoNaPosicao posicao (mapaEstado estado)))
-            && livreDeMinhocas posicao estado
-            && livreDeBarris posicao (estado {objetosEstado = filter (/= objeto) (objetosEstado estado)})
+validaObjeto objeto estado =
+  case objeto of
+        Barril posicao _ ->
+         dentroMapa posicao (mapaEstado estado)
+          && suporteBarrilOK posicao (mapaEstado estado)
+          && livreDeMinhocas posicao estado
+          && livreDeBarris posicao (estado { objetosEstado = filter (/= objeto) (objetosEstado estado) })
         
         Disparo posicao _ arma tempo dono ->
              dentroMapa posicao (mapaEstado estado)
