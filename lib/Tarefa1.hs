@@ -107,13 +107,7 @@ eAr p m = case terrenoNaPosicao p m of
             _       -> False
 
 -- | O barril está bem suportado? (em Ar e com Terra/Pedra imediatamente abaixo, ou na última linha)
-suporteBarrilOK :: Posicao -> Mapa -> Bool
-suporteBarrilOK (l,c) m =
-  let h = length m
-  in  dentroMapa (l,c) m
-      && case terrenoNaPosicao (l,c) m of { Just Ar -> True; _ -> False }
-      && ( l == h - 1
-           || maybe False eTerrenoOpaco (terrenoNaPosicao (l+1, c) m) )
+
 
 -- | valida Objeto
 validaObjeto :: Objeto -> Estado -> Bool
