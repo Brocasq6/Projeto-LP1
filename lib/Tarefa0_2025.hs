@@ -1,3 +1,11 @@
+
+{-|
+Module      : Tarefa0_2025
+Description : Funções auxiliares.
+
+Módulo que define funções genéricas sobre listas e matrizes.
+-}
+
 module Tarefa0_2025 where
     
 import Labs2025
