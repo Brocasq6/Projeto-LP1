@@ -108,7 +108,7 @@ livreDeMinhocas :: Posicao -> Estado -> Bool
 livreDeMinhocas pos estado = livre pos (minhocasEstado estado)
   where
     livre _ [] = True  -- lista vazia -> posição livre
-    livre pos (m:ms)
+    livre _ (m:ms)
         | posicaoMinhoca m == Just pos = False -- a posição já se encontra ocupada
         | otherwise = livre pos ms              -- verifica o resto da lista
 
@@ -117,7 +117,7 @@ livreDeBarris :: Posicao -> Estado -> Bool
 livreDeBarris pos estado = livre pos (objetosEstado estado)
   where
     livre _ [] = True  -- lista vazia -> posição livre
-    livre pos (o:os)
+    livre _ (o:os)
         | ehBarril o && posicaoBarril o == pos = False  -- posição ocupada por barril
         | otherwise = livre pos os                    -- verifica o resto da lista
 
