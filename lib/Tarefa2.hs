@@ -31,7 +31,7 @@ efetuaJogada
 
 
 --------------------------------------- funcoes relacionadas com a funcao efetuaJogadaMove -------------------------------------------------
-
+-- | Move uma minhoca numa dada direção, aplicando os efeitos do terreno.
 moveMinhoca :: Direcao -> Mapa -> Minhoca -> Minhoca
 moveMinhoca dir mapa m =
   case posicaoMinhoca m of
@@ -41,9 +41,11 @@ moveMinhoca dir mapa m =
             terreno = terrenoNaPosicao mapa novaPos
         in aplicaEfeitoTerreno m novaPos terreno
 
+-- | Devolve o terreno numa dada posição do mapa.
 terrenoNaPosicao :: Mapa -> Posicao -> Terreno
 terrenoNaPosicao mapa (x,y) = (mapa !! y) !! x
 
+-- | Aplica o efeito do terreno na minhoca.
 aplicaEfeitoTerreno :: Minhoca -> Posicao -> Terreno -> Minhoca
 aplicaEfeitoTerreno m pos terreno =
   case terreno of
@@ -52,6 +54,7 @@ aplicaEfeitoTerreno m pos terreno =
     Pedra -> m  -- não se move
     Agua -> m { vidaMinhoca = Morta, posicaoMinhoca = Just pos }
 
+-- | Atualiza a lista de minhocas com a nova minhoca na posição dada.
 efetuaJogadaMove :: NumMinhoca -> Direcao -> Estado -> Estado
 efetuaJogadaMove n dir est = 
         let minhocas = minhocasEstado est
@@ -61,7 +64,7 @@ efetuaJogadaMove n dir est =
         in est { minhocasEstado = novasMinhocas }
 
 --------------------------------------- funcoes relacionadas com a funcao efetuaJogadaDisparo -------------------------------------------------
-
+-- | Verifica se a minhoca tem munição para o tipo de arma.
 temMunicao :: TipoArma -> Minhoca -> Bool
 temMunicao arma municao = 
     case arma of 
@@ -71,6 +74,7 @@ temMunicao arma municao =
         Mina -> minaMinhoca municao > 0 
         Dinamite -> dinamiteMinhoca municao > 0 
 
+-- | Consome uma unidade de munição do tipo de arma na minhoca.
 consomeMunicao :: TipoArma -> Minhoca -> Minhoca
 consomeMunicao arma municao = 
     case arma of
@@ -80,6 +84,7 @@ consomeMunicao arma municao =
         Mina -> municao { minaMinhoca = minaMinhoca municao - 1 }
         Dinamite -> municao {dinamiteMinhoca = dinamiteMinhoca municao - 1 }
 
+-- | Cria um objeto disparo a partir do tipo de arma, direção, número da minhoca e a própria minhoca.
 criaDisparo :: TipoArma -> Direcao -> NumMinhoca -> Minhoca -> Objeto
 criaDisparo arma dir dono m =
   case posicaoMinhoca m of
@@ -90,9 +95,11 @@ criaDisparo arma dir dono m =
                        , tempoDisparo = Nothing
                        , donoDisparo = dono }
 
+-- | Atualiza um elemento numa lista no índice dado.
 atualizaLista :: Int -> a -> [a] -> [a]
 atualizaLista i novo l = take i l ++ [novo] ++ drop (i + 1) l 
 
+-- | Efetua uma jogada de disparo por parte de uma minhoca, atualizando o estado.
 efetuaJogadaDisparo :: NumMinhoca -> TipoArma -> Direcao -> Estado -> Estado
 efetuaJogadaDisparo n arma dir est =
   let minhocas = minhocasEstado est
