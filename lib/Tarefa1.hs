@@ -4,6 +4,7 @@ Description : Validação de estados.
 
 Módulo para a realização da Tarefa 1 de LI1\/LP1 em 2025\/26.
 -}
+
 module Tarefa1 where
 
 import Labs2025
@@ -15,7 +16,7 @@ import Labs2025
 
 
 --------------- funcoes que verificam se uma posicao se encontram livres de minhocas ou barris -----------------------------------
-
+-- | Verifica se uma posição está livre de minhocas num dado estado.
 livreDeMinhocas :: Posicao -> Estado -> Bool
 livreDeMinhocas posicao estado = livre posicao (minhocasEstado estado)
   where
@@ -24,6 +25,8 @@ livreDeMinhocas posicao estado = livre posicao (minhocasEstado estado)
         | posicaoMinhoca minhoca == Just posAtual = False
         | otherwise = livre posAtual minhocas
 
+
+-- | Verifica se uma posição está livre de barris num dado estado.
 livreDeBarris :: Posicao -> Estado -> Bool
 livreDeBarris posicao estado = livre posicao (objetosEstado estado)
   where
@@ -51,7 +54,7 @@ livreDeBarris posicao estado = livre posicao (objetosEstado estado)
 -------------------- funcoes que verificam se todas as posicoes se encontram livres de minhocas ou barris -----------------------------------------
 
 
--- Verifica recursivamente se todas as posições de minhocas estão livres
+-- | Verifica recursivamente se todas as posições de minhocas estão livres
 verificaMinhocas :: [Minhoca] -> Estado -> Bool
 verificaMinhocas [] _ = True
 verificaMinhocas (minhoca:minhocas) estado =
@@ -62,7 +65,7 @@ verificaMinhocas (minhoca:minhocas) estado =
             else False
         Nothing -> verificaMinhocas minhocas estado
 
--- Verifica recursivamente se todas as posições de barris estão livres
+-- | Verifica recursivamente se todas as posições de barris estão livres
 verificaBarris :: [Objeto] -> Estado -> Bool
 verificaBarris [] _ = True
 verificaBarris (barril:barris) estado
@@ -90,7 +93,7 @@ verificaBarris (barril:barris) estado
 ----------------------- funcoes de validacao -----------------------
 
 
--- valida Minhoca
+-- | valida Minhoca
 validaMinhoca :: Minhoca -> Estado -> Bool
 validaMinhoca minhoca estado = 
     case posicaoMinhoca minhoca of 
@@ -106,7 +109,7 @@ validaMinhoca minhoca estado =
                     Just Agua -> vidaMorta minhoca
                     _ -> True) -- devo colocar TRUE ou not (vidaMorta minhoca)?
 
--- valida Objeto
+-- | valida Objeto
 validaObjeto :: Objeto -> Estado -> Bool
 validaObjeto objeto estado = 
     case objeto of
@@ -122,7 +125,7 @@ validaObjeto objeto estado =
 
         _ -> True -- casos que nao sejam nem barril nem disparo
 
--- Disparo Valido
+-- | Disparo Valido
 tipoDisparoValido :: TipoArma -> Maybe Int -> NumMinhoca -> Estado -> Bool
 tipoDisparoValido arma tempo dono estado = 
     dono >= 0 && dono < length (minhocasEstado estado) &&
@@ -133,7 +136,7 @@ tipoDisparoValido arma tempo dono estado =
         Mina -> tempo == Nothing || maybe True (`elem` [0..2]) tempo
         Dinamite -> tempo == maybe True (`elem` [0..4]) tempo
 
--- Verifica se o estado é válido
+-- | Verifica se o estado é válido
 validaEstado :: Estado -> Bool
 validaEstado estado =
     validaMapa (mapaEstado estado)
@@ -156,20 +159,23 @@ validaEstado estado =
 
 
 
--- funcoes auxiliares à funcao validaMinhoca ----------
+--  funcoes auxiliares à funcao validaMinhoca ----------
 
+-- | função que verifica se a vida da minhoca é morta
 vidaMorta :: Minhoca -> Bool
 vidaMorta minhoca =
     case vidaMinhoca minhoca of
         Morta -> True
         _ -> False
 
+-- | função que verifica se a vida da minhoca é valida
 vidaValida :: Minhoca -> Bool
 vidaValida minhoca =
     case vidaMinhoca minhoca of
         Viva n -> n >= 0 && n <= 100
         Morta -> True
 
+-- | função que verifica se as munições da minhoca são válidas
 municoesValidas :: Minhoca -> Bool
 municoesValidas minhoca =
     if jetpackMinhoca minhoca < 0 then False
@@ -210,7 +216,7 @@ municoesValidas minhoca =
 -}
 
 
--- Verifica se o mapa é retangular e não vazio
+-- | Verifica se o mapa é retangular e não vazio
 validaMapa :: Mapa -> Bool
 validaMapa [] = False
 validaMapa mapa =
@@ -218,20 +224,20 @@ validaMapa mapa =
     && not (null (head mapa)) -- verifica se a primeira linha do mapa nao é vazia
     && all (\linha -> length linha == length (head mapa)) mapa --percorre todas as linhas do mapa e compara tamanhos.
 
--- Verifica se uma posição está dentro dos limites do mapa
+-- | Verifica se uma posição está dentro dos limites do mapa
 dentroMapa :: Posicao -> Mapa -> Bool
 dentroMapa (x,y) mapa =
     x >= 0 && x < length (head mapa) 
     && y >= 0 && y < length mapa
 
--- Obtém o terreno existente numa posição (se for válida)
+-- | Obtém o terreno existente numa posição (se for válida)
 terrenoNaPosicao :: Posicao -> Mapa -> Maybe Terreno
 terrenoNaPosicao (x,y) [] = Nothing
 terrenoNaPosicao (x,y) mapa 
     | dentroMapa (x,y) mapa = Just ((mapa!!y)!!x) 
     | otherwise = Nothing
 
--- Determina se o terreno é opaco (não atravessável) 
+-- | Determina se o terreno é opaco (não atravessável) 
 eTerrenoOpaco :: Terreno -> Bool --(retirada do ficheiro: Tarefa0_2025.hs)
 eTerrenoOpaco terreno =
     case terreno of
