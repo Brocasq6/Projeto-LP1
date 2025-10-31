@@ -5,8 +5,9 @@ import Tarefa1
 import Magic
 
 
-mapaValido :: Mapa
-mapaValido =
+
+mValido :: Mapa
+mValido =
   [ [Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar]
   , [Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar]
   , [Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar,Ar]
@@ -15,24 +16,24 @@ mapaValido =
   , [Terra,Terra,Terra,Pedra,Pedra,Agua,Agua,Agua,Ar,Ar]
   ]
 
-mapaInvalidoVazio :: Mapa
+mInvalidoVazio :: Mapa
 mInvalidoVazio = []
 
-mapaInvalidoIrregular :: Mapa
+mInvalidoIrregular :: Mapa
 mInvalidoIrregular = [[Ar,Ar,Ar],[Ar,Ar],[Ar]]
 
-mapaAgua :: Mapa
-mapaAgua =
+mAgua :: Mapa
+mAgua =
   [ [Agua,Agua,Agua]
   , [Agua,Agua,Agua]
   , [Agua,Agua,Agua]
   ]
 
-mapaSoAr :: Mapa
-mapaSoAr = replicate 5 (replicate 5 Ar)
+mSoAr :: Mapa
+mSoAr = replicate 5 (replicate 5 Ar)
 
-mamaMinimo :: Mapa
-mapaMinimo = [[Ar]]
+mMinimo :: Mapa
+mMinimo = [[Ar]]
 
 -- =====================================================
 -- OBJETOS E MINHOCAS AUXILIARES
