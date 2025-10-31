@@ -81,7 +81,7 @@ movePosicaoJanela (d1,d2) d (l,c)
 -- | Converte uma posição no referencial em que a origem é no canto superior esquerdo da janela numa posição em que a origem passa a estar no centro da janela.
 
 origemAoCentro :: Dimensao -> Posicao -> Posicao
-origemAoCentro (d1,d2) (l,c)  = undefined
+origemAoCentro (d1,d2) (l,c)  = (l - ((d1 - 1) `div` 2), c - ((d2 - 1) `div` 2))
 
 -- | Roda um par (posição,direção) 45% para a direita.
 
