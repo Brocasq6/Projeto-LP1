@@ -10,7 +10,7 @@ module Tarefa0_2025 where
     
 import Labs2025
 
-
+-- | minhoca exemplo 1
 minhoca1 :: Minhoca
 minhoca1 = Minhoca
     { posicaoMinhoca = Just (1,1)
@@ -22,6 +22,7 @@ minhoca1 = Minhoca
     , dinamiteMinhoca = 0
     }
 
+-- | minhoca exemplo 2
 minhoca2 :: Minhoca
 minhoca2 = Minhoca
     { posicaoMinhoca = Just (2,2)
@@ -32,17 +33,18 @@ minhoca2 = Minhoca
     , minaMinhoca    = 0
     , dinamiteMinhoca = 1
     }
-
+-- | mapa exemplo 
 mapaExemplo :: Mapa
 mapaExemplo =
     [ [Terra, Agua, Ar]
     , [Pedra, Terra, Terra]
     , [Ar, Agua, Pedra]
     ]
-
+-- | barril exemplo 
 barril1 :: Objeto
 barril1 = Barril (0,2) False
 
+-- | disparo exemplo
 disparo1 :: Objeto
 disparo1 = Disparo
     { posicaoDisparo = (1,2)
@@ -101,6 +103,7 @@ ePosicaoEstadoLivre pos estado
     | livreDeMinhocas pos estado && livreDeBarris pos estado = True
     | otherwise = False
 
+-- | Verifica se uma posição está livre de minhocas num dado estado.
 livreDeMinhocas :: Posicao -> Estado -> Bool
 livreDeMinhocas pos estado = livre pos (minhocasEstado estado)
   where
@@ -109,6 +112,7 @@ livreDeMinhocas pos estado = livre pos (minhocasEstado estado)
         | posicaoMinhoca m == Just pos = False -- a posição já se encontra ocupada
         | otherwise = livre pos ms              -- verifica o resto da lista
 
+-- | Verifica se uma posição está livre de barris num dado estado.
 livreDeBarris :: Posicao -> Estado -> Bool
 livreDeBarris pos estado = livre pos (objetosEstado estado)
   where
@@ -140,7 +144,7 @@ destroiPosicao pos mapa =
         _ -> mapa
 
 
--- Adiciona um novo objeto a um estado.
+-- | Adiciona um novo objeto a um estado.
 adicionaObjeto :: Objeto -> Estado -> Estado
 adicionaObjeto obj estado =
     estado { objetosEstado = obj : objetosEstado estado }

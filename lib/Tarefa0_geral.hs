@@ -104,7 +104,7 @@ rodaPosicaoDirecao (pos, direcao) =
 -- | Devolve o elemento num dado índice de uma lista.
 
 encontraIndiceLista :: Int -> [a] -> Maybe a
-encontraIndiceLista x [] = Nothing
+encontraIndiceLista _ [] = Nothing
 encontraIndiceLista 0 (h:t) = Just h
 encontraIndiceLista x (h:t)
     | x < 0 = Nothing
@@ -123,7 +123,7 @@ atualizaIndiceLista n x (h:t)
 -- | Devolve o elemento numa dada posição de uma matriz.
 
 encontraPosicaoMatriz :: Posicao -> Matriz a -> Maybe a
-encontraPosicaoMatriz (l,c) [] = Nothing
+encontraPosicaoMatriz (_,_) [] = Nothing
 encontraPosicaoMatriz (l,c) m
     | l >= length m = Nothing
     | c >= length (head m) = Nothing
