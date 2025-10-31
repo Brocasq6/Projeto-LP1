@@ -138,7 +138,9 @@ minhocaTemDisparo arma num (obj:objs)
 -- | Disparo Valido
 tipoDisparoValido :: TipoArma -> Maybe Int -> NumMinhoca -> Estado -> Bool
 tipoDisparoValido arma tempo dono estado =
-     dono >= 0 && dono < length (minhocasEstado estado)
+     dono >= 0
+  && dono < length (minhocasEstado estado)
+  && not (minhocaTemDisparo arma dono (objetosEstado estado))
   && case arma of
        Jetpack    -> False
        Escavadora -> False
@@ -150,6 +152,7 @@ tipoDisparoValido arma tempo dono estado =
 validaEstado :: Estado -> Bool
 validaEstado estado =
     validaMapa (mapaEstado estado)
+    && not (null (minhocasEstado estado))
     && verificaMinhocas (minhocasEstado estado) estado
     && verificaBarris [b | b@Barril{} <- objetosEstado estado] estado
     && all (`validaObjeto` estado) (objetosEstado estado)
