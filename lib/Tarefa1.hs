@@ -128,6 +128,17 @@ validaObjeto objeto estado =
 
         _ -> True -- casos que nao sejam nem barril nem disparo
 
+-- | Verifica se numa lista de objetos já existe um disparo feito para uma dada arma por uma dada minhoca.
+minhocaTemDisparo :: TipoArma -> NumMinhoca -> [Objeto] -> Bool
+minhocaTemDisparo _ _ [] = False
+minhocaTemDisparo arma num (obj:objs)
+    | ehDisparo && tipoDisparo obj == arma && donoDisparo obj == num = True
+    | otherwise = minhocaTemDisparo arma num objs
+  where
+    ehDisparo = case obj of
+                  Disparo{} -> True
+                  _ -> False
+
 -- | Disparo Valido
 tipoDisparoValido :: TipoArma -> Maybe Int -> NumMinhoca -> Estado -> Bool
 tipoDisparoValido arma tempo dono estado = 
