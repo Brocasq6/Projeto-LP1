@@ -13,6 +13,7 @@ import Labs2025
 
 -- | Tipo de dado para representar danos em posições.
 type Dano = Int
+-- | Tipo de dado para representar uma lista de danos em várias posições.
 type Danos = [(Posicao,Dano)]
 
 -- | Função principal da Tarefa 3. Avanço o estado do jogo um tick.
