@@ -101,10 +101,7 @@ validaMinhoca minhoca estado =
            _         -> True
 
 -- | A célula é Ar?
-eAr :: Posicao -> Mapa -> Bool
-eAr p m = case terrenoNaPosicao p m of
-            Just Ar -> True
-            _       -> False
+
 
 -- | O barril está bem suportado? (em Ar e com Terra/Pedra imediatamente abaixo, ou na última linha)
 
