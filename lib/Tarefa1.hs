@@ -132,8 +132,8 @@ validaObjeto objeto estado =
 tipoDisparoValido :: TipoArma -> Maybe Int -> NumMinhoca -> Estado -> Bool
 tipoDisparoValido arma tempo dono estado = 
     dono >= 0 && dono < length (minhocasEstado estado) 
-&& not (minhocaTemDisparo arma dono (objetosEstado estado))
-&&
+    && not (minhocaTemDisparo arma dono (objetosEstado estado))
+    &&
     case arma of 
         Jetpack -> False
         Escavadora -> False
