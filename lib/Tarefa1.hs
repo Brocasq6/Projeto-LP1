@@ -92,6 +92,7 @@ validaMinhoca minhoca estado =
     Just posicao ->
          dentroMapa posicao (mapaEstado estado)
       && livreDeBarris posicao estado
+      && not (maybe False eTerrenoOpaco (terrenoNaPosicao posicao (mapaEstado estado)))
       && livreDeMinhocas posicao (estado { minhocasEstado = filter (/= minhoca) (minhocasEstado estado) })
       && vidaValida minhoca
       && municoesValidas minhoca
@@ -118,20 +119,20 @@ suporteBarrilOK (l,c) m =
 validaObjeto :: Objeto -> Estado -> Bool
 validaObjeto objeto estado =
   case objeto of
-        Barril posicao _ ->
+    Barril posicao _ ->
          dentroMapa posicao (mapaEstado estado)
-          && suporteBarrilOK posicao (mapaEstado estado)
-          && livreDeMinhocas posicao estado
-          && livreDeBarris posicao (estado { objetosEstado = filter (/= objeto) (objetosEstado estado) })
-        
-        Disparo posicao _ arma tempo dono ->
-             dentroMapa posicao (mapaEstado estado)
-          && not (maybe False eTerrenoOpaco (terrenoNaPosicao posicao (mapaEstado estado)))
-          && livreDeMinhocas posicao estado
-          && livreDeBarris posicao estado
-          && tipoDisparoValido arma tempo dono (estado { objetosEstado = filter (/= objeto) (objetosEstado estado) })
+      && not (maybe False eTerrenoOpaco (terrenoNaPosicao posicao (mapaEstado estado)))
+      && livreDeMinhocas posicao estado
+      && livreDeBarris posicao (estado { objetosEstado = filter (/= objeto) (objetosEstado estado) })
 
-        _ -> True -- casos que nao sejam nem barril nem disparo
+    Disparo posicao _ arma tempo dono ->
+         dentroMapa posicao (mapaEstado estado)
+      && not (maybe False eTerrenoOpaco (terrenoNaPosicao posicao (mapaEstado estado)))
+      && livreDeMinhocas posicao estado
+      && livreDeBarris posicao estado
+      && tipoDisparoValido arma tempo dono (estado { objetosEstado = filter (/= objeto) (objetosEstado estado) })
+
+    _ -> True -- casos que nao sejam nem barril nem disparo
 
 -- | Verifica se numa lista de objetos já existe um disparo feito para uma dada arma por uma dada minhoca.
 minhocaTemDisparo :: TipoArma -> NumMinhoca -> [Objeto] -> Bool
