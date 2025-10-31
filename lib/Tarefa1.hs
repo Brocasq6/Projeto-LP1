@@ -134,7 +134,7 @@ tipoDisparoValido arma tempo dono estado =
         Escavadora -> False
         Bazuca -> tempo == Nothing
         Mina -> tempo == Nothing || maybe True (`elem` [0..2]) tempo
-        Dinamite -> tempo == maybe True (`elem` [0..4]) tempo
+        Dinamite -> maybe True (`elem` [0..4]) tempo
 
 -- | Verifica se o estado é válido
 validaEstado :: Estado -> Bool
