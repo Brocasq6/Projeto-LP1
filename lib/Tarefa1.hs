@@ -121,20 +121,25 @@ validaObjeto objeto estado =
         
         Disparo posicao _ arma tempo dono ->  -- caso em que é um disparo
             dentroMapa posicao (mapaEstado estado) 
-            && tipoDisparoValido arma tempo dono estado
+            && not (maybe False eTerrenoOpaco (terrenoNaPosicao posicao (mapaEstado estado)))
+            && livreDeMinhocas posicao estado
+            && livreDeBarris posicao estado
+            && tipoDisparoValido arma tempo dono (estado { objetosEstado = filter (/= objeto) (objetosEstado estado) })
 
         _ -> True -- casos que nao sejam nem barril nem disparo
 
 -- | Disparo Valido
 tipoDisparoValido :: TipoArma -> Maybe Int -> NumMinhoca -> Estado -> Bool
 tipoDisparoValido arma tempo dono estado = 
-    dono >= 0 && dono < length (minhocasEstado estado) &&
+    dono >= 0 && dono < length (minhocasEstado estado) 
+&& not (minhocaTemDisparo arma dono (objetosEstado estado))
+&&
     case arma of 
         Jetpack -> False
         Escavadora -> False
         Bazuca -> tempo == Nothing
-        Mina -> tempo == Nothing || maybe True (`elem` [0..2]) tempo
-        Dinamite -> maybe True (`elem` [0..4]) tempo
+        Mina       -> tempo == Nothing || tempo == Just 2
+        Dinamite   -> tempo == Just 3
 
 -- | Verifica se o estado é válido
 validaEstado :: Estado -> Bool
