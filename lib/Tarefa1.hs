@@ -28,15 +28,11 @@ livreDeMinhocas posicao estado = livre posicao (minhocasEstado estado)
 
 -- | Verifica se uma posição está livre de barris num dado estado.
 livreDeBarris :: Posicao -> Estado -> Bool
-livreDeBarris posicao estado = livre posicao (objetosEstado estado)
-  where
-    livre _ [] = True
-    livre posAtual (objeto:objetos)
-        | ehBarril objeto && posicaoBarril objeto == posAtual = False
-        | otherwise = livre posAtual objetos
-
-    ehBarril (Barril _ _) = True
-    ehBarril _ = False
+livreDeBarris pos estado =
+  all (\obj -> case obj of
+                 Barril p _ -> p /= pos
+                 _          -> True)
+      (objetosEstado estado)
 
 -----------------------------------------------------------------------------------
 
