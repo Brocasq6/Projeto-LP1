@@ -4,14 +4,6 @@ import Labs2025
 import Tarefa1
 import Magic
 
-{-# OPTIONS_GHC -Wno-unused-binds #-}
-module Testes where
-
-import Labs2025
-
--- =====================================================
--- MAPAS AUXILIARES
--- =====================================================
 
 mapaValido :: Mapa
 mapaValido =
@@ -140,9 +132,6 @@ testesTarefa1 =
   , eValido21, eValido22, eValido23, eValido24, eValido25
   ]
 
-
-
-    
 dataTarefa1 :: IO TaskData
 dataTarefa1 = do
     let ins = testesTarefa1
