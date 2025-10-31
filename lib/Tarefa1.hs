@@ -126,6 +126,7 @@ validaObjeto objeto estado =
   case objeto of
         Barril posicao _ ->
          dentroMapa posicao (mapaEstado estado)
+          && not (maybe False eTerrenoOpaco (terrenoNaPosicao posicao (mapaEstado estado)))
           && suporteBarrilOK posicao (mapaEstado estado)
           && livreDeMinhocas posicao estado
           && livreDeBarris posicao (estado { objetosEstado = filter (/= objeto) (objetosEstado estado) })
