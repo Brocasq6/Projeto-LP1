@@ -81,11 +81,6 @@ verificaBarris (barril:barris) estado
 
 
 
-
-
-
-
-
 ----------------------- funcoes de validacao -----------------------
 
 
@@ -96,7 +91,6 @@ validaMinhoca minhoca estado =
     Nothing     -> vidaMorta minhoca
     Just posicao ->
          dentroMapa posicao (mapaEstado estado)
-      && not (maybe False eTerrenoOpaco (terrenoNaPosicao posicao (mapaEstado estado)))
       && livreDeBarris posicao estado
       && livreDeMinhocas posicao (estado { minhocasEstado = filter (/= minhoca) (minhocasEstado estado) })
       && vidaValida minhoca
