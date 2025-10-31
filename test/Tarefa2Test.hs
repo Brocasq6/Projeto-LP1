@@ -1,9 +1,13 @@
+{-# OPTIONS_GHC -Wno-unused-binds #-}
 module Main where
 
 import Labs2025
 import Tarefa2
 import Magic
 
+-- =====================================================
+-- MAPAS BASE
+-- =====================================================
 
 mapaSimples :: Mapa
 mapaSimples =
@@ -12,7 +16,31 @@ mapaSimples =
   , [Agua, Ar, Pedra]
   ]
 
--- Minhoca viva no centro do mapa
+mapaComPedra :: Mapa
+mapaComPedra =
+  [ [Ar, Ar, Ar]
+  , [Ar, Pedra, Ar]
+  , [Agua, Ar, Pedra]
+  ]
+
+mapaComBarril :: Mapa
+mapaComBarril =
+  [ [Ar, Ar, Ar, Ar]
+  , [Ar, Terra, Ar, Ar]
+  , [Agua, Ar, Pedra, Ar]
+  ]
+
+mapaTopoAgua :: Mapa
+mapaTopoAgua =
+  [ [Agua, Agua, Agua]
+  , [Ar, Terra, Ar]
+  , [Agua, Ar, Pedra]
+  ]
+
+-- =====================================================
+-- MINHOCAS AUXILIARES
+-- =====================================================
+
 minhocaBase :: Minhoca
 minhocaBase = Minhoca
   { posicaoMinhoca = Just (1,1)
@@ -24,32 +52,130 @@ minhocaBase = Minhoca
   , dinamiteMinhoca = 1
   }
 
--- Estado inicial com 1 minhoca e sem objetos
-estadoBase :: Estado
-estadoBase = Estado
-  { mapaEstado = mapaSimples
-  , objetosEstado = []
-  , minhocasEstado = [minhocaBase]
+minhocaSemMunicao :: Minhoca
+minhocaSemMunicao = Minhoca
+  { posicaoMinhoca = Just (1,1)
+  , vidaMinhoca = Viva 100
+  , jetpackMinhoca = 0
+  , escavadoraMinhoca = 0
+  , bazucaMinhoca = 0
+  , minaMinhoca = 0
+  , dinamiteMinhoca = 0
   }
 
+minhocaExtra :: Posicao -> Minhoca
+minhocaExtra p = minhocaBase { posicaoMinhoca = Just p }
 
--- | Definir aqui os testes do grupo para a Tarefa 2
+-- =====================================================
+-- ESTADOS BASE
+-- =====================================================
+
+eBase :: Estado
+eBase =
+  Estado
+    { mapaEstado = mapaSimples
+    , objetosEstado = []
+    , minhocasEstado = [minhocaBase]
+    }
+
+-- minhoca está no ar (linha 0)
+eNoAr :: Estado
+eNoAr =
+  eBase { minhocasEstado = [minhocaBase { posicaoMinhoca = Just (0,1) }] }
+
+-- minhoca dentro de água
+eEmAgua :: Estado
+eEmAgua =
+  eBase { minhocasEstado = [minhocaBase { posicaoMinhoca = Just (2,0) }] }
+
+-- minhoca junto de pedra
+eContraPedra :: Estado
+eContraPedra =
+  Estado
+    { mapaEstado = mapaComPedra
+    , objetosEstado = []
+    , minhocasEstado = [minhocaBase]
+    }
+
+-- minhoca junto de terra
+eContraTerra :: Estado
+eContraTerra =
+  eBase { minhocasEstado = [minhocaBase { posicaoMinhoca = Just (1,0) }] }
+
+-- minhoca pode saltar (posição de chão)
+eSaltoValido :: Estado
+eSaltoValido = eBase
+
+-- duas minhocas próximas
+eComOutraMinhoca :: Estado
+eComOutraMinhoca =
+  eBase { minhocasEstado = [minhocaBase, minhocaExtra (1,2)] }
+
+-- minhoca sem munição
+eSemMunicao :: Estado
+eSemMunicao =
+  eBase { minhocasEstado = [minhocaSemMunicao] }
+
+-- já existe disparo do mesmo tipo (bazuca)
+eComObjetoMesmoTipo :: Estado
+eComObjetoMesmoTipo =
+  Estado
+    { mapaEstado = mapaSimples
+    , objetosEstado = [Disparo (1,2) Este Bazuca Nothing 0]
+    , minhocasEstado = [minhocaBase]
+    }
+
+-- minhoca fora do mapa (fora dos limites)
+eForaMapa :: Estado
+eForaMapa =
+  eBase { minhocasEstado = [minhocaBase { posicaoMinhoca = Just (3,3) }] }
+
+-- duas minhocas no mapa
+eDuasMinhocas :: Estado
+eDuasMinhocas =
+  eBase { minhocasEstado = [minhocaBase, minhocaExtra (0,0)] }
+
+-- há um barril no mapa
+eComBarril :: Estado
+eComBarril =
+  Estado
+    { mapaEstado = mapaComBarril
+    , objetosEstado = [Barril (1,2) False]
+    , minhocasEstado = [minhocaBase]
+    }
+
+-- minhoca no topo do mapa
+eTopoMapa :: Estado
+eTopoMapa =
+  eBase { minhocasEstado = [minhocaBase { posicaoMinhoca = Just (0,1) }] }
+
+-- minhoca no topo mas sobre água
+eTopoMapaAgua :: Estado
+eTopoMapaAgua =
+  eBase { mapaEstado = mapaTopoAgua
+        , minhocasEstado = [minhocaBase { posicaoMinhoca = Just (0,1) }]
+        }
+
+-- =====================================================
+-- TESTES T2 (50 jogadas cobrindo todas as regras)
+-- =====================================================
+
 testesT2 :: [(NumMinhoca, Jogada, Estado)]
 testesT2 =
-  [ (0, Move Este, eBase)              -- movimento simples
+  [ (0, Move Este, eBase)
   , (0, Move Oeste, eBase)
   , (0, Move Norte, eBase)
   , (0, Move Nordeste, eBase)
   , (0, Move Noroeste, eBase)
-  , (0, Move Sul, eBase)              -- inválido (fora do mapa)
-  , (0, Move Norte, eNoAr)            -- inválido (no ar)
-  , (0, Move Norte, eEmAgua)          -- morre
-  , (0, Move Norte, eContraPedra)     -- bloqueado
+  , (0, Move Sul, eBase)
+  , (0, Move Norte, eNoAr)
+  , (0, Move Norte, eEmAgua)
+  , (0, Move Norte, eContraPedra)
   , (0, Move Norte, eContraTerra)
   , (0, Move Nordeste, eSaltoValido)
   , (0, Move Noroeste, eSaltoValido)
   , (0, Move Oeste, eComOutraMinhoca)
-  , (0, Dispara Bazuca Este, eBase)   -- cria disparo
+  , (0, Dispara Bazuca Este, eBase)
   , (0, Dispara Mina Este, eBase)
   , (0, Dispara Dinamite Este, eBase)
   , (0, Dispara Jetpack Este, eBase)
@@ -87,12 +213,15 @@ testesT2 =
   , (0, Dispara Jetpack Noroeste, eBase)
   ]
 
+-- =====================================================
+-- EXECUÇÃO DO SISTEMA DE FEEDBACK
+-- =====================================================
 
 dataTarefa2 :: IO TaskData
 dataTarefa2 = do
-    let ins = testesTarefa2
-    outs <- mapM (\(i,j,e) -> runTest $ efetuaJogada i j e) ins
-    return $ T2 ins outs
+  let ins = testesT2
+  outs <- mapM (\(i,j,e) -> runTest $ efetuaJogada i j e) ins
+  return $ T2 ins outs
 
 main :: IO ()
 main = runFeedback =<< dataTarefa2
