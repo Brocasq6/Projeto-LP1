@@ -51,9 +51,6 @@ dimensaoMatriz m = (length m ,length (head m))
 ePosicaoMatrizValida :: Posicao -> Matriz a -> Bool
 ePosicaoMatrizValida (a,b) l = a <= length l && b <= length (head l)
 
-matrizExemplo :: Matriz Int
-matrizExemplo = [[1, 2, 3],[4, 5, 6],[7, 8, 9]]
-
 
 -- | Move uma posição uma unidade no sentido de uma direção.
 
@@ -99,7 +96,6 @@ rodaPosicaoDirecao (pos, direcao) =
         
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
--- * Funções recursivas.
 
 -- | Devolve o elemento num dado índice de uma lista.
 
@@ -129,13 +125,8 @@ encontraPosicaoMatriz (l,c) m
     | c >= length (head m) = Nothing
     | otherwise = Just ((m !! l) !! c) -- funcao que acede á primeira sublista de uma matriz e dps á coluna
 
-matrizExemplo2 :: Matriz Int
-matrizExemplo2 = [[1, 2, 3],[4, 5, 6],[7, 8, 9]]
-
 
 -- | Modifica um elemento numa dada posição de uma matriz.
---
--- __NB:__ Devolve a própria matriz se o elemento não existir.
 atualizaPosicaoMatriz :: (Eq a) => Posicao -> a -> Matriz a -> Matriz a
 atualizaPosicaoMatriz (l,c) a m
     | ((m !! l) !! c) == a = m -- se o elemento que queremos atualizar for igual ao que ja existe na matriz, devolve a propria matriz
@@ -153,9 +144,6 @@ moveDirecaoPosicoes d (h:t) = movePosicao d h : moveDirecaoPosicoes d t
 
 
 -- | Verifica se uma matriz é válida, no sentido em que modela um rectângulo.
--- "se o tamnho da primeira submatriz for igual ao tamanho dos elementos da matriz"
---     |
---     v
 eMatrizValida :: Matriz a -> Bool
 eMatrizValida m
     | length (head m) == length m = True
