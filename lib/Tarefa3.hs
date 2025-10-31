@@ -11,6 +11,7 @@ import Data.Either
 
 import Labs2025
 
+-- | Tipo de dado para representar danos em posições.
 type Dano = Int
 type Danos = [(Posicao,Dano)]
 
