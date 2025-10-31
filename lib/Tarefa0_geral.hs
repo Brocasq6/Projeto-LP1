@@ -101,8 +101,8 @@ rodaPosicaoDirecao (pos, direcao) =
 
 encontraIndiceLista :: Int -> [a] -> Maybe a
 encontraIndiceLista _ [] = Nothing
-encontraIndiceLista 0 (h:t) = Just h
-encontraIndiceLista x (h:t)
+encontraIndiceLista 0 (h:_) = Just h
+encontraIndiceLista x (_:t)
     | x < 0 = Nothing
     | otherwise = encontraIndiceLista (x-1) t  -- (x-1) faz com que passemos para o proximo indice
 
