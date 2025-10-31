@@ -127,12 +127,13 @@ validaObjeto objeto estado =
 -- | Verifica se numa lista de objetos já existe um disparo feito para uma dada arma por uma dada minhoca.
 minhocaTemDisparo :: TipoArma -> NumMinhoca -> [Objeto] -> Bool
 minhocaTemDisparo _ _ [] = False
-minhocaTemDisparo arma num (obj:objs) =
-  case obj of
-    Disparo { tipoDisparo = a, donoDisparo = n } ->
-      (a == arma && n == num) || minhocaTemDisparo arma num objs
-    _ ->
-      minhocaTemDisparo arma num objs
+minhocaTemDisparo arma num (obj:objs)
+    | ehDisparo && tipoDisparo obj == arma && donoDisparo obj == num = True
+    | otherwise = minhocaTemDisparo arma num objs
+  where
+    ehDisparo = case obj of
+                  Disparo{} -> True
+                  _ -> False
 
 -- | Disparo Valido
 tipoDisparoValido :: TipoArma -> Maybe Int -> NumMinhoca -> Estado -> Bool
