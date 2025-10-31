@@ -100,11 +100,6 @@ validaMinhoca minhoca estado =
            Just Agua -> vidaMorta minhoca
            _         -> True
 
--- | A célula é Ar?
-
-
--- | O barril está bem suportado? (em Ar e com Terra/Pedra imediatamente abaixo, ou na última linha)
-
 
 -- | valida Objeto
 validaObjeto :: Objeto -> Estado -> Bool
