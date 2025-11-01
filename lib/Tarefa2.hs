@@ -58,23 +58,22 @@ moveMinhoca dir est idx =
   in case posicaoMinhoca m of
        Nothing -> m
        Just p  ->
-         -- regra 0: se está enterrada (Terra/Pedra), não sai do sítio
+         -- regra 1: enterrada ou na água não sai do sítio
          case terrenoNaPosicao mapa p of
            Terra -> m
            Pedra -> m
+           Agua  -> m
            _     ->
              let p'       = proximaPosicao dir p
                  fora     = not (dentroMapa p' mapa)
                  ocupMinh = [ q | (k,Minhoca{posicaoMinhoca=Just q}) <- zip [0..] ms, k /= idx ]
-                 ocupObjs = [ pos | o <- os, let pos = case o of
-                                                         Barril q _        -> q
-                                                         Disparo q _ _ _ _ -> q ]
+                 ocupObjs = map posObjeto os
                  colide   = p' `elem` ocupMinh || p' `elem` ocupObjs
              in if fora || colide
                   then m
                   else case terrenoNaPosicao mapa p' of
-                         Ar    -> m { posicaoMinhoca = Just p' }  -- só anda para Ar
-                         _     -> m                                -- Terra/Pedra/Água → não anda
+                         Ar -> m { posicaoMinhoca = Just p' } -- regra 2
+                         _  -> m
 
 dentroMapa :: Posicao -> Mapa -> Bool
 dentroMapa (l,c) m =
