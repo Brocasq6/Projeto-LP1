@@ -133,11 +133,22 @@ consomeMunicao arma m = case arma of
   Mina       -> m { minaMinhoca       = minaMinhoca m - 1 }
   Dinamite   -> m { dinamiteMinhoca   = dinamiteMinhoca m - 1 }
 
-criaDisparo :: TipoArma -> Direcao -> NumMinhoca -> Minhoca -> Objeto
-criaDisparo arma dir dono m =
+-- escolhe a posição inicial do disparo (na frente se der; senão na própria)
+posInicialDisparo :: Estado -> Direcao -> Minhoca -> Posicao
+posInicialDisparo est dir m =
   case posicaoMinhoca m of
-    Nothing -> error "Minhoca fora do mapa"
-    Just p  -> Disparo p dir arma (tempoDisparoDefault arma) dono
+    Nothing -> error "Minhoca sem posição"
+    Just p  ->
+      let mapa = mapaEstado est
+          pF   = proximaPosicao dir p
+          ok q = dentroMapa q mapa
+             && case terrenoNaPosicao mapa q of { Pedra -> False; _ -> True }
+      in if ok pF then pF else p
+
+criaDisparo :: Estado -> TipoArma -> Direcao -> NumMinhoca -> Minhoca -> Objeto
+criaDisparo est arma dir dono m =
+  let p0 = posInicialDisparo est dir m
+  in Disparo p0 dir arma (tempoDisparoDefault arma) dono
 
 -- | Atualiza um elemento numa lista no índice dado.
 atualizaLista :: Int -> a -> [a] -> [a]
@@ -155,8 +166,8 @@ efetuaJogadaDisparo n arma dir est =
          else if not (temMunicao arma m) then est
          else if existeMesmoDisparo arma n (objetosEstado est) then est
          else
-           let m'     = consomeMunicao arma m
-               obj    = criaDisparo arma dir n m'
+           let m'  = consomeMunicao arma m
+               obj = criaDisparo est arma dir n m'
            in est { objetosEstado  = obj : objetosEstado est
                   , minhocasEstado = atualizaLista n m' ms }
 
