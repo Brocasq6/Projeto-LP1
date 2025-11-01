@@ -11,6 +11,47 @@ import Data.Either
 
 import Labs2025
 
+{-
+
+avancaEstado
+ |
+ |── avancaMinhoca
+ |     |── posicaoMinhoca
+ |     |── terrenoNaPosicao
+ |     |── estaNoArOuAgua
+ |     |── posicaoValida
+ |     └── aplicaGravidade
+ |
+ |── avancaObjeto
+ |     |── tipoObjeto
+ |     |     |── Barril
+ |     |     |    |── verificaExplosao
+ |     |     |    |── estaNoArOuAgua
+ |     |     |
+ |     |     |── Disparo
+ |     |           |── moveDisparo
+ |     |           |── verificaColisao
+ |     |           |── contaTempo
+ |     |           |── ativaMina
+ |     |           └── geraExplosao
+ |     |
+ |     └── criaListaDanos
+ |
+ └── aplicaDanos
+       |── calculaDanoMinhocas
+       |     |── verificaPosicaoAfetada
+       |     └── reduzVidaOuMata
+       |
+       |── atualizaMapa
+       |     |── removeTerrenoAtingido
+       |
+       └── atualizaObjetos
+             |── removeExplodidos
+             |── propagaExplosao
+
+-}
+
+
 -- | Tipo de dado para representar danos em posições.
 type Dano = Int
 -- | Tipo de dado para representar uma lista de danos em várias posições.
