@@ -31,19 +31,45 @@ efetuaJogada
 
 
 --------------------------------------- funcoes relacionadas com a funcao efetuaJogadaMove -------------------------------------------------
--- | Move uma minhoca numa dada direção, aplicando os efeitos do terreno.
-moveMinhoca :: Direcao -> Mapa -> Minhoca -> Minhoca
-moveMinhoca dir mapa m =
-  case posicaoMinhoca m of
-    Nothing -> m  -- se não tiver posição (fora do mapa)
-    Just p ->
-        let novaPos = movePosicao dir p
-            terreno = terrenoNaPosicao mapa novaPos
-        in aplicaEfeitoTerreno m novaPos terreno
+-- posição de um objeto
+posObjeto :: Objeto -> Posicao
+posObjeto (Barril p _)            = p
+posObjeto (Disparo p _ _ _ _)     = p
+
+-- tenta mover a minhoca n, respeitando mapa/colisões/terreno
+moveMinhoca :: Direcao -> Estado -> NumMinhoca -> Minhoca
+moveMinhoca dir est idx =
+  let mapa = mapaEstado est
+      ms   = minhocasEstado est
+      m    = ms !! idx
+  in case posicaoMinhoca m of
+       Nothing -> m
+       Just p  ->
+         let p'       = proximaPosicao dir p  -- vem de Labs2025
+             fora     = not (dentroMapa p' mapa)
+             ocupMinh = [ q | (k,Minhoca{posicaoMinhoca=Just q}) <- zip [0..] ms, k /= idx ]
+             ocupObjs = map posObjeto (objetosEstado est)
+             colide   = p' `elem` ocupMinh || p' `elem` ocupObjs
+             t'       = terrenoNaPosicao mapa p'
+         in if fora || colide
+              then m
+              else case t' of
+                     Pedra -> m
+                     Agua  -> m { posicaoMinhoca = Just p', vidaMinhoca = Morta }
+                     _     -> m { posicaoMinhoca = Just p' }
+
+dentroMapa :: Posicao -> Mapa -> Bool
+dentroMapa (l,c) m =
+  l >= 0 && c >= 0
+  && l < length m
+  && not (null m)
+  && c < length (head m)
 
 -- | Devolve o terreno numa dada posição do mapa.
 terrenoNaPosicao :: Mapa -> Posicao -> Terreno
-terrenoNaPosicao mapa (x,y) = (mapa !! y) !! x
+terrenoNaPosicao m (l,c)
+  | dentroMapa (l,c) m = (m !! l) !! c
+  | otherwise          = Pedra      -- fora do mapa: trata como bloqueio
 
 -- | Aplica o efeito do terreno na minhoca.
 aplicaEfeitoTerreno :: Minhoca -> Posicao -> Terreno -> Minhoca
@@ -56,44 +82,53 @@ aplicaEfeitoTerreno m pos terreno =
 
 -- | Atualiza a lista de minhocas com a nova minhoca na posição dada.
 efetuaJogadaMove :: NumMinhoca -> Direcao -> Estado -> Estado
-efetuaJogadaMove n dir est = 
-        let minhocas = minhocasEstado est
-            alvo = minhocas !! n
-            nova = moveMinhoca dir (mapaEstado est) alvo
-            novasMinhocas = atualizaLista n nova minhocas
-        in est { minhocasEstado = novasMinhocas }
+efetuaJogadaMove n dir est =
+  let nova = moveMinhoca dir est n
+  in est { minhocasEstado = atualizaLista n nova (minhocasEstado est) }
 
 --------------------------------------- funcoes relacionadas com a funcao efetuaJogadaDisparo -------------------------------------------------
--- | Verifica se a minhoca tem munição para o tipo de arma.
+-- só estas armas geram objeto
+armaDisparavel :: TipoArma -> Bool
+armaDisparavel Bazuca   = True
+armaDisparavel Mina     = True
+armaDisparavel Dinamite = True
+armaDisparavel _        = False  -- Jetpack/Escavadora não criam objeto
+
+-- tempo por arma
+tempoDisparoDefault :: TipoArma -> Maybe Ticks
+tempoDisparoDefault Bazuca   = Nothing
+tempoDisparoDefault Mina     = Nothing
+tempoDisparoDefault Dinamite = Just 3
+tempoDisparoDefault _        = Nothing
+
+-- existe já um disparo igual (arma,dono)?
+existeMesmoDisparo :: TipoArma -> NumMinhoca -> [Objeto] -> Bool
+existeMesmoDisparo arma dono =
+  any (\o -> case o of
+         Disparo _ _ a _ d -> a == arma && d == dono
+         _                 -> False)
+
 temMunicao :: TipoArma -> Minhoca -> Bool
-temMunicao arma municao = 
-    case arma of 
-        Jetpack -> jetpackMinhoca municao > 0 
-        Escavadora -> escavadoraMinhoca municao > 0 
-        Bazuca -> bazucaMinhoca municao > 0 
-        Mina -> minaMinhoca municao > 0 
-        Dinamite -> dinamiteMinhoca municao > 0 
+temMunicao arma m = case arma of
+  Jetpack    -> jetpackMinhoca m    > 0
+  Escavadora -> escavadoraMinhoca m > 0
+  Bazuca     -> bazucaMinhoca m     > 0
+  Mina       -> minaMinhoca m       > 0
+  Dinamite   -> dinamiteMinhoca m   > 0
 
--- | Consome uma unidade de munição do tipo de arma na minhoca.
 consomeMunicao :: TipoArma -> Minhoca -> Minhoca
-consomeMunicao arma municao = 
-    case arma of
-        Jetpack -> municao { jetpackMinhoca = jetpackMinhoca municao - 1 }
-        Escavadora -> municao { escavadoraMinhoca = escavadoraMinhoca municao - 1 }
-        Bazuca -> municao { bazucaMinhoca = bazucaMinhoca municao - 1 }
-        Mina -> municao { minaMinhoca = minaMinhoca municao - 1 }
-        Dinamite -> municao {dinamiteMinhoca = dinamiteMinhoca municao - 1 }
+consomeMunicao arma m = case arma of
+  Jetpack    -> m { jetpackMinhoca    = jetpackMinhoca m - 1 }
+  Escavadora -> m { escavadoraMinhoca = escavadoraMinhoca m - 1 }
+  Bazuca     -> m { bazucaMinhoca     = bazucaMinhoca m - 1 }
+  Mina       -> m { minaMinhoca       = minaMinhoca m - 1 }
+  Dinamite   -> m { dinamiteMinhoca   = dinamiteMinhoca m - 1 }
 
--- | Cria um objeto disparo a partir do tipo de arma, direção, número da minhoca e a própria minhoca.
 criaDisparo :: TipoArma -> Direcao -> NumMinhoca -> Minhoca -> Objeto
 criaDisparo arma dir dono m =
   case posicaoMinhoca m of
     Nothing -> error "Minhoca fora do mapa"
-    Just p  -> Disparo { posicaoDisparo = p
-                       , direcaoDisparo = dir
-                       , tipoDisparo = arma
-                       , tempoDisparo = Nothing
-                       , donoDisparo = dono }
+    Just p  -> Disparo p dir arma (tempoDisparoDefault arma) dono
 
 -- | Atualiza um elemento numa lista no índice dado.
 atualizaLista :: Int -> a -> [a] -> [a]
@@ -102,14 +137,19 @@ atualizaLista i novo l = take i l ++ [novo] ++ drop (i + 1) l
 -- | Efetua uma jogada de disparo por parte de uma minhoca, atualizando o estado.
 efetuaJogadaDisparo :: NumMinhoca -> TipoArma -> Direcao -> Estado -> Estado
 efetuaJogadaDisparo n arma dir est =
-  let minhocas = minhocasEstado est
-      m = minhocas !! n
-  in if temMunicao arma m
-     then let m' = consomeMunicao arma m
-              disparo = criaDisparo arma dir n m'
-          in est { objetosEstado = disparo : objetosEstado est
-                 , minhocasEstado = atualizaLista n m' minhocas }
-     else est  -- sem munição, nada acontece 
+  let ms = minhocasEstado est
+      m  = ms !! n
+  in case posicaoMinhoca m of
+       Nothing -> est
+       Just _  ->
+         if not (armaDisparavel arma) then est
+         else if not (temMunicao arma m) then est
+         else if existeMesmoDisparo arma n (objetosEstado est) then est
+         else
+           let m'     = consomeMunicao arma m
+               obj    = criaDisparo arma dir n m'
+           in est { objetosEstado  = obj : objetosEstado est
+                  , minhocasEstado = atualizaLista n m' ms }
 
 ----------------------------------------------------------------------------------------------------------------
 
