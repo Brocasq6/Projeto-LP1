@@ -36,6 +36,13 @@ posObjeto :: Objeto -> Posicao
 posObjeto (Barril p _)            = p
 posObjeto (Disparo p _ _ _ _)     = p
 
+-- próxima célula a partir de (linha,coluna)
+proximaPosicao :: Direcao -> Posicao -> Posicao
+proximaPosicao Norte (l,c) = (l-1, c)
+proximaPosicao Sul   (l,c) = (l+1, c)
+proximaPosicao Este  (l,c) = (l, c+1)
+proximaPosicao Oeste (l,c) = (l, c-1)
+
 -- tenta mover a minhoca n, respeitando mapa/colisões/terreno
 moveMinhoca :: Direcao -> Estado -> NumMinhoca -> Minhoca
 moveMinhoca dir est idx =
@@ -67,9 +74,7 @@ dentroMapa (l,c) m =
 
 -- | Devolve o terreno numa dada posição do mapa.
 terrenoNaPosicao :: Mapa -> Posicao -> Terreno
-terrenoNaPosicao m (l,c)
-  | dentroMapa (l,c) m = (m !! l) !! c
-  | otherwise          = Pedra      -- fora do mapa: trata como bloqueio
+terrenoNaPosicao m (l,c) = (m !! l) !! c
 
 -- | Aplica o efeito do terreno na minhoca.
 aplicaEfeitoTerreno :: Minhoca -> Posicao -> Terreno -> Minhoca
