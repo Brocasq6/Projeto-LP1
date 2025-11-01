@@ -10,7 +10,10 @@ module Tarefa3 where
 import Data.Either
 
 import Labs2025
-
+import Tarefa0_2025
+import Tarefa0_geral
+import Tarefa1 
+import Tarefa2    
 {-
 
 avancaEstado
@@ -68,6 +71,56 @@ avancaEstado e@(Estado mapa objetos minhocas) = foldr aplicaDanos e' danoss
 -- | Para um dado estado, dado o índice de uma minhoca na lista de minhocas e o estado dessa minhoca, retorna o novo estado da minhoca no próximo tick.
 avancaMinhoca :: Estado -> NumMinhoca -> Minhoca -> Minhoca
 avancaMinhoca e i m = undefined
+
+posicaoMinhoca :: Minhoca -> Maybe Posicao
+posicaoMinhoca m = 
+    case m of
+        Minhoca { posicaoMinhoca = p } -> p 
+
+terrenoNaPosicao :: Posicao -> Mapa -> Maybe Terreno
+terrenoNaPosicao (linha,coluna) minhoca
+  | dentroMapa (linha,coluna) minhoca = Just ((minhoca !! linha) !! coluna)
+  | otherwise = Nothing 
+
+-- | Verifica se uma posição está no ar ou na água.
+estaNoArOuAgua :: Posicao -> Mapa -> Bool   
+estaNoArOuAgua posicao mapa =
+    case terrenoNaPosicao posicao mapa of
+        Just Agua -> True
+        Just Ar -> True
+        _ -> False
+
+
+-- | Verifica se uma posição é válida (dentro do mapa e não ocupada por terreno opaco).
+posicaoValida :: Posicao -> Mapa -> Bool    
+posicaoValida posicao mapa =
+    case terrenoNaPosicao posicao mapa of
+        Just Pedra -> False
+        Just Terra -> False
+        Nothing    -> False
+        _          -> True
+  
+-- | Aplica a gravidade a uma posição, retornando a nova posição após a aplicação da gravidade.
+aplicaGravidade :: Posicao -> Mapa -> Posicao   
+aplicaGravidade (linha, coluna) mapa
+  | dentroMapa abaixo mapa && estaNoArOuAgua abaixo mapa = aplicaGravidade abaixo mapa
+  | otherwise = (linha, coluna)
+  where
+    abaixo = (linha + 1, coluna)
+
+
+{-
+ |── avancaMinhoca
+ |     |── posicaoMinhoca
+ |     |── terrenoNaPosicao
+ |     |── estaNoArOuAgua
+ |     |── posicaoValida
+ |     └── aplicaGravidade
+-}
+
+
+
+
 
 -- | Para um dado estado, dado o índice de um objeto na lista de objetos e o estado desse objeto, retorna o novo estado do objeto no próximo tick ou, caso o objeto expluda, uma lista de posições afetadas com o dano associado.
 avancaObjeto :: Estado -> NumObjeto -> Objeto -> Either Objeto Danos
