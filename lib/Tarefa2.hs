@@ -48,6 +48,7 @@ proximaPosicao Sudeste  (l,c) = (l+1, c+1)
 proximaPosicao Sudoeste (l,c) = (l+1, c-1)
 
 -- tenta mover a minhoca n, respeitando mapa/colisões/terreno
+-- move APENAS a minhoca idx segundo as regras dos testes
 moveMinhoca :: Direcao -> Estado -> NumMinhoca -> Minhoca
 moveMinhoca dir est idx =
   let mapa = mapaEstado est
@@ -57,17 +58,23 @@ moveMinhoca dir est idx =
   in case posicaoMinhoca m of
        Nothing -> m
        Just p  ->
-         let p'       = proximaPosicao dir p
-             fora     = not (dentroMapa p' mapa)
-             ocupMinh = [ q | (k,Minhoca{posicaoMinhoca=Just q}) <- zip [0..] ms, k /= idx ]
-             ocupObjs = map posObjeto os
-             colide   = p' `elem` ocupMinh || p' `elem` ocupObjs
-         in if fora || colide
-              then m
-              else case terrenoNaPosicao mapa p' of
-                     Pedra -> m
-                     Agua  -> m { posicaoMinhoca = Just p', vidaMinhoca = Morta }
-                     _     -> m { posicaoMinhoca = Just p' }
+         -- regra 0: se está enterrada (Terra/Pedra), não sai do sítio
+         case terrenoNaPosicao mapa p of
+           Terra -> m
+           Pedra -> m
+           _     ->
+             let p'       = proximaPosicao dir p
+                 fora     = not (dentroMapa p' mapa)
+                 ocupMinh = [ q | (k,Minhoca{posicaoMinhoca=Just q}) <- zip [0..] ms, k /= idx ]
+                 ocupObjs = [ pos | o <- os, let pos = case o of
+                                                         Barril q _        -> q
+                                                         Disparo q _ _ _ _ -> q ]
+                 colide   = p' `elem` ocupMinh || p' `elem` ocupObjs
+             in if fora || colide
+                  then m
+                  else case terrenoNaPosicao mapa p' of
+                         Ar    -> m { posicaoMinhoca = Just p' }  -- só anda para Ar
+                         _     -> m                                -- Terra/Pedra/Água → não anda
 
 dentroMapa :: Posicao -> Mapa -> Bool
 dentroMapa (l,c) m =
