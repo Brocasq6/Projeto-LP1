@@ -33,8 +33,8 @@ efetuaJogada
 --------------------------------------- funcoes relacionadas com a funcao efetuaJogadaMove -------------------------------------------------
 -- posição de um objeto
 posObjeto :: Objeto -> Posicao
-posObjeto (Barril p _)            = p
-posObjeto (Disparo p _ _ _ _)     = p
+posObjeto (Barril p _)        = p
+posObjeto (Disparo p _ _ _ _) = p
 
 -- próxima célula a partir de (linha,coluna)
 proximaPosicao :: Direcao -> Posicao -> Posicao
@@ -52,7 +52,7 @@ moveMinhoca :: Direcao -> Estado -> NumMinhoca -> Minhoca
 moveMinhoca dir est idx =
   let mapa = mapaEstado est
       ms   = minhocasEstado est
-      objs = objetosEstado est
+      os   = objetosEstado est
       m    = ms !! idx
   in case posicaoMinhoca m of
        Nothing -> m
@@ -60,19 +60,21 @@ moveMinhoca dir est idx =
          let p'       = proximaPosicao dir p
              fora     = not (dentroMapa p' mapa)
              ocupMinh = [ q | (k,Minhoca{posicaoMinhoca=Just q}) <- zip [0..] ms, k /= idx ]
-             ocupObjs = map posObjeto objs
+             ocupObjs = map posObjeto os
              colide   = p' `elem` ocupMinh || p' `elem` ocupObjs
-             t'       = terrenoNaPosicao mapa p'
          in if fora || colide
               then m
-              else case t' of
+              else case terrenoNaPosicao mapa p' of
                      Pedra -> m
                      Agua  -> m { posicaoMinhoca = Just p', vidaMinhoca = Morta }
                      _     -> m { posicaoMinhoca = Just p' }
 
 dentroMapa :: Posicao -> Mapa -> Bool
 dentroMapa (l,c) m =
-  l >= 0 && c >= 0 && l < length m && not (null m) && c < length (head m)
+  l >= 0 && c >= 0
+  && l < length m
+  && not (null m)
+  && c < length (head m)
 
 -- | Devolve o terreno numa dada posição do mapa.
 terrenoNaPosicao :: Mapa -> Posicao -> Terreno
@@ -90,8 +92,8 @@ aplicaEfeitoTerreno m pos terreno =
 -- | Atualiza a lista de minhocas com a nova minhoca na posição dada.
 efetuaJogadaMove :: NumMinhoca -> Direcao -> Estado -> Estado
 efetuaJogadaMove n dir est =
-  let nova = moveMinhoca dir est n
-  in est { minhocasEstado = atualizaLista n nova (minhocasEstado est) }
+  let m' = moveMinhoca dir est n
+  in est { minhocasEstado = atualizaLista n m' (minhocasEstado est) }
 
 --------------------------------------- funcoes relacionadas com a funcao efetuaJogadaDisparo -------------------------------------------------
 -- só estas armas geram objeto
