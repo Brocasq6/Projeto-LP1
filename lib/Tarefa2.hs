@@ -38,39 +38,29 @@ posObjeto (Disparo p _ _ _ _)     = p
 
 -- próxima célula a partir de (linha,coluna)
 proximaPosicao :: Direcao -> Posicao -> Posicao
-proximaPosicao Norte (l,c) = (l-1, c)
-proximaPosicao Sul   (l,c) = (l+1, c)
-proximaPosicao Este  (l,c) = (l, c+1)
-proximaPosicao Oeste (l,c) = (l, c-1)
+proximaPosicao Norte    (l,c) = (l-1, c)
+proximaPosicao Sul      (l,c) = (l+1, c)
+proximaPosicao Este     (l,c) = (l, c+1)
+proximaPosicao Oeste    (l,c) = (l, c-1)
+proximaPosicao Nordeste (l,c) = (l-1, c+1)
+proximaPosicao Noroeste (l,c) = (l-1, c-1)
+proximaPosicao Sudeste  (l,c) = (l+1, c+1)
+proximaPosicao Sudoeste (l,c) = (l+1, c-1)
 
 -- tenta mover a minhoca n, respeitando mapa/colisões/terreno
-moveMinhoca :: Direcao -> Estado -> NumMinhoca -> Minhoca
-moveMinhoca dir est idx =
-  let mapa = mapaEstado est
-      ms   = minhocasEstado est
-      m    = ms !! idx
-  in case posicaoMinhoca m of
-       Nothing -> m
-       Just p  ->
-         let p'       = proximaPosicao dir p  -- vem de Labs2025
-             fora     = not (dentroMapa p' mapa)
-             ocupMinh = [ q | (k,Minhoca{posicaoMinhoca=Just q}) <- zip [0..] ms, k /= idx ]
-             ocupObjs = map posObjeto (objetosEstado est)
-             colide   = p' `elem` ocupMinh || p' `elem` ocupObjs
-             t'       = terrenoNaPosicao mapa p'
-         in if fora || colide
-              then m
-              else case t' of
-                     Pedra -> m
-                     Agua  -> m { posicaoMinhoca = Just p', vidaMinhoca = Morta }
-                     _     -> m { posicaoMinhoca = Just p' }
+moveMinhoca :: Direcao -> Mapa -> Minhoca -> Minhoca
+moveMinhoca dir mapa m =
+  case posicaoMinhoca m of
+    Nothing -> m
+    Just p  ->
+      let p' = proximaPosicao dir p
+      in if not (dentroMapa p' mapa)
+            then m
+            else aplicaEfeitoTerreno m p' (terrenoNaPosicao mapa p')
 
 dentroMapa :: Posicao -> Mapa -> Bool
 dentroMapa (l,c) m =
-  l >= 0 && c >= 0
-  && l < length m
-  && not (null m)
-  && c < length (head m)
+  l >= 0 && c >= 0 && l < length m && not (null m) && c < length (head m)
 
 -- | Devolve o terreno numa dada posição do mapa.
 terrenoNaPosicao :: Mapa -> Posicao -> Terreno
