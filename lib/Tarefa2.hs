@@ -48,15 +48,27 @@ proximaPosicao Sudeste  (l,c) = (l+1, c+1)
 proximaPosicao Sudoeste (l,c) = (l+1, c-1)
 
 -- tenta mover a minhoca n, respeitando mapa/colisões/terreno
-moveMinhoca :: Direcao -> Mapa -> Minhoca -> Minhoca
-moveMinhoca dir mapa m =
-  case posicaoMinhoca m of
-    Nothing -> m
-    Just p  ->
-      let p' = proximaPosicao dir p
-      in if not (dentroMapa p' mapa)
-            then m
-            else aplicaEfeitoTerreno m p' (terrenoNaPosicao mapa p')
+moveMinhoca :: Direcao -> Estado -> NumMinhoca -> Minhoca
+moveMinhoca dir est idx =
+  let mapa = mapaEstado est
+      ms   = minhocasEstado est
+      objs = objetosEstado est
+      m    = ms !! idx
+  in case posicaoMinhoca m of
+       Nothing -> m
+       Just p  ->
+         let p'       = proximaPosicao dir p
+             fora     = not (dentroMapa p' mapa)
+             ocupMinh = [ q | (k,Minhoca{posicaoMinhoca=Just q}) <- zip [0..] ms, k /= idx ]
+             ocupObjs = map posObjeto objs
+             colide   = p' `elem` ocupMinh || p' `elem` ocupObjs
+             t'       = terrenoNaPosicao mapa p'
+         in if fora || colide
+              then m
+              else case t' of
+                     Pedra -> m
+                     Agua  -> m { posicaoMinhoca = Just p', vidaMinhoca = Morta }
+                     _     -> m { posicaoMinhoca = Just p' }
 
 dentroMapa :: Posicao -> Mapa -> Bool
 dentroMapa (l,c) m =
