@@ -81,6 +81,18 @@ avancaMinhoca e _ m
 atualizaPosicaoGravidade :: Estado -> Minhoca -> Posicao -> Minhoca
 atualizaPosicaoGravidade e m p = undefined
 
+-- | verifica se uma mihoca está morta
+minhocaMorta :: Minhoca -> Bool
+minhocaMorta m =
+    case vidaMinhoca m of
+        Just v  -> v <= 0
+        Nothing -> True 
+
+mataMinhoca :: Minhoca -> Minhoca
+mataMinhoca m pos = m {vidaMinhoca = Morta, posicaoMinhoca = pos}
+
+
+
 posicaoMinhoca :: Minhoca -> Maybe Posicao
 posicaoMinhoca m = 
     case m of
