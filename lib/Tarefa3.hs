@@ -157,10 +157,19 @@ avancaObjeto estado indice objeto
         Disparo -> avancaDisparo estado objeto
 
 avancaBarril :: Estado -> Objeto -> Either Objeto Danos
-avancaBarril estado objeto = undefined
-
+avancaBarril estado objeto = 
+    | prestesAexplodir objeto = (removerObjeto , criaListaDanos (geraExplosao(posicaoObjeto objeto) 5))
+    | estaNoArOuAgua (posicaoObjeto objeto) (mapaEstado estado) = (0 { explodeBarril = True }, [])
+    | otherwise = (objeto, [])
+    where
+        removerObjeto = objeto { explodeBarril = True }
+        
 avancaDisparo :: Estado -> Objeto -> Either Objeto Danos
-avancaDisparo estado objeto = undefined
+avancaDisparo estado objeto = 
+    case tipoDisparo objeto of
+        Mina -> avancaMina estado objeto
+        Granada -> avancaMina estado objeto
+        Bazuca -> avacaBazuca estado objeto
 
 tipoObjeto :: Objeto -> TipoObjeto
 tipoObjeto objeto = undefined
