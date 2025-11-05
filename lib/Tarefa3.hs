@@ -163,7 +163,11 @@ avancaBarril estado objeto =
     | otherwise = (objeto, [])
     where
         removerObjeto = objeto { explodeBarril = True }
-        
+
+prestesAexplodir :: Objeto -> Bool
+prestesAexplodir (Barril {explodeBarril = True}) = True
+prestesAexplodir _ = False
+
 avancaDisparo :: Estado -> Objeto -> Either Objeto Danos
 avancaDisparo estado objeto = 
     case tipoDisparo objeto of
