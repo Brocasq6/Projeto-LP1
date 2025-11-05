@@ -164,16 +164,64 @@ avancaBarril estado objeto =
     where
         removerObjeto = objeto { explodeBarril = True }
 
-prestesAexplodir :: Objeto -> Bool
-prestesAexplodir (Barril {explodeBarril = True}) = True
-prestesAexplodir _ = False
 
 avancaDisparo :: Estado -> Objeto -> Either Objeto Danos
 avancaDisparo estado objeto = 
     case tipoDisparo objeto of
+        Bazuca -> avancaBazuca estado objeto 
         Mina -> avancaMina estado objeto
-        Granada -> avancaMina estado objeto
-        Bazuca -> avacaBazuca estado objeto
+        Dinamite -> avancaDinamite estado objeto
+        Jetpack -> (objeto, [])
+        Escavadora -> (objeto, [])
+
+avancaBazuca :: Estado -> Objeto -> Either Objeto Danos 
+avancaBazuca estado objeto = undefined
+
+avancaMina :: Estado -> Objeto -> Either Objeto Danos
+avancaMina estado objeto = undefined
+
+avancaDinamite :: Estado -> Objeto -> Either Objeto Danos
+avancaDinamite estado objeto = undefined
+
+
+moveDisparo :: Direcao -> Posicao -> Posicao
+moveDisparo direcao (l,c) = 
+    case direcao of
+        Norte -> (l-1,c)
+        Sul -> (l+1,c)
+        Este -> (l,c+1)
+        Oeste -> (l,c-1)
+        Nordeste -> (l-1,c+1)
+        Noroeste -> (l-1,c-1)
+        Sudeste -> (l+1,c+1)
+        Sudoeste -> (l+1,c-1)
+
+verificaColisao :: Posicao -> Mapa -> Bool
+verificaColisao posicao mapa =
+    case terrenoNaPosicao posicao mapa of
+        Nothing -> True
+        Just Pedra -> True
+        Just Terra -> True
+        _ -> False
+
+contaTempo :: Objeto -> Objeto
+contaTempo objeto =
+    case tipoDisparo objeto of
+        Nothing -> Nothing
+        Just t  -> Just (t-1)
+
+ativaMina :: Objeto -> Objeto
+ativaMina objeto = undefined
+
+geraExplosao :: Posicao -> Dano -> Danos
+geraExplosao posicao dano = undefined   
+
+
+type Dano = Int
+type Danos = [(Posicao,Dano)]
+
+criaListaDanos :: Posicao -> Dano -> Danos
+criaListaDanos posicao dano = 
 
 data TipoObjeto = OBarril | ODisparo
   deriving (Eq, Show)
