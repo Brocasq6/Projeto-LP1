@@ -70,33 +70,40 @@ avancaEstado e@(Estado mapa objetos minhocas) = foldr aplicaDanos e' danoss
 
 -- | Para um dado estado, dado o índice de uma minhoca na lista de minhocas e o estado dessa minhoca, retorna o novo estado da minhoca no próximo tick.
 avancaMinhoca :: Estado -> NumMinhoca -> Minhoca -> Minhoca
-avancaMinhoca e _ m
-  | minhocaMorta m = m
+avancaMinhoca estado _ minhoca
+  | minhocaMorta minhoca = minhoca
   | otherwise =
-      case posicaoMinhoca m of
-        Nothing -> m
-        Just p  -> atualizaPosicaoGravidade e m p
+      case posicaoMinhoca mihoca of
+        Nothing -> mihoca
+        Just posicao -> atualizaPosicaoGravidade estado minhoca posicao
 
 -- | Atualiza a posição de uma minhoca aplicando a gravidade.
 atualizaPosicaoGravidade :: Estado -> Minhoca -> Posicao -> Minhoca
-atualizaPosicaoGravidade e m p = undefined
+atualizaPosicaoGravidade estado minhoca posicao =
+    | not (dentroMapa abaixo mapa) = mataMinhoca minhoca Nothing -- se a posicao abaixo nao estiver dentro do mapa, a minhoca morre
+    | estaNoArOuAgua abaixo mapa =
+        case terrenoNaPosicao abaixo mapa of
+            Just Agua -> minhoca { posicaoMinhoca = Just (aplicaGravidade abaixo mapa) } -- se estiver na agua, aplica a gravidade normalmente
+            Just Ar -> minhoca { posicaoMinhoca = Just (aplicaGravidade abaixo mapa) } -- se estiver no ar, aplica a gravidade normalmente  
+    | otherwise = minhoca -- se ja se encontrar no chao, nao faz nada
+    where
+        mapa = mapaEstado estado
+        abaixo = (fst posicao + 1, snd posicao)
 
 -- | verifica se uma mihoca está morta
 minhocaMorta :: Minhoca -> Bool
-minhocaMorta m =
-    case vidaMinhoca m of
-        Just v  -> v <= 0
-        Nothing -> True 
+minhocaMorta minhoca =
+    case vidaMinhoca minhoca of
+       Morta -> True
+       Viva _ -> False
 
 mataMinhoca :: Minhoca -> Minhoca
-mataMinhoca m pos = m {vidaMinhoca = Morta, posicaoMinhoca = pos}
-
-
+mataMinhoca minhoca posicao = minhoca {vidaMinhoca = Morta, posicaoMinhoca = posicao}
 
 posicaoMinhoca :: Minhoca -> Maybe Posicao
-posicaoMinhoca m = 
-    case m of
-        Minhoca { posicaoMinhoca = p } -> p 
+posicaoMinhoca minhoca = 
+    case minhoca of
+        Minhoca { posicaoMinhoca = posicao } -> posicao 
 
 terrenoNaPosicao :: Posicao -> Mapa -> Maybe Terreno
 terrenoNaPosicao (linha,coluna) minhoca
@@ -111,15 +118,14 @@ estaNoArOuAgua posicao mapa =
         Just Ar -> True
         _ -> False
 
-
 -- | Verifica se uma posição é válida (dentro do mapa e não ocupada por terreno opaco).
 posicaoValida :: Posicao -> Mapa -> Bool    
 posicaoValida posicao mapa =
     case terrenoNaPosicao posicao mapa of
         Just Pedra -> False
         Just Terra -> False
-        Nothing    -> False
-        _          -> True
+        Nothing -> False
+        _ -> True
   
 -- | Aplica a gravidade a uma posição, retornando a nova posição após a aplicação da gravidade.
 aplicaGravidade :: Posicao -> Mapa -> Posicao   
@@ -147,6 +153,23 @@ aplicaGravidade (linha, coluna) mapa
 avancaObjeto :: Estado -> NumObjeto -> Objeto -> Either Objeto Danos
 avancaObjeto e i o = undefined
 
+{-
+ |── avancaObjeto
+ |     |── tipoObjeto
+ |     |     |── Barril
+ |     |     |    |── verificaExplosao
+ |     |     |    |── estaNoArOuAgua
+ |     |     |
+ |     |     |── Disparo
+ |     |           |── moveDisparo
+ |     |           |── verificaColisao
+ |     |           |── contaTempo
+ |     |           |── ativaMina
+ |     |           └── geraExplosao
+ |     |
+ |     └── criaListaDanos
+ |
+ -}
 -- | Para uma lista de posições afetadas por uma explosão, recebe um estado e calcula o novo estado em que esses danos são aplicados.
 aplicaDanos :: Danos -> Estado -> Estado
 aplicaDanos ds e = undefined
