@@ -70,7 +70,16 @@ avancaEstado e@(Estado mapa objetos minhocas) = foldr aplicaDanos e' danoss
 
 -- | Para um dado estado, dado o índice de uma minhoca na lista de minhocas e o estado dessa minhoca, retorna o novo estado da minhoca no próximo tick.
 avancaMinhoca :: Estado -> NumMinhoca -> Minhoca -> Minhoca
-avancaMinhoca e i m = undefined
+avancaMinhoca e _ m
+  | minhocaMorta m = m
+  | otherwise =
+      case posicaoMinhoca m of
+        Nothing -> m
+        Just p  -> atualizaPosicaoGravidade e m p
+
+-- | Atualiza a posição de uma minhoca aplicando a gravidade.
+atualizaPosicaoGravidade :: Estado -> Minhoca -> Posicao -> Minhoca
+atualizaPosicaoGravidade e m p = undefined
 
 posicaoMinhoca :: Minhoca -> Maybe Posicao
 posicaoMinhoca m = 
