@@ -175,10 +175,17 @@ avancaDisparo estado objeto =
         Escavadora -> (objeto, [])
 
 avancaBazuca :: Estado -> Objeto -> Either Objeto Danos 
-avancaBazuca estado objeto = undefined
+avancaBazuca estado objeto = 
 
 avancaMina :: Estado -> Objeto -> Either Objeto Danos
-avancaMina estado objeto = undefined
+avancaMina estado objeto =
+    | tempoDisparo objeto == Just 0 = (remover, geraExplosao (posicaoObjeto objeto) 5
+    | otherwise =
+        let ativada = ativaMina estado objeto
+            novoTempo = contaTempo ativada
+        in (ativada { tempoDisparo = novoTempo }, [])
+    where
+        remover = objeto { tempoDisparo = Just 0 }
 
 avancaDinamite :: Estado -> Objeto -> Either Objeto Danos
 avancaDinamite estado objeto = undefined
