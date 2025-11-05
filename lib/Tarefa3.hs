@@ -151,24 +151,36 @@ aplicaGravidade (linha, coluna) mapa
 
 -- | Para um dado estado, dado o índice de um objeto na lista de objetos e o estado desse objeto, retorna o novo estado do objeto no próximo tick ou, caso o objeto expluda, uma lista de posições afetadas com o dano associado.
 avancaObjeto :: Estado -> NumObjeto -> Objeto -> Either Objeto Danos
-avancaObjeto e i o = undefined
+avancaObjeto estado indice objeto
+    case tipoObjeto objeto of
+        Barril -> avancaBarril estado objeto
+        Disparo -> avancaDisparo estado objeto
+
+avancaBarril :: Estado -> Objeto -> Either Objeto Danos
+avancaBarril estado objeto = undefined
+
+avancaDisparo :: Estado -> Objeto -> Either Objeto Danos
+avancaDisparo estado objeto = undefined
+
+tipoObjeto :: Objeto -> TipoObjeto
+tipoObjeto objeto = undefined
 
 {-
- |── avancaObjeto
- |     |── tipoObjeto
- |     |     |── Barril
- |     |     |    |── verificaExplosao
- |     |     |    |── estaNoArOuAgua
+ |- avancaObjeto
+ |     |- tipoObjeto
+ |     |     |- Barril
+ |     |     |   |- verificaExplosao
+ |     |     |   |- estaNoArOuAgua
  |     |     |
- |     |     |── Disparo
- |     |           |── moveDisparo
- |     |           |── verificaColisao
- |     |           |── contaTempo
- |     |           |── ativaMina
- |     |           └── geraExplosao
+ |     |     |- Disparo
+ |     |         |- moveDisparo
+ |     |         |- verificaColisao
+ |     |         |- contaTempo
+ |     |         |- ativaMina
+ |     |         |- geraExplosao
  |     |
- |     └── criaListaDanos
- |
+ |     |- criaListaDanos
+ |--
  -}
 -- | Para uma lista de posições afetadas por uma explosão, recebe um estado e calcula o novo estado em que esses danos são aplicados.
 aplicaDanos :: Danos -> Estado -> Estado
