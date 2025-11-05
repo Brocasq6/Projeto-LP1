@@ -188,7 +188,14 @@ avancaMina estado objeto =
         remover = objeto { tempoDisparo = Just 0 }
 
 avancaDinamite :: Estado -> Objeto -> Either Objeto Danos
-avancaDinamite estado objeto = undefined
+avancaDinamite estado objeto = 
+    | tempoDisparo objeto == Just 0 = (remover, geraExplosao (posicaoObjeto objeto) 3)
+    | otherwise =
+        let novaPos = aplicaGravidade (posicaoObjeto objeto) (mapaEstado estado)
+            novoTempo = contaTempo objeto 
+        in (objeto { posicaoDisparo = novaPos, tempoDisparo = novoTempo }, [])
+    where
+        remover = objeto { posicaoDisparo = (-1,-1)}
 
 
 moveDisparo :: Direcao -> Posicao -> Posicao
