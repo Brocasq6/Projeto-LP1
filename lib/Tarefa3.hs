@@ -190,17 +190,17 @@ avancaBazuca estado objeto
     novaPos = moveDisparo (direcaoDisparo objeto) posAtual
     remover = objeto{ posicaoDisparo = (-1, -1) }
 
--- | move APENAS a minhoca idx segundo as regras dos testes
+-- | Avança o estado de uma Mina.
 avancaMina :: Estado -> Objeto -> (Objeto, Danos)
-avancaMina estado objeto =
-  | tempoDisparo objeto == Just 0 = 
-        (remover, geraExplosao (posicaoObjeto objeto) 5)
+avancaMina estado objeto
+  | tempoDisparo objeto == Just 0 =
+      (remover, geraExplosao (posicaoObjeto objeto) 5)
   | otherwise =
-        let ativada = ativaMina estado objeto
-            novoMina = contaTempo ativada
-        in (ativada { tempoDisparo = novoTempo }, [])
-    where
-        remover = objeto { tempoDisparo = Just 0 }
+      let ativada   = ativaMina estado objeto
+          novoTempo = contaTempo ativada
+      in (ativada { tempoDisparo = novoTempo }, [])
+  where
+    remover = objeto { tempoDisparo = Just 0 }
 
 -- | move APENAS a minhoca idx segundo as regras dos testes
 avancaDinamite :: Estado -> Objeto -> (Objeto, Danos)
