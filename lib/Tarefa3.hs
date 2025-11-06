@@ -193,9 +193,9 @@ avancaBazuca estado objeto
 -- | move APENAS a minhoca idx segundo as regras dos testes
 avancaMina :: Estado -> Objeto -> (Objeto, Danos)
 avancaMina estado objeto =
-    | tempoDisparo objeto == Just 0 = 
+  | tempoDisparo objeto == Just 0 = 
         (remover, geraExplosao (posicaoObjeto objeto) 5)
-    | otherwise =
+  | otherwise =
         let ativada = ativaMina estado objeto
             novoMina = contaTempo ativada
         in (ativada { tempoDisparo = novoTempo }, [])
