@@ -9,7 +9,7 @@ module Tarefa3 where
 
 import Data.Either
 
-import Labs2025 hiding
+import Labs2025
 import Tarefa0_2025
 import Tarefa0_geral
 import Tarefa1 hiding (terrenoNaPosicao, dentroMapa, proximaPosicao)
