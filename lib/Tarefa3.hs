@@ -73,8 +73,8 @@ avancaMinhoca :: Estado -> NumMinhoca -> Minhoca -> Minhoca
 avancaMinhoca estado _ minhoca
   | minhocaMorta minhoca = minhoca
   | otherwise =
-      case posicaoMinhoca mihoca of
-        Nothing -> mihoca
+      case posicaoMinhoca minhoca of
+        Nothing -> minhoca
         Just posicao -> atualizaPosicaoGravidade estado minhoca posicao
 
 -- | Atualiza a posição de uma minhoca aplicando a gravidade.
@@ -107,6 +107,11 @@ posicaoMinhoca :: Minhoca -> Maybe Posicao
 posicaoMinhoca minhoca = 
     case minhoca of
         Minhoca { posicaoMinhoca = posicao } -> posicao 
+
+-- Posição de um objeto
+posicaoObjeto :: Objeto -> Posicao
+posicaoObjeto (Barril  p _)            = p
+posicaoObjeto (Disparo p _ _ _ _)      = p
 
 -- | Retorna o terreno na posição dada do mapa.
 terrenoNaPosicao :: Posicao -> Mapa -> Maybe Terreno
