@@ -151,12 +151,12 @@ aplicaGravidade (linha, coluna) mapa
 
 -- | Para um dado estado, dado o índice de um objeto na lista de objetos e o estado desse objeto, retorna o novo estado do objeto no próximo tick ou, caso o objeto expluda, uma lista de posições afetadas com o dano associado.
 avancaObjeto :: Estado -> NumObjeto -> Objeto -> (Objeto, Danos)
-avancaObjeto estado indice objeto
+avancaObjeto estado indice objeto =
     case tipoObjeto objeto of
         Barril -> avancaBarril estado objeto
         Disparo -> avancaDisparo estado objeto
 
-avancaBarril :: Estado -> Objeto -> Either Objeto Danos
+avancaBarril :: Estado -> Objeto -> (Objeto, Danos)
 avancaBarril estado objeto = 
     | explodeBarril objeto = (removerObjeto, geraExplosao (posicaoObjeto objeto) 5)
     | estaNoArOuAgua (posicaoObjeto objeto) (mapaEstado estado) = (0 { explodeBarril = True }, [])
@@ -165,7 +165,7 @@ avancaBarril estado objeto =
         removerObjeto = objeto { explodeBarril = True }
 
 
-avancaDisparo :: Estado -> Objeto -> Either Objeto Danos
+avancaDisparo :: Estado -> Objeto -> (Objeto, Danos)
 avancaDisparo estado objeto = 
     case tipoDisparo objeto of
         Bazuca -> avancaBazuca estado objeto 
@@ -187,10 +187,11 @@ avancaBazuca estado objeto
 
 avancaMina :: Estado -> Objeto -> (Objeto, Danos)
 avancaMina estado objeto =
-    | tempoDisparo objeto == Just 0 = (remover, geraExplosao (posicaoObjeto objeto) 5
+    | tempoDisparo objeto == Just 0 = 
+        (remover, geraExplosao (posicaoObjeto objeto) 5)
     | otherwise =
         let ativada = ativaMina estado objeto
-            novoTempo = contaTempo ativada
+            novoMina = contaTempo ativada
         in (ativada { tempoDisparo = novoTempo }, [])
     where
         remover = objeto { tempoDisparo = Just 0 }
@@ -245,10 +246,6 @@ estaNaAreaExplosao (x1,y1) (x2,y2) diametro =
 
 geraExplosao :: Posicao -> Dano -> Danos -- gera uma lista de posicoes afetadas pela explosao e o dano associado
 geraExplosao posicao dano = undefined   
-
-
-type Dano = Int
-type Danos = [(Posicao,Dano)]
 
 criaListaDanos :: Posicao -> Dano -> Danos
 criaListaDanos posicao dano = [(posicao,dano)]
