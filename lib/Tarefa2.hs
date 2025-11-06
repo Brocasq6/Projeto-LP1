@@ -31,12 +31,12 @@ efetuaJogada
 
 
 --------------------------------------- funcoes relacionadas com a funcao efetuaJogadaMove -------------------------------------------------
--- posição de um objeto
+-- | posição de um objeto
 posObjeto :: Objeto -> Posicao
 posObjeto (Barril p _)        = p
 posObjeto (Disparo p _ _ _ _) = p
 
--- próxima célula a partir de (linha,coluna)
+-- | próxima célula a partir de (linha,coluna)
 proximaPosicao :: Direcao -> Posicao -> Posicao
 proximaPosicao Norte    (l,c) = (l-1, c)
 proximaPosicao Sul      (l,c) = (l+1, c)
@@ -48,7 +48,7 @@ proximaPosicao Sudeste  (l,c) = (l+1, c+1)
 proximaPosicao Sudoeste (l,c) = (l+1, c-1)
 
 -- tenta mover a minhoca n, respeitando mapa/colisões/terreno
--- move APENAS a minhoca idx segundo as regras dos testes
+-- | move APENAS a minhoca idx segundo as regras dos testes
 moveMinhoca :: Direcao -> Estado -> NumMinhoca -> Minhoca
 moveMinhoca dir est idx =
   let mapa = mapaEstado est
@@ -78,6 +78,7 @@ moveMinhoca dir est idx =
                   then m
                   else m { posicaoMinhoca = Just p' }  
 
+-- | Verifica se uma posição está dentro do mapa.
 dentroMapa :: Posicao -> Mapa -> Bool
 dentroMapa (l,c) m =
   l >= 0 && c >= 0
@@ -126,6 +127,7 @@ existeMesmoDisparo arma dono =
          Disparo _ _ a _ d -> a == arma && d == dono
          _                 -> False)
 
+-- | Verifica se uma minhoca tem munição para a arma.
 temMunicao :: TipoArma -> Minhoca -> Bool
 temMunicao arma m = case arma of
   Jetpack -> jetpackMinhoca m > 0
