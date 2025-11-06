@@ -93,7 +93,7 @@ avancaMinhoca estado _ minhoca
 atualizaPosicaoGravidade :: Estado -> Minhoca -> Posicao -> Minhoca
 atualizaPosicaoGravidade estado minhoca posicao
   | not (dentroMapa abaixo mapa) = mataMinhoca minhoca Nothing
-  | estaNaOrOuAgua abaixo mapa =
+  | estaNoOrOuAgua abaixo mapa =
       case terrenoNaPosicao abaixo mapa of
         Just Agua -> minhoca { posicaoMinhoca = Just (aplicaGravidade abaixo mapa) } -- se estiver na agua, aplica a gravidade
         Just Ar   -> minhoca { posicaoMinhoca = Just (aplicaGravidade abaixo mapa) } -- se estiver no ar, aplica a gravidade
@@ -127,7 +127,7 @@ terrenoNaPosicao (l,c) m
   | l >= 0 && c >= 0 && l < length m && not (null m) && c < length (head m)
   = Just ((m !! l) !! c)
   | otherwise = Nothing
-  
+
 -- | Verifica se uma posição está no ar ou na água.
 estaNoArOuAgua :: Posicao -> Mapa -> Bool   
 estaNoArOuAgua posicao mapa =
@@ -170,9 +170,9 @@ aplicaGravidade (linha, coluna) mapa
 -- | Para um dado estado, dado o índice de um objeto na lista de objetos e o estado desse objeto, retorna o novo estado do objeto no próximo tick ou, caso o objeto expluda, uma lista de posições afetadas com o dano associado.
 avancaObjeto :: Estado -> NumObjeto -> Objeto -> (Objeto, Danos)
 avancaObjeto estado _ objeto =
-    case tipoObjeto objeto of
-        Barril -> avancaBarril estado objeto
-        Disparo -> avancaDisparo estado objeto
+  case tipoObjeto objeto of
+    OBarril  -> avancaBarril  estado objeto
+    ODisparo -> avancaDisparo estado objeto
 
 -- | move APENAS a minhoca idx segundo as regras dos testes
 avancaBarril :: Estado -> Objeto -> (Objeto, Danos)
