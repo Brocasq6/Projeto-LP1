@@ -154,14 +154,14 @@ aplicaGravidade (linha, coluna) mapa
 
 -- | Para um dado estado, dado o índice de um objeto na lista de objetos e o estado desse objeto, retorna o novo estado do objeto no próximo tick ou, caso o objeto expluda, uma lista de posições afetadas com o dano associado.
 avancaObjeto :: Estado -> NumObjeto -> Objeto -> (Objeto, Danos)
-avancaObjeto estado indice objeto =
+avancaObjeto estado _ objeto =
     case tipoObjeto objeto of
         Barril -> avancaBarril estado objeto
         Disparo -> avancaDisparo estado objeto
 
 -- | move APENAS a minhoca idx segundo as regras dos testes
 avancaBarril :: Estado -> Objeto -> (Objeto, Danos)
-avancaBarril estado objeto = 
+avancaBarril estado objeto
     | explodeBarril objeto = (removerObjeto, geraExplosao (posicaoObjeto objeto) 5)
     | estaNoArOuAgua (posicaoObjeto objeto) (mapaEstado estado) = (0 { explodeBarril = True }, [])
     | otherwise = (objeto, [])
@@ -242,10 +242,10 @@ contaTempo objeto =
         Just t  -> Just (t-1)
 
 -- | funcao que ativa uma mina
-ativaMina :: Estado -> Objeto -> Objeto -- caso ha alguma minhoca na area de explosao de diametro 5 entao inicia uma contagem decrescente da mina
-ativaMina estado mina = 
-    | any (estaNaAreaExplosao (posicaoObjeto mina)) (minhocasEstado estado) = mina { tempoDisparo = Just 2 }
-    | otherwise = mina
+ativaMina :: Estado -> Objeto -> Objeto
+ativaMina estado mina
+  | any (\m -> maybe False (\p -> estaNaAreaExplosao p (posicaoObjeto mina) 5) (posicaoMinhoca m)) (minhocasEstado estado) = mina { tempoDisparo = Just 2 }
+  | otherwise = mina
 
 -- | verifica se uma posicao esta na area de explosao
 estaNaAreaExplosao :: Posicao -> Posicao -> Int -> Bool
@@ -262,9 +262,15 @@ geraExplosao (x, y) diam =
     raio = diam `div` 2
 
     geraCamada :: Posicao -> Int -> Danos
-    geraCamada (cx,cy) dist =
+    geraCamada (cx,cy) dist
       | dist == 0 = [((cx, cy), diam * 10)]
-      | otherwise = [((cx + dx, cy + dy), dano) | dx <- [-dist .. dist] , dy <- [-dist .. dist] , abs dx == dist || abs dy == dist, let dano = max 0 ((diam - dist) * 10) , dano > 0]
+      | otherwise = [((cx + dx, cy + dy), dano) 
+                    | dx <- [-dist .. dist] 
+                    , dy <- [-dist .. dist] 
+                    , abs dx == dist || abs dy == dist
+                    , let dano = max 0 ((diam - dist) * 10) 
+                    , dano > 0
+                    ]
  
 
 -- | cria uma lista de danos para uma dada posicao e dano
