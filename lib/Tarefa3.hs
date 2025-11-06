@@ -93,7 +93,7 @@ avancaMinhoca estado _ minhoca
 atualizaPosicaoGravidade :: Estado -> Minhoca -> Posicao -> Minhoca
 atualizaPosicaoGravidade estado minhoca posicao
   | not (dentroMapa abaixo mapa) = mataMinhoca minhoca Nothing
-  | estaNoOrOuAgua abaixo mapa =
+  | estaNoArOuAgua abaixo mapa =
       case terrenoNaPosicao abaixo mapa of
         Just Agua -> minhoca { posicaoMinhoca = Just (aplicaGravidade abaixo mapa) } -- se estiver na agua, aplica a gravidade
         Just Ar   -> minhoca { posicaoMinhoca = Just (aplicaGravidade abaixo mapa) } -- se estiver no ar, aplica a gravidade
