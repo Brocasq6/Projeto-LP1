@@ -97,14 +97,17 @@ minhocaMorta minhoca =
        Morta -> True
        Viva _ -> False
 
+-- | mata uma minhoca, definindo a sua vida como Morta e a sua posição como Nothing
 mataMinhoca :: Minhoca -> Minhoca
 mataMinhoca minhoca posicao = minhoca {vidaMinhoca = Morta, posicaoMinhoca = posicao}
 
+-- | Retorna a posição de uma minhoca.
 posicaoMinhoca :: Minhoca -> Maybe Posicao
 posicaoMinhoca minhoca = 
     case minhoca of
         Minhoca { posicaoMinhoca = posicao } -> posicao 
 
+-- | Retorna o terreno na posição dada do mapa.
 terrenoNaPosicao :: Posicao -> Mapa -> Maybe Terreno
 terrenoNaPosicao (linha,coluna) minhoca
   | dentroMapa (linha,coluna) minhoca = Just ((minhoca !! linha) !! coluna)
@@ -156,6 +159,7 @@ avancaObjeto estado indice objeto =
         Barril -> avancaBarril estado objeto
         Disparo -> avancaDisparo estado objeto
 
+-- | move APENAS a minhoca idx segundo as regras dos testes
 avancaBarril :: Estado -> Objeto -> (Objeto, Danos)
 avancaBarril estado objeto = 
     | explodeBarril objeto = (removerObjeto, geraExplosao (posicaoObjeto objeto) 5)
@@ -164,7 +168,7 @@ avancaBarril estado objeto =
     where
         removerObjeto = objeto { explodeBarril = True }
 
-
+-- | move APENAS a minhoca idx segundo as regras dos testes
 avancaDisparo :: Estado -> Objeto -> (Objeto, Danos)
 avancaDisparo estado objeto = 
     case tipoDisparo objeto of
@@ -174,6 +178,7 @@ avancaDisparo estado objeto =
         Jetpack -> (objeto, [])
         Escavadora -> (objeto, [])
 
+-- | move APENAS a minhoca idx segundo as regras dos testes
 avancaBazuca :: Estado -> Objeto -> (Objeto, Danos)
 avancaBazuca estado objeto
   | verificaColisao novaPos mapa = (remover, geraExplosao posAtual 5)
@@ -184,7 +189,7 @@ avancaBazuca estado objeto
     novaPos = moveDisparo (direcaoDisparo objeto) posAtual
     remover = objeto{ posicaoDisparo = (-1, -1) }
 
-
+-- | move APENAS a minhoca idx segundo as regras dos testes
 avancaMina :: Estado -> Objeto -> (Objeto, Danos)
 avancaMina estado objeto =
     | tempoDisparo objeto == Just 0 = 
@@ -196,6 +201,7 @@ avancaMina estado objeto =
     where
         remover = objeto { tempoDisparo = Just 0 }
 
+-- | move APENAS a minhoca idx segundo as regras dos testes
 avancaDinamite :: Estado -> Objeto -> (Objeto, Danos)
 avancaDinamite estado objeto = 
     | tempoDisparo objeto == Just 0 = (remover, geraExplosao (posicaoObjeto objeto) 3)
@@ -206,7 +212,7 @@ avancaDinamite estado objeto =
     where
         remover = objeto { posicaoDisparo = (-1,-1)}
 
-
+-- | move APENAS a minhoca idx segundo as regras dos testes
 moveDisparo :: Direcao -> Posicao -> Posicao
 moveDisparo direcao (l,c) = 
     case direcao of
@@ -219,6 +225,7 @@ moveDisparo direcao (l,c) =
         Sudeste -> (l+1,c+1)
         Sudoeste -> (l+1,c-1)
 
+-- | verifica se ha uma colisao na posicao dada
 verificaColisao :: Posicao -> Mapa -> Bool
 verificaColisao posicao mapa =
     case terrenoNaPosicao posicao mapa of
@@ -227,32 +234,38 @@ verificaColisao posicao mapa =
         Just Terra -> True
         _ -> False
 
+-- | faz a contagem decrescente do tempo de vida do disparo
 contaTempo :: Objeto -> Objeto
 contaTempo objeto =
     case tipoDisparo objeto of
         Nothing -> Nothing
         Just t  -> Just (t-1)
 
+-- | funcao que ativa uma mina
 ativaMina :: Estado -> Objeto -> Objeto -- caso ha alguma minhoca na area de explosao de diametro 5 entao inicia uma contagem decrescente da mina
 ativaMina estado mina = 
     | any (estaNaAreaExplosao (posicaoObjeto mina)) (minhocasEstado estado) = mina { tempoDisparo = Just 2 }
     | otherwise = mina
 
+-- | verifica se uma posicao esta na area de explosao
 estaNaAreaExplosao :: Posicao -> Posicao -> Int -> Bool
 estaNaAreaExplosao (x1,y1) (x2,y2) diametro = 
     abs (x1 - x2) <= raio && abs (y1 - y2) <= raio
     where
         raio = diametro `div` 2
 
+-- | gera uma explsao numa posicao com um dado dano
 geraExplosao :: Posicao -> Dano -> Danos -- gera uma lista de posicoes afetadas pela explosao e o dano associado
 geraExplosao posicao dano = undefined   
 
+-- | cria uma lista de danos para uma dada posicao e dano
 criaListaDanos :: Posicao -> Dano -> Danos
 criaListaDanos posicao dano = [(posicao,dano)]
 
 data TipoObjeto = OBarril | ODisparo
   deriving (Eq, Show)
 
+-- | retorna o tipo de objeto
 tipoObjeto :: Objeto -> TipoObjeto
 tipoObjeto (Barril {})  = OBarril
 tipoObjeto (Disparo {}) = ODisparo
