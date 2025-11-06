@@ -208,7 +208,7 @@ avancaDinamite estado objeto
   | tempoDisparo objeto == Just 0 = (remover, geraExplosao (posicaoObjeto objeto) 3)
   | otherwise =
       let novaPos = aplicaGravidade (posicaoObjeto objeto) (mapaEstado estado)
-            novoTempo = contaTempo objeto 
+          novoTempo = contaTempo objeto 
       in (objeto { posicaoDisparo = novaPos, tempoDisparo = novoTempo }, [])
   where
     remover = objeto { posicaoDisparo = (-1,-1)}
