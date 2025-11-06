@@ -7,13 +7,13 @@ Módulo para a realização da Tarefa 3 de LI1\/LP1 em 2025\/26.
 
 module Tarefa3 where
 
-import Data.Either
+import Data.Either (partitionEithers) 
 
 import Labs2025
 import Tarefa0_2025
 import Tarefa0_geral
 import Tarefa1 hiding (terrenoNaPosicao, dentroMapa, proximaPosicao)
-import Tarefa2 hiding (terrenoNaPosicao, proximaPosicao)   
+import Tarefa2 hiding (terrenoNaPosicao, proximaPosicao)  
 {-
 
 avancaEstado
@@ -62,11 +62,24 @@ type Danos = [(Posicao,Dano)]
 
 -- | Função principal da Tarefa 3. Avanço o estado do jogo um tick.
 avancaEstado :: Estado -> Estado
-avancaEstado e@(Estado mapa objetos minhocas) = foldr aplicaDanos e' danoss
-    where
-    minhocas' = map (uncurry $ avancaMinhoca e) (zip [0..] minhocas)
-    (objetos',danoss) = partitionEithers $ map (uncurry $ avancaObjeto $ e { minhocasEstado = minhocas' }) (zip [0..] objetos)
-    e' = Estado mapa objetos' minhocas'
+avancaEstado e@(Estado mapa objetos minhocas) =
+  let
+    -- 1) primeiro, atualizar minhocas
+    minhocas' =
+      map (uncurry (avancaMinhoca e)) (zip [0..] minhocas)
+
+    -- 2) depois, avançar objetos no estado com as novas minhocas
+    eComMinhocas = e { minhocasEstado = minhocas' }
+
+    (objetos', danosLists) =
+      partitionEithers $
+        map (uncurry (avancaObjeto eComMinhocas)) (zip [0..] objetos)
+
+    -- 3) aplicar todos os danos ao estado com objetos e minhocas já atualizados
+    danos = concat danosLists
+    e'    = Estado mapa objetos' minhocas'
+  in
+    foldl aplicaDano e' danos
 
 -- | Para um dado estado, dado o índice de uma minhoca na lista de minhocas e o estado dessa minhoca, retorna o novo estado da minhoca no próximo tick.
 avancaMinhoca :: Estado -> NumMinhoca -> Minhoca -> Minhoca
