@@ -255,8 +255,17 @@ estaNaAreaExplosao (x1,y1) (x2,y2) diametro =
         raio = diametro `div` 2
 
 -- | gera uma explsao numa posicao com um dado dano
-geraExplosao :: Posicao -> Dano -> Danos -- gera uma lista de posicoes afetadas pela explosao e o dano associado
-geraExplosao posicao dano = undefined   
+geraExplosao :: Posicao -> Dano -> Danos
+geraExplosao (x, y) diam =
+  concatMap (geraCamada (x, y)) [0 .. raio]
+  where
+    raio = diam `div` 2
+
+    geraCamada :: Posicao -> Int -> Danos
+    geraCamada (cx,cy) dist =
+      | dist == 0 = [((cx, cy), diam * 10)]
+      | otherwise = [((cx + dx, cy + dy), dano) | dx <- [-dist .. dist] , dy <- [-dist .. dist] , abs dx == dist || abs dy == dist, let dano = max 0 ((diam - dist) * 10) , dano > 0]
+ 
 
 -- | cria uma lista de danos para uma dada posicao e dano
 criaListaDanos :: Posicao -> Dano -> Danos
