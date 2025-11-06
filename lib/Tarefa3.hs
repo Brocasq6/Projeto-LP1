@@ -174,10 +174,18 @@ avancaDisparo estado objeto =
         Jetpack -> (objeto, [])
         Escavadora -> (objeto, [])
 
-avancaBazuca :: Estado -> Objeto -> Either Objeto Danos 
-avancaBazuca estado objeto = 
+avancaBazuca :: Estado -> Objeto -> (Objeto, Danos)
+avancaBazuca estado objeto
+  | verificaColisao novaPos mapa = (remover, geraExplosao posAtual 5)
+  | otherwise = (objeto { posicaoDisparo = novaPos }, [])
+  where
+    mapa = mapaEstado estado
+    posAtual = posicaoDisparo objeto
+    novaPos = moveDisparo (direcaoDisparo objeto) posAtual
+    remover = objeto{ posicaoDisparo = (-1, -1) }
 
-avancaMina :: Estado -> Objeto -> Either Objeto Danos
+
+avancaMina :: Estado -> Objeto -> (Objeto, Danos)
 avancaMina estado objeto =
     | tempoDisparo objeto == Just 0 = (remover, geraExplosao (posicaoObjeto objeto) 5
     | otherwise =
@@ -187,7 +195,7 @@ avancaMina estado objeto =
     where
         remover = objeto { tempoDisparo = Just 0 }
 
-avancaDinamite :: Estado -> Objeto -> Either Objeto Danos
+avancaDinamite :: Estado -> Objeto -> (Objeto, Danos)
 avancaDinamite estado objeto = 
     | tempoDisparo objeto == Just 0 = (remover, geraExplosao (posicaoObjeto objeto) 3)
     | otherwise =
