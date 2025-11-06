@@ -332,3 +332,10 @@ cacluaDanoMinhocas dano = map aplicaDano
         Just posicao -> case verificaPosicaoAfetada posicao of
                       Nothing -> minhoca
                       Just dano -> reduzVidaOuMata minhoca dano
+
+
+atualizaMapa :: Danos -> Mapa -> Mapa
+atualizaMapa dano mapa = 
+  foldr remove mapa (map fst dano)
+  where 
+    remove posicao m = removeTerrenoAtingido posicao m
