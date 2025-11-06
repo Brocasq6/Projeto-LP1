@@ -102,11 +102,8 @@ minhocaMorta minhoca =
 mataMinhoca :: Minhoca -> Minhoca
 mataMinhoca minhoca posicao = minhoca {vidaMinhoca = Morta, posicaoMinhoca = posicao}
 
--- | Retorna a posição de uma minhoca.
-posicaoMinhoca :: Minhoca -> Maybe Posicao
-posicaoMinhoca minhoca = 
-    case minhoca of
-        Minhoca { posicaoMinhoca = posicao } -> posicao 
+
+
 
 -- | Retorna o terreno na posição dada do mapa.
 terrenoNaPosicao :: Posicao -> Mapa -> Maybe Terreno
