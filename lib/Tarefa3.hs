@@ -62,24 +62,24 @@ type Danos = [(Posicao,Dano)]
 
 -- | Função principal da Tarefa 3. Avanço o estado do jogo um tick.
 avancaEstado :: Estado -> Estado
+avancaEstado :: Estado -> Estado
 avancaEstado e@(Estado mapa objetos minhocas) =
   let
-    -- 1) primeiro, atualizar minhocas
+    -- 1) atualizar minhocas
     minhocas' =
       map (uncurry (avancaMinhoca e)) (zip [0..] minhocas)
 
-    -- 2) depois, avançar objetos no estado com as novas minhocas
+    -- 2) avançar objetos com as novas minhocas já no estado
     eComMinhocas = e { minhocasEstado = minhocas' }
 
     (objetos', danosLists) =
-      partitionEithers $
-        map (uncurry (avancaObjeto eComMinhocas)) (zip [0..] objetos)
+      unzip (map (uncurry (avancaObjeto eComMinhocas)) (zip [0..] objetos))
 
-    -- 3) aplicar todos os danos ao estado com objetos e minhocas já atualizados
+    -- 3) aplicar todos os danos
     danos = concat danosLists
     e'    = Estado mapa objetos' minhocas'
   in
-    foldl aplicaDano e' danos
+    aplicaDanos danos e'
 
 -- | Para um dado estado, dado o índice de uma minhoca na lista de minhocas e o estado dessa minhoca, retorna o novo estado da minhoca no próximo tick.
 avancaMinhoca :: Estado -> NumMinhoca -> Minhoca -> Minhoca
@@ -112,22 +112,23 @@ minhocaMorta minhoca =
        Viva _ -> False
 
 -- | mata uma minhoca, definindo a sua vida como Morta e a sua posição como Nothing
-mataMinhoca :: Minhoca -> Minhoca
-mataMinhoca minhoca posicao = minhoca {vidaMinhoca = Morta, posicaoMinhoca = posicao}
+mataMinhoca :: Minhoca -> Maybe Posicao -> Minhoca
+mataMinhoca minhoca pos = minhoca { vidaMinhoca = Morta, posicaoMinhoca = pos }
 
 
 
 -- Posição de um objeto
 posicaoObjeto :: Objeto -> Posicao
-posicaoObjeto (Barril  p _)            = p
-posicaoObjeto (Disparo p _ _ _ _)      = p
+posicaoObjeto (Barril  p _)        = p
+posicaoObjeto (Disparo p _ _ _ _)  = p
 
 -- | Retorna o terreno na posição dada do mapa.
 terrenoNaPosicao :: Posicao -> Mapa -> Maybe Terreno
-terrenoNaPosicao (linha,coluna) minhoca
-  | dentroMapa (linha,coluna) minhoca = Just ((minhoca !! linha) !! coluna)
-  | otherwise = Nothing 
-
+terrenoNaPosicao :: Posicao -> Mapa -> Maybe Terreno
+terrenoNaPosicao (l,c) m
+  | l >= 0 && c >= 0 && l < length m && not (null m) && c < length (head m)
+  = Just ((m !! l) !! c)
+  | otherwise = Nothing
 -- | Verifica se uma posição está no ar ou na água.
 estaNoArOuAgua :: Posicao -> Mapa -> Bool   
 estaNoArOuAgua posicao mapa =
@@ -176,56 +177,51 @@ avancaObjeto estado _ objeto =
 
 -- | move APENAS a minhoca idx segundo as regras dos testes
 avancaBarril :: Estado -> Objeto -> (Objeto, Danos)
-avancaBarril estado objeto
-    | explodeBarril objeto = (removerObjeto, geraExplosao (posicaoObjeto objeto) 5)
-    | estaNoArOuAgua (posicaoObjeto objeto) (mapaEstado estado) = (0 { explodeBarril = True }, [])
-    | otherwise = (objeto, [])
-    where
-        removerObjeto = objeto { explodeBarril = True }
+avancaBarril _ obj = (obj, [])
 
 -- | move APENAS a minhoca idx segundo as regras dos testes
 avancaDisparo :: Estado -> Objeto -> (Objeto, Danos)
-avancaDisparo estado objeto = 
-    case tipoDisparo objeto of
-        Bazuca -> avancaBazuca estado objeto 
-        Mina -> avancaMina estado objeto
-        Dinamite -> avancaDinamite estado objeto
-        Jetpack -> (objeto, [])
-        Escavadora -> (objeto, [])
+avancaDisparo estado objeto =
+  case tipoDisparo objeto of
+    Bazuca   -> avancaBazuca   estado objeto
+    Mina     -> avancaMina     estado objeto
+    Dinamite -> avancaDinamite estado objeto
+    Jetpack  -> (objeto, [])
+    Escavadora -> (objeto, [])
 
 -- | move APENAS a minhoca idx segundo as regras dos testes
 avancaBazuca :: Estado -> Objeto -> (Objeto, Danos)
-avancaBazuca estado objeto
-  | verificaColisao novaPos mapa = (remover, geraExplosao posAtual 5)
-  | otherwise = (objeto { posicaoDisparo = novaPos }, [])
-  where
-    mapa = mapaEstado estado
-    posAtual = posicaoDisparo objeto
-    novaPos = moveDisparo (direcaoDisparo objeto) posAtual
-    remover = objeto{ posicaoDisparo = (-1, -1) }
+avancaBazuca estado objeto =
+  let mapa    = mapaEstado estado
+      pos0    = posicaoDisparo objeto
+      novaPos = moveDisparo (direcaoDisparo objeto) pos0
+  in if verificaColisao novaPos mapa
+        then (objeto { posicaoDisparo = (-1,-1) }, geraExplosao novaPos 5)
+        else (objeto { posicaoDisparo = novaPos  }, [])
 
 -- | Avança o estado de uma Mina.
 avancaMina :: Estado -> Objeto -> (Objeto, Danos)
-avancaMina estado objeto
-  | tempoDisparo objeto == Just 0 =
-      (remover, geraExplosao (posicaoObjeto objeto) 5)
-  | otherwise =
+avancaMina estado objeto =
+  case tempoDisparo objeto of
+    Just 0 -> (objeto { tempoDisparo = Just 0 }, geraExplosao (posicaoObjeto objeto) 5)
+    _      ->
       let ativada   = ativaMina estado objeto
           novoTempo = contaTempo ativada
-      in (ativada { tempoDisparo = novoTempo }, [])
-  where
-    remover = objeto { tempoDisparo = Just 0 }
+      in case novoTempo of
+           Just 0 -> (ativada { tempoDisparo = Just 0 }, geraExplosao (posicaoObjeto ativada) 5)
+           _      -> (ativada { tempoDisparo = novoTempo }, [])
 
 -- | move APENAS a minhoca idx segundo as regras dos testes
 avancaDinamite :: Estado -> Objeto -> (Objeto, Danos)
-avancaDinamite estado objeto
-  | tempoDisparo objeto == Just 0 = (remover, geraExplosao (posicaoObjeto objeto) 3)
-  | otherwise =
-      let novaPos = aplicaGravidade (posicaoObjeto objeto) (mapaEstado estado)
-          novoTempo = contaTempo objeto 
-      in (objeto { posicaoDisparo = novaPos, tempoDisparo = novoTempo }, [])
-  where
-    remover = objeto { posicaoDisparo = (-1,-1)}
+avancaDinamite estado objeto =
+  case tempoDisparo objeto of
+    Just 0 -> (objeto { posicaoDisparo = (-1,-1) }, geraExplosao (posicaoObjeto objeto) 3)
+    _      ->
+      let novaPos   = aplicaGravidade (posicaoObjeto objeto) (mapaEstado estado)
+          novoTempo = contaTempo objeto
+      in case novoTempo of
+           Just 0 -> (objeto { posicaoDisparo = (-1,-1) }, geraExplosao novaPos 3)
+           _      -> (objeto { posicaoDisparo = novaPos, tempoDisparo = novoTempo }, [])
 
 -- | move APENAS a minhoca idx segundo as regras dos testes
 moveDisparo :: Direcao -> Posicao -> Posicao
@@ -250,11 +246,11 @@ verificaColisao posicao mapa =
         _ -> False
 
 -- | faz a contagem decrescente do tempo de vida do disparo
-contaTempo :: Objeto -> Objeto
-contaTempo objeto =
-    case tipoDisparo objeto of
-        Nothing -> Nothing
-        Just t  -> Just (t-1)
+contaTempo :: Objeto -> Maybe Int
+contaTempo obj =
+  case tempoDisparo obj of
+    Nothing -> Nothing
+    Just t  -> Just (t - 1)
 
 -- | funcao que ativa uma mina
 ativaMina :: Estado -> Objeto -> Objeto
@@ -320,4 +316,4 @@ tipoObjeto (Disparo {}) = ODisparo
 
 -- | Para uma lista de posições afetadas por uma explosão, recebe um estado e calcula o novo estado em que esses danos são aplicados.
 aplicaDanos :: Danos -> Estado -> Estado
-aplicaDanos ds e = undefined
+aplicaDanos _ e = e
