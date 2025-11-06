@@ -315,4 +315,20 @@ tipoObjeto (Disparo {}) = ODisparo
 
 -- | Para uma lista de posições afetadas por uma explosão, recebe um estado e calcula o novo estado em que esses danos são aplicados.
 aplicaDanos :: Danos -> Estado -> Estado
-aplicaDanos _ e = e
+aplicaDanos _ estado = 
+  estado 
+  {
+    minhocasEstado = calculaDanoMinhocas danos (minhocasEstado estado)
+    , mapaEstado = atualizaMapa danos (mapaEstado estado)
+    , objetoEstado = atualizaObjetos danos (objeteosEstado estado)
+  }
+
+calculaDanoMinhocas :: Danos -> [Minhoca] -> [Minhoca]
+cacluaDanoMinhocas dano = map aplicaDano
+  where
+    aplicaDano minhoca = 
+      case minhoca of 
+        Nothing -> minhoca 
+        Just posicao -> case verificaPosicaoAfetada posicao of
+                      Nothing -> minhoca
+                      Just dano -> reduzVidaOuMata minhoca dano
