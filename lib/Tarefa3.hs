@@ -62,7 +62,6 @@ type Danos = [(Posicao,Dano)]
 
 -- | Função principal da Tarefa 3. Avanço o estado do jogo um tick.
 avancaEstado :: Estado -> Estado
-avancaEstado :: Estado -> Estado
 avancaEstado e@(Estado mapa objetos minhocas) =
   let
     -- 1) atualizar minhocas
@@ -124,11 +123,11 @@ posicaoObjeto (Disparo p _ _ _ _)  = p
 
 -- | Retorna o terreno na posição dada do mapa.
 terrenoNaPosicao :: Posicao -> Mapa -> Maybe Terreno
-terrenoNaPosicao :: Posicao -> Mapa -> Maybe Terreno
 terrenoNaPosicao (l,c) m
   | l >= 0 && c >= 0 && l < length m && not (null m) && c < length (head m)
   = Just ((m !! l) !! c)
   | otherwise = Nothing
+  
 -- | Verifica se uma posição está no ar ou na água.
 estaNoArOuAgua :: Posicao -> Mapa -> Bool   
 estaNoArOuAgua posicao mapa =
