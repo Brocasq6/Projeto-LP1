@@ -105,21 +105,21 @@ efetuaJogadaMove n dir est =
   in est { minhocasEstado = atualizaLista n m' (minhocasEstado est) }
 
 --------------------------------------- funcoes relacionadas com a funcao efetuaJogadaDisparo -------------------------------------------------
--- só estas armas geram objeto
+-- | só estas armas geram objeto
 armaDisparavel :: TipoArma -> Bool
 armaDisparavel Bazuca   = True
 armaDisparavel Mina     = True
 armaDisparavel Dinamite = True
 armaDisparavel _        = False  -- Jetpack/Escavadora não criam objeto
 
--- tempo por arma
+-- | tempo por arma
 tempoDisparoDefault :: TipoArma -> Maybe Ticks
 tempoDisparoDefault Bazuca   = Nothing
 tempoDisparoDefault Mina     = Nothing
 tempoDisparoDefault Dinamite = Just 3
 tempoDisparoDefault _        = Nothing
 
--- existe já um disparo igual (arma,dono)?
+-- | existe já um disparo igual (arma,dono)?
 existeMesmoDisparo :: TipoArma -> NumMinhoca -> [Objeto] -> Bool
 existeMesmoDisparo arma dono =
   any (\o -> case o of
@@ -128,21 +128,22 @@ existeMesmoDisparo arma dono =
 
 temMunicao :: TipoArma -> Minhoca -> Bool
 temMunicao arma m = case arma of
-  Jetpack    -> jetpackMinhoca m    > 0
+  Jetpack -> jetpackMinhoca m > 0
   Escavadora -> escavadoraMinhoca m > 0
-  Bazuca     -> bazucaMinhoca m     > 0
-  Mina       -> minaMinhoca m       > 0
-  Dinamite   -> dinamiteMinhoca m   > 0
+  Bazuca -> bazucaMinhoca m > 0
+  Mina -> minaMinhoca m > 0
+  Dinamite -> dinamiteMinhoca m > 0
 
+-- | Consome munição de uma minhoca ao disparar uma arma.
 consomeMunicao :: TipoArma -> Minhoca -> Minhoca
 consomeMunicao arma m = case arma of
-  Jetpack    -> m { jetpackMinhoca    = jetpackMinhoca m - 1 }
+  Jetpack -> m { jetpackMinhoca = jetpackMinhoca m - 1 }
   Escavadora -> m { escavadoraMinhoca = escavadoraMinhoca m - 1 }
-  Bazuca     -> m { bazucaMinhoca     = bazucaMinhoca m - 1 }
-  Mina       -> m { minaMinhoca       = minaMinhoca m - 1 }
-  Dinamite   -> m { dinamiteMinhoca   = dinamiteMinhoca m - 1 }
+  Bazuca -> m { bazucaMinhoca = bazucaMinhoca m - 1 }
+  Mina -> m { minaMinhoca = minaMinhoca m - 1 }
+  Dinamite -> m { dinamiteMinhoca = dinamiteMinhoca m - 1 }
 
--- escolhe a posição inicial do disparo (na frente se der; senão na própria)
+-- | escolhe a posição inicial do disparo (na frente se der; senão na própria)
 posInicialDisparo :: Estado -> Direcao -> Minhoca -> Posicao
 posInicialDisparo est dir m =
   case posicaoMinhoca m of
@@ -154,6 +155,7 @@ posInicialDisparo est dir m =
              && case terrenoNaPosicao mapa q of { Pedra -> False; _ -> True }
       in if ok pF then pF else p
 
+-- | Cria um objeto disparo a partir do estado, tipo de arma, direção, número da minhoca e a própria minhoca.
 criaDisparo :: Estado -> TipoArma -> Direcao -> NumMinhoca -> Minhoca -> Objeto
 criaDisparo est arma dir dono m =
   let p0 = posInicialDisparo est dir m
