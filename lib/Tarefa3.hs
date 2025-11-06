@@ -12,8 +12,8 @@ import Data.Either
 import Labs2025
 import Tarefa0_2025
 import Tarefa0_geral
-import Tarefa1 
-import Tarefa2    
+import Tarefa1 hiding (terrenoNaPosicao, dentroMapa, proximaPosicao)
+import Tarefa2 hiding (terrenoNaPosicao, dentroMapa, proximaPosicao)   
 {-
 
 avancaEstado
@@ -102,8 +102,11 @@ minhocaMorta minhoca =
 mataMinhoca :: Minhoca -> Minhoca
 mataMinhoca minhoca posicao = minhoca {vidaMinhoca = Morta, posicaoMinhoca = posicao}
 
-
-
+-- | Retorna a posição de uma minhoca.
+posicaoMinhoca :: Minhoca -> Maybe Posicao
+posicaoMinhoca minhoca = 
+    case minhoca of
+        Minhoca { posicaoMinhoca = posicao } -> posicao 
 
 -- | Retorna o terreno na posição dada do mapa.
 terrenoNaPosicao :: Posicao -> Mapa -> Maybe Terreno
