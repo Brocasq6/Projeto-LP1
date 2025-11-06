@@ -204,7 +204,7 @@ avancaMina estado objeto
 
 -- | move APENAS a minhoca idx segundo as regras dos testes
 avancaDinamite :: Estado -> Objeto -> (Objeto, Danos)
-avancaDinamite estado objeto = 
+avancaDinamite estado objeto
   | tempoDisparo objeto == Just 0 = (remover, geraExplosao (posicaoObjeto objeto) 3)
   | otherwise =
       let novaPos = aplicaGravidade (posicaoObjeto objeto) (mapaEstado estado)
