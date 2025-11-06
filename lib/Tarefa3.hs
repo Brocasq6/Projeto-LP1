@@ -79,16 +79,17 @@ avancaMinhoca estado _ minhoca
 
 -- | Atualiza a posição de uma minhoca aplicando a gravidade.
 atualizaPosicaoGravidade :: Estado -> Minhoca -> Posicao -> Minhoca
-atualizaPosicaoGravidade estado minhoca posicao =
-    | not (dentroMapa abaixo mapa) = mataMinhoca minhoca Nothing 
-    | estaNoArOuAgua abaixo mapa =
-        case terrenoNaPosicao abaixo mapa of
-            Just Agua -> minhoca { posicaoMinhoca = Just (aplicaGravidade abaixo mapa) } -- se estiver na agua, aplica a gravidade normalmente
-            Just Ar -> minhoca { posicaoMinhoca = Just (aplicaGravidade abaixo mapa) } -- se estiver no ar, aplica a gravidade normalmente  
-    | otherwise = minhoca -- se ja se encontrar no chao, nao faz nada
-    where
-        mapa = mapaEstado estado
-        abaixo = (fst posicao + 1, snd posicao)
+atualizaPosicaoGravidade estado minhoca posicao
+  | not (dentroMapa abaixo mapa) = mataMinhoca minhoca Nothing
+  | estaNaOrOuAgua abaixo mapa =
+      case terrenoNaPosicao abaixo mapa of
+        Just Agua -> minhoca { posicaoMinhoca = Just (aplicaGravidade abaixo mapa) } -- se estiver na agua, aplica a gravidade
+        Just Ar   -> minhoca { posicaoMinhoca = Just (aplicaGravidade abaixo mapa) } -- se estiver no ar, aplica a gravidade
+        _         -> minhoca -- caso contrário, não faz nada
+  | otherwise = minhoca -- se já se encontrar no chão, não faz nada
+  where
+    mapa   = mapaEstado estado
+    abaixo = (fst posicao + 1, snd posicao)
 
 -- | verifica se uma mihoca está morta
 minhocaMorta :: Minhoca -> Bool
