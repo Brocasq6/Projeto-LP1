@@ -150,7 +150,7 @@ aplicaGravidade (linha, coluna) mapa
 
 
 -- | Para um dado estado, dado o índice de um objeto na lista de objetos e o estado desse objeto, retorna o novo estado do objeto no próximo tick ou, caso o objeto expluda, uma lista de posições afetadas com o dano associado.
-avancaObjeto :: Estado -> NumObjeto -> Objeto -> Either Objeto Danos
+avancaObjeto :: Estado -> NumObjeto -> Objeto -> (Objeto, Danos)
 avancaObjeto estado indice objeto
     case tipoObjeto objeto of
         Barril -> avancaBarril estado objeto
