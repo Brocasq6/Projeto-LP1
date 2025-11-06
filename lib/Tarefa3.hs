@@ -9,11 +9,11 @@ module Tarefa3 where
 
 import Data.Either
 
-import Labs2025 hiding (posicaoMinhoca)
+import Labs2025 hiding
 import Tarefa0_2025
 import Tarefa0_geral
 import Tarefa1 hiding (terrenoNaPosicao, dentroMapa, proximaPosicao)
-import Tarefa2 hiding (terrenoNaPosicao, dentroMapa, proximaPosicao)   
+import Tarefa2 hiding (terrenoNaPosicao, proximaPosicao)   
 {-
 
 avancaEstado
@@ -102,11 +102,7 @@ minhocaMorta minhoca =
 mataMinhoca :: Minhoca -> Minhoca
 mataMinhoca minhoca posicao = minhoca {vidaMinhoca = Morta, posicaoMinhoca = posicao}
 
--- | Retorna a posição de uma minhoca.
-posicaoMinhoca :: Minhoca -> Maybe Posicao
-posicaoMinhoca minhoca = 
-    case minhoca of
-        Minhoca { posicaoMinhoca = posicao } -> posicao 
+
 
 -- Posição de um objeto
 posicaoObjeto :: Objeto -> Posicao
