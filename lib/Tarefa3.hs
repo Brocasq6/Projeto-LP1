@@ -232,10 +232,18 @@ contaTempo objeto =
         Nothing -> Nothing
         Just t  -> Just (t-1)
 
-ativaMina :: Objeto -> Objeto
-ativaMina objeto = undefined
+ativaMina :: Estado -> Objeto -> Objeto -- caso ha alguma minhoca na area de explosao de diametro 5 entao inicia uma contagem decrescente da mina
+ativaMina estado mina = 
+    | any (estaNaAreaExplosao (posicaoObjeto mina)) (minhocasEstado estado) = mina { tempoDisparo = Just 2 }
+    | otherwise = mina
 
-geraExplosao :: Posicao -> Dano -> Danos
+estaNaAreaExplosao :: Posicao -> Posicao -> Int -> Bool
+estaNaAreaExplosao (x1,y1) (x2,y2) diametro = 
+    abs (x1 - x2) <= raio && abs (y1 - y2) <= raio
+    where
+        raio = diametro `div` 2
+
+geraExplosao :: Posicao -> Dano -> Danos -- gera uma lista de posicoes afetadas pela explosao e o dano associado
 geraExplosao posicao dano = undefined   
 
 
@@ -243,7 +251,7 @@ type Dano = Int
 type Danos = [(Posicao,Dano)]
 
 criaListaDanos :: Posicao -> Dano -> Danos
-criaListaDanos posicao dano = 
+criaListaDanos posicao dano = [(posicao,dano)]
 
 data TipoObjeto = OBarril | ODisparo
   deriving (Eq, Show)
@@ -269,6 +277,7 @@ tipoObjeto (Disparo {}) = ODisparo
  |     |- criaListaDanos
  |--
  -}
+
 -- | Para uma lista de posições afetadas por uma explosão, recebe um estado e calcula o novo estado em que esses danos são aplicados.
 aplicaDanos :: Danos -> Estado -> Estado
 aplicaDanos ds e = undefined
