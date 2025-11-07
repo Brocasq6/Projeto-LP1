@@ -271,7 +271,7 @@ geraExplosao (cx, cy) diametro =
   | x <- [cx - raio .. cx + raio]
   , y <- [cy - raio .. cy + raio]
   , let distancia :: Int
-        distancia = round (sqrt (fromIntegral ((x - cx)^2 + (y - cy)^2) :: Double))
+        distancia = round (sqrt (fromIntegral (((x - cx)*(x-cz)) + (y - cy)*(y-cy)) :: Double))
         dano = max 0 ((diametro - distancia) * 10)
   , dano > 0
   ]
