@@ -315,27 +315,58 @@ tipoObjeto (Disparo {}) = ODisparo
 
 -- | Para uma lista de posições afetadas por uma explosão, recebe um estado e calcula o novo estado em que esses danos são aplicados.
 aplicaDanos :: Danos -> Estado -> Estado
-aplicaDanos _ estado = 
-  estado 
-  {
-    minhocasEstado = calculaDanoMinhocas danos (minhocasEstado estado)
-    , mapaEstado = atualizaMapa danos (mapaEstado estado)
-    , objetosEstado = atualizaObjetos danos (objeteosEstado estado)
-  }
+aplicaDanos danos estado =
+  estado
+    { minhocasEstado = calculaDanoMinhocas danos (minhocasEstado estado)
+    , mapaEstado     = atualizaMapa        danos (mapaEstado estado)
+    , objetosEstado  = atualizaObjetos     danos (objetosEstado estado)
+    }
 
+-- aplica os danos a cada minhoca
 calculaDanoMinhocas :: Danos -> [Minhoca] -> [Minhoca]
-calculaDanoMinhocas dano = map aplicaDano
+calculaDanoMinhocas danos = map aplica
   where
-    aplicaDano minhoca = 
-      case minhoca of 
-        Nothing -> minhoca 
-        Just posicao -> case verificaPosicaoAfetada posicao of
-                      Nothing -> minhoca
-                      Just dano -> reduzVidaOuMata minhoca dano
+    -- dado uma minhoca, vê se a sua posição está numa célula com dano;
+    -- se sim, aplica (somando danos repetidos nessa célula)
+    aplica :: Minhoca -> Minhoca
+    aplica m =
+      case posicaoMinhoca m of
+        Nothing   -> m
+        Just pos  ->
+          case verificaPosicaoAfetada pos danos of
+            Nothing   -> m
+            Just dano -> reduzVidaOuMata m dano
 
+-- devolve o total de dano naquela posição, se existir
+verificaPosicaoAfetada :: Posicao -> Danos -> Maybe Dano
+verificaPosicaoAfetada pos ds =
+  let soma = sum [ d | (p,d) <- ds, p == pos ]
+  in if soma == 0 then Nothing else Just soma
 
+-- reduz vida; se chegar a zero ou menos, mata (mantém posição)
+reduzVidaOuMata :: Minhoca -> Dano -> Minhoca
+reduzVidaOuMata m d =
+  case vidaMinhoca m of
+    Morta     -> m
+    Viva hp   -> if d >= hp
+                   then m { vidaMinhoca = Morta }
+                   else m { vidaMinhoca = Viva (hp - d) }
+
+-- remove/transforma terreno nas posições atingidas (simples: remove)
 atualizaMapa :: Danos -> Mapa -> Mapa
-atualizaMapa dano mapa = 
-  foldr remove mapa (map fst dano)
-  where 
-    remove posicao m = removeTerrenoAtingido posicao m
+atualizaMapa danos mapa =
+  foldl remover mapa (map fst danos)
+  where
+    remover m pos = removeTerrenoAtingido pos m
+
+
+removeTerrenoAtingido :: Posicao -> Mapa -> Mapa
+removeTerrenoAtingido (l, c) mapa
+  | not (dentroMapa (l, c) mapa) = mapa
+  | otherwise = atualizaCel mapa (l, c) Ar
+
+atualizaCel :: Mapa -> Posicao -> Terreno -> Mapa
+atualizaCel mapa (l, c) novoTerreno =
+  take l mapa ++
+  [take c (mapa !! l) ++ [novoTerreno] ++ drop (c + 1) (mapa !! l)] ++
+  drop (l + 1) mapa
