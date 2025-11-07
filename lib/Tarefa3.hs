@@ -111,7 +111,7 @@ mataMinhoca minhoca pos = minhoca { vidaMinhoca = Morta, posicaoMinhoca = pos }
 
 
 
--- Posição de um objeto
+-- | Posição de um objeto
 posicaoObjeto :: Objeto -> Posicao
 posicaoObjeto (Barril  p _) = p
 posicaoObjeto (Disparo p _ _ _ _)  = p
@@ -282,6 +282,7 @@ geraExplosao (cx, cy) diametro =
 criaListaDanos :: Posicao -> Dano -> Danos
 criaListaDanos posicao dano = [(posicao,dano)]
 
+-- | definicao do data type TipoObjeto
 data TipoObjeto = OBarril | ODisparo
   deriving (Eq, Show)
 
@@ -317,7 +318,7 @@ aplicaDanos danos estado =
     , objetosEstado  = atualizaObjetos     danos (objetosEstado estado)
     }
 
--- aplica os danos a cada minhoca
+-- | aplica os danos a cada minhoca
 calculaDanoMinhocas :: Danos -> [Minhoca] -> [Minhoca]
 calculaDanoMinhocas danos = map aplica
   where
@@ -332,13 +333,13 @@ calculaDanoMinhocas danos = map aplica
             Nothing   -> m
             Just dano -> reduzVidaOuMata m dano
 
--- devolve o total de dano naquela posição, se existir
+-- | devolve o total de dano naquela posição, se existir
 verificaPosicaoAfetada :: Posicao -> Danos -> Maybe Dano
 verificaPosicaoAfetada pos ds =
   let soma = sum [ d | (p,d) <- ds, p == pos ]
   in if soma == 0 then Nothing else Just soma
 
--- reduz vida; se chegar a zero ou menos, mata (mantém posição)
+-- | reduz vida; se chegar a zero ou menos, mata (mantém posição)
 reduzVidaOuMata :: Minhoca -> Dano -> Minhoca
 reduzVidaOuMata m d =
   case vidaMinhoca m of
@@ -347,23 +348,26 @@ reduzVidaOuMata m d =
                    then m { vidaMinhoca = Morta }
                    else m { vidaMinhoca = Viva (hp - d) }
 
--- remove/transforma terreno nas posições atingidas (simples: remove)
+-- | remove/transforma terreno nas posições atingidas (simples: remove)
 atualizaMapa :: Danos -> Mapa -> Mapa
 atualizaMapa danos mapa =
   foldl remover mapa (map fst danos)
   where
     remover m pos = removeTerrenoAtingido pos m
 
+-- | funcao que atualiza os objetos
 atualizaObjetos :: Danos -> [Objeto] -> [Objeto]
 atualizaObjetos danos =
   let atingiu pos = any (\(p,d) -> p == pos && d > 0) danos
   in filter (not . atingiu . posicaoObjeto)
 
+-- | funcao que remove as partes do terreno que foram atingido
 removeTerrenoAtingido :: Posicao -> Mapa -> Mapa
 removeTerrenoAtingido (l, c) mapa
   | not (dentroMapa (l, c) mapa) = mapa
   | otherwise = atualizaCel mapa (l, c) Ar
 
+-- | funcao que atualiza uma celula de um mapa
 atualizaCel :: Mapa -> Posicao -> Terreno -> Mapa
 atualizaCel mapa (l, c) novoTerreno =
   take l mapa ++
