@@ -76,9 +76,9 @@ avancaEstado e@(Estado mapa objetos minhocas) =
 
     -- 3) aplicar todos os danos
     danos = concat danosLists
-    e'    = Estado mapa objetos' minhocas'
+    eFinal = eComMinhocas {objetosEstado = objetos'}
   in
-    aplicaDanos danos e'
+    aplicaDanos danos eFinal
 
 -- | Para um dado estado, dado o índice de uma minhoca na lista de minhocas e o estado dessa minhoca, retorna o novo estado da minhoca no próximo tick.
 avancaMinhoca :: Estado -> NumMinhoca -> Minhoca -> Minhoca
@@ -203,25 +203,26 @@ avancaBazuca estado objeto =
 avancaMina :: Estado -> Objeto -> (Objeto, Danos)
 avancaMina estado objeto =
   case tempoDisparo objeto of
-    Just 0 -> (objeto { tempoDisparo = Just 0 }, geraExplosao (posicaoObjeto objeto) 5)
-    _      ->
-      let ativada   = ativaMina estado objeto
-          novoTempo = contaTempo ativada
+    Just 0 -> (objeto {posicaoDisparo = (-1,-1)}, geraExplosao (posicaoObjeto objeto) 5)
+    _ ->
+      let ativada = ativaMina estado objeto
+          novaPos = aplicaGravidade (posicaoObjeto ativada) (mapaEstado estado)
+          novoTempo = contaTempo ativada 
       in case novoTempo of
-           Just 0 -> (ativada { tempoDisparo = Just 0 }, geraExplosao (posicaoObjeto ativada) 5)
-           _      -> (ativada { tempoDisparo = novoTempo }, [])
+           Just 0 -> (ativada {posicaoDisparo = (-1,-1)}, geraExplosao novaPos 5)
+           _ -> (ativada {posicaoDisparo = novaPos , tempoDisparo = novoTempo} , [])
 
 -- | move APENAS a minhoca idx segundo as regras dos testes
 avancaDinamite :: Estado -> Objeto -> (Objeto, Danos)
 avancaDinamite estado objeto =
   case tempoDisparo objeto of
-    Just 0 -> (objeto { posicaoDisparo = (-1,-1) }, geraExplosao (posicaoObjeto objeto) 3)
-    _      ->
-      let novaPos   = aplicaGravidade (posicaoObjeto objeto) (mapaEstado estado)
+    Just 0 -> (objeto { posicaoDisparo = (-1,-1) }, geraExplosao (posicaoObjeto objeto) 7)
+    _ ->
+      let novaPos = aplicaGravidade (posicaoObjeto objeto) (mapaEstado estado)
           novoTempo = contaTempo objeto
       in case novoTempo of
-           Just 0 -> (objeto { posicaoDisparo = (-1,-1) }, geraExplosao novaPos 3)
-           _      -> (objeto { posicaoDisparo = novaPos, tempoDisparo = novoTempo }, [])
+           Just 0 -> (objeto { posicaoDisparo = (-1,-1) }, geraExplosao novaPos 7)
+           _ -> (objeto { posicaoDisparo = novaPos, tempoDisparo = novoTempo }, [])
 
 -- | move APENAS a minhoca idx segundo as regras dos testes
 moveDisparo :: Direcao -> Posicao -> Posicao
@@ -267,22 +268,16 @@ estaNaAreaExplosao (x1,y1) (x2,y2) diametro =
 
 -- | gera uma explsao numa posicao com um dado dano
 geraExplosao :: Posicao -> Dano -> Danos
-geraExplosao (x, y) diam =
-  concatMap (geraCamada (x, y)) [0 .. raio]
+geraExplosao (cx, cy) diametro =
+  [ ((x,y),dano)
+  | x <- []
+  , y <- []
+  , let distancia = round (sqrt (fromIntegral ((x-cx)^2 + (y-cy)^2)))
+        dano = max 0 ((diametro - distancia) * 10)
+  , dano > 0
+  ]
   where
-    raio = diam `div` 2
-
-    geraCamada :: Posicao -> Int -> Danos
-    geraCamada (cx,cy) dist
-      | dist == 0 = [((cx, cy), diam * 10)]
-      | otherwise = [((cx + dx, cy + dy), dano) 
-                    | dx <- [-dist .. dist] 
-                    , dy <- [-dist .. dist] 
-                    , abs dx == dist || abs dy == dist
-                    , let dano = max 0 ((diam - dist) * 10) 
-                    , dano > 0
-                    ]
- 
+    raio = diametro `div` 2
 
 -- | cria uma lista de danos para uma dada posicao e dano
 criaListaDanos :: Posicao -> Dano -> Danos
