@@ -93,7 +93,7 @@ avancaMinhoca estado _ minhoca
 atualizaPosicaoGravidade :: Estado -> Minhoca -> Posicao -> Minhoca
 atualizaPosicaoGravidade estado minhoca posicao
   let mapa = mapaEstado estado
-    abaixo = (fst poiscao + 1, snd posicao)
+    abaixo = (fst posicao + 1, snd posicao)
   in case terrenoNaPosicao abaixo mapa of
     Nothing ->  mataMinhoca minhoca Nothing
     Just Agua -> mataMinhoca minhoca (Just abaixo)
