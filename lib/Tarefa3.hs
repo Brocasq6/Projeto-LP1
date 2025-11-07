@@ -9,8 +9,9 @@ module Tarefa3 where
 import Labs2025
 import Tarefa0_2025
 import Tarefa0_geral
-import Tarefa1 hiding (terrenoNaPosicao, dentroMapa)
-import Tarefa2 hiding (terrenoNaPosicao, dentroMapa)
+import Tarefa1 hiding (terrenoNaPosicao) 
+import Tarefa2 hiding (terrenoNaPosicao)  
+
 
 {-
 
