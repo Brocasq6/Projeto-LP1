@@ -359,6 +359,10 @@ atualizaMapa danos mapa =
   where
     remover m pos = removeTerrenoAtingido pos m
 
+atualizaObjetos :: Danos -> [Objeto] -> [Objeto]
+atualizaObjetos danos =
+  let atingiu pos = any (\(p,d) -> p == pos && d > 0) danos
+  in filter (not . atingiu . posicaoObjeto)
 
 removeTerrenoAtingido :: Posicao -> Mapa -> Mapa
 removeTerrenoAtingido (l, c) mapa
