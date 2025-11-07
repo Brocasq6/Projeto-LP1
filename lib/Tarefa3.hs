@@ -320,11 +320,11 @@ aplicaDanos _ estado =
   {
     minhocasEstado = calculaDanoMinhocas danos (minhocasEstado estado)
     , mapaEstado = atualizaMapa danos (mapaEstado estado)
-    , objetoEstado = atualizaObjetos danos (objeteosEstado estado)
+    , objetosEstado = atualizaObjetos danos (objeteosEstado estado)
   }
 
 calculaDanoMinhocas :: Danos -> [Minhoca] -> [Minhoca]
-cacluaDanoMinhocas dano = map aplicaDano
+calculaDanoMinhocas dano = map aplicaDano
   where
     aplicaDano minhoca = 
       case minhoca of 
