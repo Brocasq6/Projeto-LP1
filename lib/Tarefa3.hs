@@ -175,10 +175,10 @@ avancaObjeto estado _ objeto =
 -- | move APENAS a minhoca idx segundo as regras dos testes
 avancaBarril :: Estado -> Objeto -> (Objeto, Danos)
 avancaBarril estado (Barril posicao explodir)
-  | explodir = (Barril (-1,-1) False, geraExplosao pos 5)
+  | explodir = (Barril (-1,-1) False, geraExplosao posicao 5)
   | estaNoArOuAgua posicao (mapaEstado estado) = (Barril posicao True, [])
   | otherwise = (Barril posicao explodir, [])
-avancaBarril _ obj = (obj, [])
+avancaBarril _ objeto = (objeto, [])
 
 -- | move APENAS a minhoca idx segundo as regras dos testes
 avancaDisparo :: Estado -> Objeto -> (Objeto, Danos)
