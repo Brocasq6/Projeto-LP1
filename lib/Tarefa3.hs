@@ -7,10 +7,8 @@ Módulo para a realização da Tarefa 3 de LI1\/LP1 em 2025\/26.
 
 module Tarefa3 where 
 import Labs2025
-import Tarefa0_2025
-import Tarefa0_geral
 import Tarefa1 hiding (terrenoNaPosicao) 
-import Tarefa2 hiding (terrenoNaPosicao,dentroMapa)  
+ 
 
 
 {-
