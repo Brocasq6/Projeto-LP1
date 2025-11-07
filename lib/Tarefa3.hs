@@ -92,16 +92,13 @@ avancaMinhoca estado _ minhoca
 -- | Atualiza a posição de uma minhoca aplicando a gravidade.
 atualizaPosicaoGravidade :: Estado -> Minhoca -> Posicao -> Minhoca
 atualizaPosicaoGravidade estado minhoca posicao
-  | not (dentroMapa abaixo mapa) = mataMinhoca minhoca Nothing
-  | estaNoArOuAgua abaixo mapa =
-      case terrenoNaPosicao abaixo mapa of
-        Just Agua -> minhoca { posicaoMinhoca = Just (aplicaGravidade abaixo mapa) } -- se estiver na agua, aplica a gravidade
-        Just Ar   -> minhoca { posicaoMinhoca = Just (aplicaGravidade abaixo mapa) } -- se estiver no ar, aplica a gravidade
-        _         -> minhoca -- caso contrário, não faz nada
-  | otherwise = minhoca -- se já se encontrar no chão, não faz nada
-  where
-    mapa   = mapaEstado estado
-    abaixo = (fst posicao + 1, snd posicao)
+  let mapa = mapaEstado estado
+    abaixo = (fst poiscao + 1, snd posicao)
+  in case terrenoNaPosicao abaixo mapa of
+    Nothing ->  mataMinhoca minhoca Nothing
+    Just Agua -> mataMinhoca minhoca (Just abaixo)
+    Just Ar -> minhoca { posicaoMinhoca = Just (aplicaGravidade abaixo mapa)}
+    _ -> minhoca
 
 -- | verifica se uma mihoca está morta
 minhocaMorta :: Minhoca -> Bool
@@ -374,3 +371,5 @@ atualizaCel mapa (l, c) novoTerreno =
   take l mapa ++
   [take c (mapa !! l) ++ [novoTerreno] ++ drop (c + 1) (mapa !! l)] ++
   drop (l + 1) mapa
+
+
