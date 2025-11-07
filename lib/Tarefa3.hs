@@ -267,10 +267,11 @@ estaNaAreaExplosao (x1,y1) (x2,y2) diametro =
 -- | gera uma explsao numa posicao com um dado dano
 geraExplosao :: Posicao -> Dano -> Danos
 geraExplosao (cx, cy) diametro =
-  [ ((x,y),dano)
+  [ ((x, y), dano)
   | x <- [cx - raio .. cx + raio]
   , y <- [cy - raio .. cy + raio]
-  , let distancia = round (sqrt (fromIntegral ((x-cx)^2 + (y-cy)^2) :: Double))
+  , let distancia :: Int
+        distancia = round (sqrt (fromIntegral ((x - cx)^2 + (y - cy)^2) :: Double))
         dano = max 0 ((diametro - distancia) * 10)
   , dano > 0
   ]
