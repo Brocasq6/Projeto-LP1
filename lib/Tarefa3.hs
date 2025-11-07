@@ -176,7 +176,7 @@ avancaObjeto estado _ objeto =
 avancaBarril :: Estado -> Objeto -> (Objeto, Danos)
 avancaBarril estado (Barril posicao explodir)
   | explodir = (Barril (-1,-1) False, geraExplosao pos 5)
-  | estaNoArOuAgua posicao (mapaestado estado) = (Barril posicao True, [])
+  | estaNoArOuAgua posicao (mapaEstado estado) = (Barril posicao True, [])
   | otherwise = (Barril posicao explodir, [])
 avancaBarril _ obj = (obj, [])
 
