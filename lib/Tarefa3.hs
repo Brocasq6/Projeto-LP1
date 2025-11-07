@@ -5,15 +5,12 @@ Description : Avançar tempo do jogo.
 Módulo para a realização da Tarefa 3 de LI1\/LP1 em 2025\/26.
 -}
 
-module Tarefa3 where
-
-import Data.Either (partitionEithers) 
-
+module Tarefa3 where 
 import Labs2025
 import Tarefa0_2025
 import Tarefa0_geral
-import Tarefa1 hiding (terrenoNaPosicao, dentroMapa, proximaPosicao)
-import Tarefa2 hiding (terrenoNaPosicao, proximaPosicao)  
+import Tarefa1
+import Tarefa2 
 {-
 
 avancaEstado
@@ -62,7 +59,7 @@ type Danos = [(Posicao,Dano)]
 
 -- | Função principal da Tarefa 3. Avanço o estado do jogo um tick.
 avancaEstado :: Estado -> Estado
-avancaEstado e@(Estado mapa objetos minhocas) =
+avancaEstado e@(Estado _ objetos minhocas) =
   let
     -- 1) atualizar minhocas
     minhocas' =
@@ -271,9 +268,9 @@ estaNaAreaExplosao (x1,y1) (x2,y2) diametro =
 geraExplosao :: Posicao -> Dano -> Danos
 geraExplosao (cx, cy) diametro =
   [ ((x,y),dano)
-  | x <- []
-  , y <- []
-  , let distancia = round (sqrt (fromIntegral ((x-cx)^2 + (y-cy)^2)))
+  | x <- [cx - raio .. cx + raio]
+  , y <- [cy - raio .. cy + raio]
+  , let distancia = round (sqrt (fromIntegral ((x-cx)^2 + (y-cy)^2) :: Double))
         dano = max 0 ((diametro - distancia) * 10)
   , dano > 0
   ]
