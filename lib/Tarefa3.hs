@@ -115,7 +115,7 @@ mataMinhoca minhoca pos = minhoca { vidaMinhoca = Morta, posicaoMinhoca = pos }
 
 -- Posição de um objeto
 posicaoObjeto :: Objeto -> Posicao
-posicaoObjeto (Barril  p _)        = p
+posicaoObjeto (Barril  p _) = p
 posicaoObjeto (Disparo p _ _ _ _)  = p
 
 -- | Retorna o terreno na posição dada do mapa.
@@ -173,6 +173,10 @@ avancaObjeto estado _ objeto =
 
 -- | move APENAS a minhoca idx segundo as regras dos testes
 avancaBarril :: Estado -> Objeto -> (Objeto, Danos)
+avancaBarril estado (Barril posicao explodir)
+  | explodir = (Barril (-1,-1) False, geraExplosao pos 5)
+  | estaNoArOuAgua posicao (mapaestado estado) = (Barril posicao True, [])
+  | otherwise = (Barril posicao explodir, [])
 avancaBarril _ obj = (obj, [])
 
 -- | move APENAS a minhoca idx segundo as regras dos testes
