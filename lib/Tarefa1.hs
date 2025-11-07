@@ -234,11 +234,12 @@ validaMapa mapa =
 
 -- | Verifica se uma posição está dentro dos limites do mapa
 dentroMapa :: Posicao -> Mapa -> Bool
-dentroMapa (l,c) m =
-  l >= 0 && c >= 0
-  && l < length m              -- l = índice da linha
-  && not (null m)
-  && c < length (head m)       -- c = índice da coluna
+dentroMapa (l, c) mapa =
+  not (null mapa)
+  && l >= 0 && c >= 0
+  && l < length mapa
+  && c < length (head mapa)
+
 
 -- | Obtém o terreno existente numa posição (se for válida)
 terrenoNaPosicao :: Posicao -> Mapa -> Maybe Terreno
