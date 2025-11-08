@@ -129,6 +129,12 @@ temSoloAbaixo (l,c) m =
     Just Pedra -> True
     _          -> False
 
+podeAgir :: Estado -> Minhoca -> Bool
+podeAgir est m =
+  case posicaoMinhoca m of
+    Just p -> estaNoAr p (mapaEstado est) && temSoloAbaixo p (mapaEstado est)
+    _      -> False
+  
 substitui :: Int -> a -> [a] -> [a]
 substitui idx novo xs =
   take idx xs ++ [novo] ++ drop (idx + 1) xs
@@ -214,12 +220,15 @@ atualizaLista i novo l = take i l ++ [novo] ++ drop (i + 1) l
 -- | Efetua uma jogada de disparo por parte de uma minhoca, atualizando o estado.
 efetuaJogadaDisparo :: NumMinhoca -> TipoArma -> Direcao -> Estado -> Estado
 efetuaJogadaDisparo n arma dir est =
-  let ms = minhocasEstado est
-      m  = ms !! n
+  let ms   = minhocasEstado est
+      m    = ms !! n
+      mapa = mapaEstado est
   in case posicaoMinhoca m of
        Nothing -> est
-       Just _  ->
-         if not (armaDisparavel arma) then est
+       Just p ->
+         -- Não dispara se está em Pedra/Terra/Água, enterrada, sem suporte, etc.
+         if not (podeAgir est m) then est
+         else if not (armaDisparavel arma) then est
          else if not (temMunicao arma m) then est
          else if existeMesmoDisparo arma n (objetosEstado est) then est
          else
