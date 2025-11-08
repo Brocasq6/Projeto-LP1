@@ -250,7 +250,7 @@ jogaEscavadora i dir e@(Estado m objs mins)
   | Nothing <- posicaoMinhoca w      = e
   | not (temMunicao Escavadora w)    = e
   | Just p <- posicaoMinhoca w
-  , terrenoBloqueado p m             = e        
+  |  terrenoBloqueado p m             = e        
   | not (dentroMapa p' m)            = e
   | ocupadoPorAlgo                   = e
   | otherwise =
