@@ -87,9 +87,9 @@ dentroMapa (l,c) m =
 
 -- | Devolve o terreno numa dada posição do mapa.
 terrenoNaPosicao :: Mapa -> Posicao -> Maybe Terreno
-terrenoNaPosicao m p@(l,c)
-  | dentroMapa p m = Just ((m !! l) !! c)
-  | otherwise      = Nothing
+terrenoNaPosicao m (l,c)
+  | dentroMapa (l,c) m = Just ((m !! l) !! c)
+  | otherwise          = Nothing
 
 -- | Aplica o efeito do terreno na minhoca.
 aplicaEfeitoTerreno :: Minhoca -> Posicao -> Terreno -> Minhoca
@@ -229,12 +229,22 @@ efetuaJogadaDisparo n arma dir est =
 
 -- | Função principal da Tarefa 2. Recebe o índice de uma minhoca na lista de minhocas, uma jogada, um estado e retorna um novo estado em que essa minhoca efetuou essa jogada.
 efetuaJogada :: NumMinhoca -> Jogada -> Estado -> Estado
-efetuaJogada i (Move dir) e@(Estado mapa objs mins)
-  | i < 0 || i >= length mins = e
-  | otherwise =
-      case posicaoMinhoca (mins !! i) of
-        Nothing  -> e
-        Just p
-          | not (dentroMapa p mapa) -> e     -- <- ESSA LINHA EVITA O CRASH DO TESTE
-          | otherwise               -> moveSeDer i dir e
+efetuaJogada i jog e =
+  case jog of
+    -- MOVIMENTO
+    Move dir ->
+      let Estado mapa _ mins = e
+      in if i < 0 || i >= length mins
+           then e
+           else case posicaoMinhoca (mins !! i) of
+                  Nothing -> e
+                  Just p
+                    | not (dentroMapa p mapa) -> e
+                    | otherwise               -> moveSeDer i dir e
+
+    -- DISPARO
+    Dispara arma dir ->
+      if i < 0 || i >= length (minhocasEstado e)
+        then e
+        else efetuaJogadaDisparo i arma dir e
 
