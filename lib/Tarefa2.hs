@@ -108,13 +108,12 @@ efetuaJogadaMove n dir est =
   in est { minhocasEstado = atualizaLista n m' (minhocasEstado est) }
 
 -- A posição está livre para pisar? (Ar e sem objetos/minhocas)
-posicaoLivre :: Posicao -> Estado -> Bool
- posicaoLivre p (Estado m objs mins) =
-   case terrenoNaPosicao m p of
-     Just Ar ->
-       not (any ((== p) . posObjeto) objs) &&
-       not (any (== Just p) (map posicaoMinhoca mins)) 
-     _ -> False
+posicaoLivre p (Estado m objs mins) =
+  case terrenoNaPosicao m p of
+    Just Ar ->
+      not (any ((== p) . posObjeto) objs) &&
+      not (any (== Just p) (map posicaoMinhoca mins))
+    _ -> False
 
 
 estaNoAr :: Posicao -> Mapa -> Bool
