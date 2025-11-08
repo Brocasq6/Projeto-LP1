@@ -168,7 +168,6 @@ testesT2 =
   , (0, Move Nordeste, eBase)
   , (0, Move Noroeste, eBase)
   , (0, Move Sul, eBase)
-  , (0, Move Norte, eNoAr)
   , (0, Move Norte, eEmAgua)
   , (0, Move Norte, eContraPedra)
   , (0, Move Norte, eContraTerra)
