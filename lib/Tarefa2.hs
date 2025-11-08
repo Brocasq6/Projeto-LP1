@@ -240,7 +240,7 @@ jogaJetpack i dir e@(Estado m objs mins)
   | Nothing <- posicaoMinhoca w      = e
   | not (temMunicao Jetpack w)       = e
   | Just p <- posicaoMinhoca w
-  , terrenoBloqueado p m             = e        -- 👈 bloqueia se dentro de Terra/Pedra
+  , terrenoBloqueado p m             = e        
   | not (dentroMapa p' m)            = e
   | not (posicaoLivre p' e)          = e
   | otherwise =
