@@ -87,8 +87,8 @@ dentroMapa (l,c) m =
   && c < length (head m)
 
 -- | Devolve o terreno numa dada posição do mapa.
-terrenoNaPosicao' :: Posicao -> Mapa -> Maybe Terreno
-terrenoNaPosicao' p m = terrenoNaPosicao m p
+terrenoNaPosicao :: Posicao -> Mapa -> Maybe Terreno
+terrenoNaPosicao p m = terrenoNaPosicao m p
 
 -- | Aplica o efeito do terreno na minhoca.
 aplicaEfeitoTerreno :: Minhoca -> Posicao -> Terreno -> Minhoca
