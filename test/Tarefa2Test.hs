@@ -2,7 +2,7 @@ module Main where
 
 import Labs2025
 import Tarefa2
-import Magic ()  -- se não tiveres Magic, remove esta linha
+import Magic 
 
 -- ─────────────────────────────
 -- Mapas simples de apoio
