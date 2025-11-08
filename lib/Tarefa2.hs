@@ -232,6 +232,8 @@ jogaJetpack i dir e@(Estado m objs mins)
   | i < 0 || i >= length mins        = e
   | Nothing <- posicaoMinhoca w      = e
   | not (temMunicao Jetpack w)       = e
+  | Just p <- posicaoMinhoca w
+  , terrenoBloqueado p m             = e        -- 👈 bloqueia se dentro de Terra/Pedra
   | not (dentroMapa p' m)            = e
   | not (posicaoLivre p' e)          = e
   | otherwise =
@@ -247,20 +249,22 @@ jogaEscavadora i dir e@(Estado m objs mins)
   | i < 0 || i >= length mins        = e
   | Nothing <- posicaoMinhoca w      = e
   | not (temMunicao Escavadora w)    = e
+  | Just p <- posicaoMinhoca w
+  , terrenoBloqueado p m             = e        
   | not (dentroMapa p' m)            = e
   | ocupadoPorAlgo                   = e
   | otherwise =
       case terrenoNaPosicao m p' of
-        Just Pedra -> e                        -- não fura pedra
-        Just Agua  -> e                        -- não entra em água
-        Just Terra ->                          -- escava e entra
+        Just Pedra -> e
+        Just Agua  -> e
+        Just Terra ->
           let m'  = setTerreno p' Ar m
               w'  = (consomeMunicao Escavadora w) { posicaoMinhoca = Just p' }
           in  Estado m' objs (atualizaMinhocaIdx i w' mins)
-        Just Ar    ->                          -- já é livre, apenas move
+        Just Ar ->
           let w' = (consomeMunicao Escavadora w) { posicaoMinhoca = Just p' }
           in  e { minhocasEstado = atualizaMinhocaIdx i w' mins }
-        _          -> e
+        _ -> e
   where
     w  = mins !! i
     Just p = posicaoMinhoca w
