@@ -195,7 +195,8 @@ posInicialDisparo est dir m =
       let mapa = mapaEstado est
           pF   = proximaPosicao dir p
           ok q = dentroMapa q mapa
-             && case terrenoNaPosicao mapa q of { Pedra -> False; _ -> True }
+              && maybe True (/= Pedra) (terrenoNaPosicao mapa q)
+      in if ok pF then pF else p
       in if ok pF then pF else p
 
 -- | Cria um objeto disparo a partir do estado, tipo de arma, direção, número da minhoca e a própria minhoca.
