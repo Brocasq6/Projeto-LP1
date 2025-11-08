@@ -108,6 +108,7 @@ efetuaJogadaMove n dir est =
   in est { minhocasEstado = atualizaLista n m' (minhocasEstado est) }
 
 -- A posição está livre para pisar? (Ar e sem objetos/minhocas)
+posicaoLivre :: Posicao -> Estado -> Bool
 posicaoLivre p (Estado m objs mins) =
   case terrenoNaPosicao m p of
     Just Ar ->
@@ -213,9 +214,60 @@ criaDisparo est arma dir dono m =
   let p0 = posInicialDisparo est dir m
   in Disparo p0 dir arma (tempoDisparoDefault arma) dono
 
+setTerreno :: Posicao -> Terreno -> Mapa -> Mapa
+setTerreno (l,c) t m =
+  let linha = m !! l
+      linha' = take c linha ++ [t] ++ drop (c+1) linha
+  in  take l m ++ [linha'] ++ drop (l+1) m
+
+atualizaMinhocaIdx :: Int -> Minhoca -> [Minhoca] -> [Minhoca]
+atualizaMinhocaIdx i w ws = take i ws ++ [w] ++ drop (i+1) ws
+
 -- | Atualiza um elemento numa lista no índice dado.
 atualizaLista :: Int -> a -> [a] -> [a]
 atualizaLista i novo l = take i l ++ [novo] ++ drop (i + 1) l 
+
+jogaJetpack :: NumMinhoca -> Direcao -> Estado -> Estado
+jogaJetpack i dir e@(Estado m objs mins)
+  | i < 0 || i >= length mins        = e
+  | Nothing <- posicaoMinhoca w      = e
+  | not (temMunicao Jetpack w)       = e
+  | not (dentroMapa p' m)            = e
+  | not (posicaoLivre p' e)          = e
+  | otherwise =
+      let w' = (consomeMunicao Jetpack w) { posicaoMinhoca = Just p' }
+      in  e { minhocasEstado = atualizaMinhocaIdx i w' mins }
+  where
+    w  = mins !! i
+    Just p = posicaoMinhoca w
+    p' = proximaPosicao dir p
+
+jogaEscavadora :: NumMinhoca -> Direcao -> Estado -> Estado
+jogaEscavadora i dir e@(Estado m objs mins)
+  | i < 0 || i >= length mins        = e
+  | Nothing <- posicaoMinhoca w      = e
+  | not (temMunicao Escavadora w)    = e
+  | not (dentroMapa p' m)            = e
+  | ocupadoPorAlgo                   = e
+  | otherwise =
+      case terrenoNaPosicao m p' of
+        Just Pedra -> e                        -- não fura pedra
+        Just Agua  -> e                        -- não entra em água
+        Just Terra ->                          -- escava e entra
+          let m'  = setTerreno p' Ar m
+              w'  = (consomeMunicao Escavadora w) { posicaoMinhoca = Just p' }
+          in  Estado m' objs (atualizaMinhocaIdx i w' mins)
+        Just Ar    ->                          -- já é livre, apenas move
+          let w' = (consomeMunicao Escavadora w) { posicaoMinhoca = Just p' }
+          in  e { minhocasEstado = atualizaMinhocaIdx i w' mins }
+        _          -> e
+  where
+    w  = mins !! i
+    Just p = posicaoMinhoca w
+    p' = proximaPosicao dir p
+    ocupadoPorAlgo =
+      any ((== p') . posObjeto) objs ||
+      any (== Just p') (map posicaoMinhoca mins)
 
 -- | Efetua uma jogada de disparo por parte de uma minhoca, atualizando o estado.
 efetuaJogadaDisparo :: NumMinhoca -> TipoArma -> Direcao -> Estado -> Estado
@@ -241,22 +293,10 @@ efetuaJogadaDisparo n arma dir est =
 
 -- | Função principal da Tarefa 2. Recebe o índice de uma minhoca na lista de minhocas, uma jogada, um estado e retorna um novo estado em que essa minhoca efetuou essa jogada.
 efetuaJogada :: NumMinhoca -> Jogada -> Estado -> Estado
-efetuaJogada i jog e =
-  case jog of
-    -- MOVIMENTO
-    Move dir ->
-      let Estado mapa _ mins = e
-      in if i < 0 || i >= length mins
-           then e
-           else case posicaoMinhoca (mins !! i) of
-                  Nothing -> e
-                  Just p
-                    | not (dentroMapa p mapa) -> e
-                    | otherwise               -> moveSeDer i dir e
-
-    -- DISPARO
-    Dispara arma dir ->
-      if i < 0 || i >= length (minhocasEstado e)
-        then e
-        else efetuaJogadaDisparo i arma dir e
+efetuaJogada i (Move dir) e = moveSeDer i dir e
+efetuaJogada i (Dispara arma dir) e =
+  case arma of
+    Jetpack    -> jogaJetpack i dir e
+    Escavadora -> jogaEscavadora i dir e
+    _          -> efetuaJogadaDisparo i arma dir e  -- bazuca/mina/dinamite
 
