@@ -227,6 +227,13 @@ atualizaMinhocaIdx i w ws = take i ws ++ [w] ++ drop (i+1) ws
 atualizaLista :: Int -> a -> [a] -> [a]
 atualizaLista i novo l = take i l ++ [novo] ++ drop (i + 1) l 
 
+terrenoBloqueado :: Posicao -> Mapa -> Bool
+terrenoBloqueado p mapa =
+  case terrenoNaPosicao p mapa of
+    Just Terra -> True
+    Just Pedra -> True
+    _          -> False
+    
 jogaJetpack :: NumMinhoca -> Direcao -> Estado -> Estado
 jogaJetpack i dir e@(Estado m objs mins)
   | i < 0 || i >= length mins        = e
@@ -250,7 +257,7 @@ jogaEscavadora i dir e@(Estado m objs mins)
   | Nothing <- posicaoMinhoca w      = e
   | not (temMunicao Escavadora w)    = e
   | Just p <- posicaoMinhoca w
-  |  terrenoBloqueado p m             = e        
+  ,  terrenoBloqueado p m             = e        
   | not (dentroMapa p' m)            = e
   | ocupadoPorAlgo                   = e
   | otherwise =
