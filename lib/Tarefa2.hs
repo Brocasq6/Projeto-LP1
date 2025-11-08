@@ -197,7 +197,6 @@ posInicialDisparo est dir m =
           ok q = dentroMapa q mapa
               && maybe True (/= Pedra) (terrenoNaPosicao mapa q)
       in if ok pF then pF else p
-      in if ok pF then pF else p
 
 -- | Cria um objeto disparo a partir do estado, tipo de arma, direção, número da minhoca e a própria minhoca.
 criaDisparo :: Estado -> TipoArma -> Direcao -> NumMinhoca -> Minhoca -> Objeto
