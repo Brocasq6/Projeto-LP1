@@ -166,7 +166,7 @@ aplicaGravidade (linha, coluna) mapa
 avancaObjeto :: Estado -> NumObjeto -> Objeto -> (Objeto, Danos)
 avancaObjeto estado _ objeto =
   case tipoObjeto objeto of
-    OBarril  -> avancaBarril  estado objeto
+    OBarril -> avancaBarril  estado objeto
     ODisparo -> avancaDisparo estado objeto
 
 -- | move APENAS a minhoca idx segundo as regras dos testes
@@ -181,17 +181,17 @@ avancaBarril _ objeto = (objeto, [])
 avancaDisparo :: Estado -> Objeto -> (Objeto, Danos)
 avancaDisparo estado objeto =
   case tipoDisparo objeto of
-    Bazuca   -> avancaBazuca   estado objeto
-    Mina     -> avancaMina     estado objeto
+    Bazuca -> avancaBazuca   estado objeto
+    Mina -> avancaMina     estado objeto
     Dinamite -> avancaDinamite estado objeto
-    Jetpack  -> (objeto, [])
+    Jetpack -> (objeto, [])
     Escavadora -> (objeto, [])
 
 -- | move APENAS a minhoca idx segundo as regras dos testes
 avancaBazuca :: Estado -> Objeto -> (Objeto, Danos)
 avancaBazuca estado objeto =
-  let mapa    = mapaEstado estado
-      pos0    = posicaoDisparo objeto
+  let mapa = mapaEstado estado
+      pos0 = posicaoDisparo objeto
       novaPos = moveDisparo (direcaoDisparo objeto) pos0
   in if verificaColisao novaPos mapa
         then (objeto { posicaoDisparo = (-1,-1) }, geraExplosao novaPos 5)
@@ -327,10 +327,10 @@ calculaDanoMinhocas danos = map aplica
     aplica :: Minhoca -> Minhoca
     aplica m =
       case posicaoMinhoca m of
-        Nothing   -> m
-        Just pos  ->
+        Nothing -> m
+        Just pos ->
           case verificaPosicaoAfetada pos danos of
-            Nothing   -> m
+            Nothing -> m
             Just dano -> reduzVidaOuMata m dano
 
 -- | devolve o total de dano naquela posição, se existir
@@ -343,10 +343,10 @@ verificaPosicaoAfetada pos ds =
 reduzVidaOuMata :: Minhoca -> Dano -> Minhoca
 reduzVidaOuMata m d =
   case vidaMinhoca m of
-    Morta     -> m
-    Viva hp   -> if d >= hp
-                   then m { vidaMinhoca = Morta }
-                   else m { vidaMinhoca = Viva (hp - d) }
+    Morta -> m
+    Viva hp -> if d >= hp
+               then m { vidaMinhoca = Morta }
+               else m { vidaMinhoca = Viva (hp - d) }
 
 -- | remove/transforma terreno nas posições atingidas (simples: remove)
 atualizaMapa :: Danos -> Mapa -> Mapa
