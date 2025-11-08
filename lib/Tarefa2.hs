@@ -60,10 +60,11 @@ moveMinhoca dir est idx =
        Just p  ->
          -- Se a célula atual for Ar/Terra/Pedra/Água, não sai do sítio (apenas "vira")
          case terrenoNaPosicao mapa p of
-           Ar    -> m   
-           Terra -> m
-           Pedra -> m
-           Agua  -> m
+           Just Ar    -> m   
+           Just Terra -> m
+           Just Pedra -> m
+           Just Agua  -> m
+           Nothing    -> m 
            _     ->
              -- (este ramo só ocorreria para outros terrenos; mantemos por segurança)
              let p'       = proximaPosicao dir p
@@ -81,14 +82,14 @@ moveMinhoca dir est idx =
 -- | Verifica se uma posição está dentro do mapa.
 dentroMapa :: Posicao -> Mapa -> Bool
 dentroMapa (l,c) m =
-  l >= 0 && c >= 0
-  && l < length m
-  && not (null m)
-  && c < length (head m)
+  l >= 0 && c >= 0 && not (null m) &&
+  l < length m && c < length (head m)
 
 -- | Devolve o terreno numa dada posição do mapa.
-terrenoNaPosicao :: Posicao -> Mapa -> Maybe Terreno
-terrenoNaPosicao p m = terrenoNaPosicao m p
+terrenoNaPosicao :: Mapa -> Posicao -> Maybe Terreno
+terrenoNaPosicao m p@(l,c)
+  | dentroMapa p m = Just ((m !! l) !! c)
+  | otherwise      = Nothing
 
 -- | Aplica o efeito do terreno na minhoca.
 aplicaEfeitoTerreno :: Minhoca -> Posicao -> Terreno -> Minhoca
@@ -110,7 +111,7 @@ posicaoLivre :: Posicao -> Estado -> Bool
 posicaoLivre p (Estado m objs mins) =
   case terrenoNaPosicao m p of
     Just Ar ->
-      not (any ((== p) . posicaoObjeto) objs) &&
+      not (any ((== p) . posObjeto) objs) &&
       not (any (== Just p) (map posicaoMinhoca mins))
     _ -> False
 
