@@ -229,11 +229,11 @@ atualizaLista i novo l = take i l ++ [novo] ++ drop (i + 1) l
 
 terrenoBloqueado :: Posicao -> Mapa -> Bool
 terrenoBloqueado p mapa =
-  case terrenoNaPosicao p mapa of
+  case terrenoNaPosicao mapa p of  -- <- troca a ordem aqui
     Just Terra -> True
     Just Pedra -> True
     _          -> False
-    
+
 jogaJetpack :: NumMinhoca -> Direcao -> Estado -> Estado
 jogaJetpack i dir e@(Estado m objs mins)
   | i < 0 || i >= length mins        = e
