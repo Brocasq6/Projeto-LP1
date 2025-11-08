@@ -88,8 +88,9 @@ dentroMapa (l,c) m =
 -- | Devolve o terreno numa dada posição do mapa.
 terrenoNaPosicao :: Mapa -> Posicao -> Maybe Terreno
 terrenoNaPosicao m (l,c)
-  | dentroMapa (l,c) m = Just ((m !! l) !! c)
-  | otherwise          = Nothing
+  | l >= 0 && c >= 0 && l < length m && not (null m) && c < length (head m)
+  = Just ((m !! l) !! c)
+  | otherwise = Nothing
 
 -- | Aplica o efeito do terreno na minhoca.
 aplicaEfeitoTerreno :: Minhoca -> Posicao -> Terreno -> Minhoca
@@ -108,19 +109,26 @@ efetuaJogadaMove n dir est =
 
 -- A posição está livre para pisar? (Ar e sem objetos/minhocas)
 posicaoLivre :: Posicao -> Estado -> Bool
-posicaoLivre p (Estado m objs mins) =
-  case terrenoNaPosicao m p of
-    Just Ar ->
-      not (any ((== p) . posObjeto) objs) &&
-      not (any (== Just p) (map posicaoMinhoca mins))
-    _ -> False
+ posicaoLivre p (Estado m objs mins) =
+   case terrenoNaPosicao m p of
+     Just Ar ->
+       not (any ((== p) . posObjeto) objs) &&
+       not (any (== Just p) (map posicaoMinhoca mins)) 
+     _ -> False
 
-estaNoArOuAgua :: Posicao -> Mapa -> Bool
-estaNoArOuAgua p m =
-  case terrenoNaPosicao m p of
-    Just Ar   -> True
-    Just Agua -> True
-    _         -> False
+
+estaNoAr :: Posicao -> Mapa -> Bool
+estaNoAr p m = terrenoNaPosicao m p == Just Ar
+
+estaNaAgua :: Posicao -> Mapa -> Bool
+estaNaAgua p m = terrenoNaPosicao m p == Just Agua
+
+temSoloAbaixo :: Posicao -> Mapa -> Bool
+temSoloAbaixo (l,c) m =
+  case terrenoNaPosicao m (l+1,c) of
+    Just Terra -> True
+    Just Pedra -> True
+    _          -> False
 
 substitui :: Int -> a -> [a] -> [a]
 substitui idx novo xs =
@@ -130,22 +138,18 @@ substitui idx novo xs =
 moveSeDer :: NumMinhoca -> Direcao -> Estado -> Estado
 moveSeDer i dir e@(Estado mapa objs mins)
   | i < 0 || i >= length mins = e
-  | Nothing <- posicaoMinhoca w           = e
+  | Nothing <- posicaoMinhoca w                       = e
   | Just p <- posicaoMinhoca w
-  , not (dentroMapa p mapa)               = e
+  , not (dentroMapa p mapa)                           = e
   | Just p <- posicaoMinhoca w
-  , estaNoArOuAgua p mapa                 = e
-  | Nothing <- dest                       = e
-  | Just p <- dest
-  , not (dentroMapa p mapa)               = e
-  | Just p <- dest
-  , not (posicaoLivre p e)                = e
-  | Just p <- dest                        = e { minhocasEstado = substitui i (w { posicaoMinhoca = Just p }) mins }
+  , not (estaNoAr p mapa && temSoloAbaixo p mapa)     = e   
+  | Nothing <- dest                                   = e
+  | Just q <- dest, not (dentroMapa q mapa)           = e
+  | Just q <- dest, not (posicaoLivre q e)            = e
+  | Just q <- dest                                    = e { minhocasEstado = substitui i (w { posicaoMinhoca = Just q }) mins }
   where
     w    = mins !! i
-    dest = case posicaoMinhoca w of
-             Just p  -> Just (proximaPosicao dir p)
-             Nothing -> Nothing
+    dest = (\p -> Just (proximaPosicao dir p)) =<< posicaoMinhoca w
 --------------------------------------- funcoes relacionadas com a funcao efetuaJogadaDisparo -------------------------------------------------
 -- | só estas armas geram objeto
 armaDisparavel :: TipoArma -> Bool
