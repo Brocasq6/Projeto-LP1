@@ -188,8 +188,12 @@ efetuaJogadaDisparo n arma dir est =
 
 -- | Função principal da Tarefa 2. Recebe o índice de uma minhoca na lista de minhocas, uma jogada, um estado e retorna um novo estado em que essa minhoca efetuou essa jogada.
 efetuaJogada :: NumMinhoca -> Jogada -> Estado -> Estado
-efetuaJogada n jogada estado =
-  case jogada of
-    Move dir -> efetuaJogadaMove n dir estado
-    Dispara arma dir -> efetuaJogadaDisparo n arma dir estado
+efetuaJogada i (Move dir) e@(Estado mapa objs mins)
+  | i < 0 || i >= length mins = e
+  | otherwise =
+      case posicaoMinhoca (mins !! i) of
+        Nothing  -> e
+        Just p
+          | not (dentroMapa p mapa) -> e     -- <- ESSA LINHA EVITA O CRASH DO TESTE
+          | otherwise               -> moveSeDer i dir e
 
