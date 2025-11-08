@@ -87,8 +87,8 @@ dentroMapa (l,c) m =
   && c < length (head m)
 
 -- | Devolve o terreno numa dada posição do mapa.
-terrenoNaPosicao :: Mapa -> Posicao -> Terreno
-terrenoNaPosicao m (l,c) = (m !! l) !! c
+terrenoNaPosicao' :: Posicao -> Mapa -> Maybe Terreno
+terrenoNaPosicao' p m = terrenoNaPosicao m p
 
 -- | Aplica o efeito do terreno na minhoca.
 aplicaEfeitoTerreno :: Minhoca -> Posicao -> Terreno -> Minhoca
@@ -108,14 +108,18 @@ efetuaJogadaMove n dir est =
 -- A posição está livre para pisar? (Ar e sem objetos/minhocas)
 posicaoLivre :: Posicao -> Estado -> Bool
 posicaoLivre p (Estado m objs mins) =
-  case terrenoNaPosicao p m of
+  case terrenoNaPosicao m p of
     Just Ar ->
-      not (any ((== p) . posObjeto) objs) &&
+      not (any ((== p) . posicaoObjeto) objs) &&
       not (any (== Just p) (map posicaoMinhoca mins))
-    _       -> False
+    _ -> False
 
 estaNoArOuAgua :: Posicao -> Mapa -> Bool
-estaNoArOuAgua p m = maybe False (\t -> t == Ar || t == Agua) (terrenoNaPosicao p m)
+estaNoArOuAgua p m =
+  case terrenoNaPosicao m p of
+    Just Ar   -> True
+    Just Agua -> True
+    _         -> False
 
 substitui :: Int -> a -> [a] -> [a]
 substitui idx novo xs =
