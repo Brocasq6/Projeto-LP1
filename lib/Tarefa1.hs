@@ -88,35 +88,32 @@ verificaBarris (barril:barris) estado
 validaMinhoca :: Minhoca -> Estado -> Bool
 validaMinhoca minhoca estado =
   case posicaoMinhoca minhoca of
-    Nothing     -> vidaMorta minhoca
-    Just posicao ->
-         dentroMapa posicao (mapaEstado estado)
-      && livreDeBarris posicao estado
-      && not (maybe False eTerrenoOpaco (terrenoNaPosicao posicao (mapaEstado estado)))
-      && livreDeMinhocas posicao (estado { minhocasEstado = filter (/= minhoca) (minhocasEstado estado) })
-      && vidaValida minhoca
-      && municoesValidas minhoca
-      && case terrenoNaPosicao posicao (mapaEstado estado) of
-           Just Agua -> vidaMorta minhoca
-           _         -> True
+    Nothing -> vidaMorta minhoca
+    Just posicao -> dentroMapa posicao (mapaEstado estado)
+                    && livreDeBarris posicao estado
+                    && not (maybe False eTerrenoOpaco (terrenoNaPosicao posicao (mapaEstado estado)))
+                    && livreDeMinhocas posicao (estado { minhocasEstado = filter (/= minhoca) (minhocasEstado estado) })
+                    && vidaValida minhoca
+                    && municoesValidas minhoca
+                    && case terrenoNaPosicao posicao (mapaEstado estado) of
+                        Just Agua -> vidaMorta minhoca
+                        _         -> True
 
 
 -- | valida Objeto
 validaObjeto :: Objeto -> Estado -> Bool
 validaObjeto objeto estado =
   case objeto of
-    Barril posicao _ ->
-         dentroMapa posicao (mapaEstado estado)
-      && not (maybe False eTerrenoOpaco (terrenoNaPosicao posicao (mapaEstado estado)))
-      && livreDeMinhocas posicao estado
-      && livreDeBarris posicao (estado { objetosEstado = filter (/= objeto) (objetosEstado estado) })
+    Barril posicao _ -> dentroMapa posicao (mapaEstado estado)
+                        && not (maybe False eTerrenoOpaco (terrenoNaPosicao posicao (mapaEstado estado)))
+                        && livreDeMinhocas posicao estado
+                        && livreDeBarris posicao (estado { objetosEstado = filter (/= objeto) (objetosEstado estado) })
 
-    Disparo posicao _ arma tempo dono ->
-         dentroMapa posicao (mapaEstado estado)
-      && not (maybe False eTerrenoOpaco (terrenoNaPosicao posicao (mapaEstado estado)))
-      && livreDeMinhocas posicao estado
-      && livreDeBarris posicao estado
-      && tipoDisparoValido arma tempo dono (estado { objetosEstado = filter (/= objeto) (objetosEstado estado) })
+    Disparo posicao _ arma tempo dono -> dentroMapa posicao (mapaEstado estado)
+                                         && not (maybe False eTerrenoOpaco (terrenoNaPosicao posicao (mapaEstado estado)))
+                                         && livreDeMinhocas posicao estado
+                                         && livreDeBarris posicao estado
+                                         && tipoDisparoValido arma tempo dono (estado { objetosEstado = filter (/= objeto) (objetosEstado estado) })
 
     _ -> True -- casos que nao sejam nem barril nem disparo
 
@@ -138,20 +135,20 @@ tipoDisparoValido arma tempo dono estado =
   && dono < length (minhocasEstado estado)
   && not (minhocaTemDisparo arma dono (objetosEstado estado))
   && case arma of
-       Jetpack    -> False
+       Jetpack -> False
        Escavadora -> False
-       Bazuca     -> tempo == Nothing
-       Mina       -> tempo == Nothing || tempo == Just 2
-       Dinamite   -> tempo == Just 3
+       Bazuca -> tempo == Nothing
+       Mina -> tempo == Nothing || tempo == Just 2
+       Dinamite -> tempo == Just 3
 
 -- | Verifica se o estado é válido
 validaEstado :: Estado -> Bool
 validaEstado estado =
     validaMapa (mapaEstado estado)
- && verificaMinhocas (minhocasEstado estado) estado
- && verificaBarris [b | b@Barril{} <- objetosEstado estado] estado
- && all (`validaObjeto` estado) (objetosEstado estado)
- && all (`validaMinhoca` estado) (minhocasEstado estado)
+    && verificaMinhocas (minhocasEstado estado) estado
+    && verificaBarris [b | b@Barril{} <- objetosEstado estado] estado
+    && all (`validaObjeto` estado) (objetosEstado estado)
+    && all (`validaMinhoca` estado) (minhocasEstado estado)
 
 ----------------------------------------------
 
@@ -245,7 +242,7 @@ dentroMapa (l, c) mapa =
 terrenoNaPosicao :: Posicao -> Mapa -> Maybe Terreno
 terrenoNaPosicao (l,c) m
   | dentroMapa (l,c) m = Just ((m !! l) !! c)
-  | otherwise          = Nothing
+  | otherwise = Nothing
 
 -- | Determina se o terreno é opaco (não atravessável) 
 eTerrenoOpaco :: Terreno -> Bool --(retirada do ficheiro: Tarefa0_2025.hs)
