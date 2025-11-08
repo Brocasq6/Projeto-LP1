@@ -105,6 +105,44 @@ efetuaJogadaMove n dir est =
   let m' = moveMinhoca dir est n
   in est { minhocasEstado = atualizaLista n m' (minhocasEstado est) }
 
+-- A posição está livre para pisar? (Ar e sem objetos/minhocas)
+posicaoLivre :: Posicao -> Estado -> Bool
+posicaoLivre p (Estado m objs mins) =
+  case terrenoNaPosicao p m of
+    Just Ar ->
+      not (any ((== p) . posicaoObjeto) objs) &&
+      not (any (== Just p) (map posicaoMinhoca mins))
+    _       -> False
+
+estaNoArOuAgua :: Posicao -> Mapa -> Bool
+estaNoArOuAgua p m = maybe False (\t -> t == Ar || t == Agua) (terrenoNaPosicao p m)
+
+substitui :: Int -> a -> [a] -> [a]
+substitui idx novo xs =
+  take idx xs ++ [novo] ++ drop (idx + 1) xs
+  
+-- Move a minhoca i na direção dada, se as regras permitirem.
+moveSeDer :: NumMinhoca -> Direcao -> Estado -> Estado
+moveSeDer i dir e@(Estado mapa objs mins)
+  -- índice inválido
+  | i < 0 || i >= length mins = e
+  -- minhoca sem posição
+  | Nothing <- posicaoMinhoca w           = e
+  -- fora do mapa → não mexe
+  | Just p <- posicaoMinhoca w
+  , not (dentroMapa p mapa)               = e
+  -- minhoca no ar/água → não pode movimentar
+  | Just p <- posicaoMinhoca w
+  , estaNoArOuAgua p mapa                 = e
+  -- destino fora do mapa → não mexe
+  | not (dentroMapa dest mapa)            = e
+  -- destino não é livre (terra/pedra/água/ocupado) → não mexe
+  | not (posicaoLivre dest e)             = e
+  -- pode mover
+  | otherwise                             = e { minhocasEstado = substitui i (w { posicaoMinhoca = Just dest }) mins }
+  where
+    w    = mins !! i
+    dest = proximaPosicao dir =<< posicaoMinhoca w
 --------------------------------------- funcoes relacionadas com a funcao efetuaJogadaDisparo -------------------------------------------------
 -- | só estas armas geram objeto
 armaDisparavel :: TipoArma -> Bool
