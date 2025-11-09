@@ -329,7 +329,7 @@ geraExplosao (cx, cy) d =
       | k <- [1 .. kMaxDiag]
       , let v = (d - 3 * k) * 10
       , v > 0
-      ]
+      ] 
 
 
 -- | cria uma lista de danos para uma dada posicao e dano
