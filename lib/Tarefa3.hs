@@ -8,7 +8,7 @@ Módulo para a realização da Tarefa 3 de LI1\/LP1 em 2025\/26.
 module Tarefa3 where 
 import Labs2025
 import Tarefa1 hiding (terrenoNaPosicao) 
-import Data.Either
+import Data.Either (partitionEithers)
 
 -- | Tipo de dado para representar danos em posições.
 type Dano = Int
@@ -111,17 +111,20 @@ aplicaGravidade (linha, coluna) mapa
 
 -- | Para um dado estado, dado o índice de um objeto na lista de objetos e o estado desse objeto, retorna o novo estado do objeto no próximo tick ou, caso o objeto expluda, uma lista de posições afetadas com o dano associado.
 avancaObjeto :: Estado -> NumObjeto -> Objeto -> Either Objeto Danos
-avancaObjeto estado _ objeto =
-  case tipoObjeto objeto of
-    OBarril  -> avancaBarril  estado objeto
-    ODisparo -> avancaDisparo estado objeto
+avancaObjeto estado _ obj =
+  case tipoDisparo obj of
+    Bazuca     -> avancaBazuca   estado obj
+    Mina       -> avancaMina     estado obj
+    Dinamite   -> avancaDinamite estado obj
+    Jetpack    -> Left obj
+    Escavadora -> Left obj
 
 -- | move APENAS a minhoca idx segundo as regras dos testes
 avancaBarril :: Estado -> Objeto -> Either Objeto Danos
-avancaBarril estado (Barril pos explodir)
-  | explodir                                   = Right (geraExplosao pos 5)
-  | estaNoArOuAgua pos (mapaEstado estado)     = Left  (Barril pos True)
-  | otherwise                                  = Left  (Barril pos explodir)
+avancaBarril est (Barril p True)  = Right (geraExplosao p 5)
+avancaBarril est (Barril p flag)
+  | estaNoArOuAgua p (mapaEstado est) = Left (Barril p True)
+  | otherwise                         = Left (Barril p flag)
 avancaBarril _ o = Left o
 
 -- | move APENAS a minhoca idx segundo as regras dos testes
@@ -129,7 +132,22 @@ avancaDisparo :: Estado -> Objeto -> Either Objeto Danos
 avancaDisparo estado obj =
   case tipoDisparo obj of
     Bazuca    -> avancaBazuca   estado obj
-    Mina      -> avancaMina     estado obj
+    Mina      -> avancaMavancaMina :: Estado -> Objeto -> (Objeto, Danos)
+avancaMina est o0 =
+  case tempoDisparo o0 of
+    Just 0 ->
+      (o0 { posicaoDisparo = (-1,-1) }, geraExplosao (posicaoObjeto o0) 5)
+
+    Just t ->
+      let o1 = quedaMina est o0
+      in (o1 { tempoDisparo = Just (t-1) }, [])
+
+    Nothing ->
+      let o1 = quedaMina est o0
+          o2 = if deveAtivarMina est o1
+                 then o1 { tempoDisparo = Just 2 }   -- ativa agora, sem decramentar
+                 else o1
+      in (o2, [])ina     estado obj
     Dinamite  -> avancaDinamite estado obj
     Jetpack   -> Left obj
     Escavadora-> Left obj
@@ -155,43 +173,42 @@ colisaoBazuca p mapa objs
 avancaBazuca :: Estado -> Objeto -> Either Objeto Danos
 avancaBazuca estado obj =
   let mapa    = mapaEstado estado
-      objs    = objetosEstado estado
       pos0    = posicaoDisparo obj
       novaPos = moveDisparo (direcaoDisparo obj) pos0
-  in if verificaColisao novaPos mapa objs
+  in if verificaColisao novaPos mapa
         then Right (geraExplosao novaPos 5)
         else Left  (obj { posicaoDisparo = novaPos })
 
 -- | Avança o estado de uma Mina.
-avancaMina :: Estado -> Objeto -> (Objeto, Danos)
+avancaMina :: Estado -> Objeto -> Either Objeto Danos
 avancaMina est o0 =
   case tempoDisparo o0 of
     Just 0 ->
-      (o0 { posicaoDisparo = (-1,-1) }, geraExplosao (posicaoObjeto o0) 5)
+      Right (geraExplosao (posicaoObjeto o0) 5)
 
     Just t ->
       let o1 = quedaMina est o0
-      in (o1 { tempoDisparo = Just (t-1) }, [])
+      in Left (o1 { tempoDisparo = Just (t-1) })
 
     Nothing ->
       let o1 = quedaMina est o0
           o2 = if deveAtivarMina est o1
-                 then o1 { tempoDisparo = Just 2 }   -- ativa agora, sem decramentar
+                 then o1 { tempoDisparo = Just 2 }  -- ativa (sem decrementar agora)
                  else o1
-      in (o2, [])
+      in Left o2
 
 -- | move APENAS a minhoca idx segundo as regras dos testes
 avancaDinamite :: Estado -> Objeto -> Either Objeto Danos
-avancaDinamite estado obj =
+avancaDinamite est obj =
   case tempoDisparo obj of
     Just 0 -> Right (geraExplosao (posicaoObjeto obj) 7)
-    _ ->
-      let novaPos   = aplicaGravidade (posicaoObjeto obj) (mapaEstado estado)
-          novoTempo = contaTempo obj
-      in case novoTempo of
-           Just 0 -> Right (geraExplosao novaPos 7)
-           _      -> Left  (obj { posicaoDisparo = novaPos
-                                , tempoDisparo  = novoTempo })
+    Just t ->
+      let nova = aplicaGravidade (posicaoObjeto obj) (mapaEstado est)
+      in Left (obj { posicaoDisparo = nova, tempoDisparo = Just (t-1) })
+    Nothing ->
+      -- se dinâmite “armada” sem tempo, mantém/ajusta (se não usas este caso, podes deixar como Left obj)
+      let nova = aplicaGravidade (posicaoObjeto obj) (mapaEstado est)
+      in Left (obj { posicaoDisparo = nova })
 
 -- | move APENAS a minhoca idx segundo as regras dos testes
 moveDisparo :: Direcao -> Posicao -> Posicao
@@ -254,6 +271,7 @@ deveAtivarMina est mina =
         i /= donoDisparo mina &&
         maybe False (\p -> estaNaAreaExplosao p (posicaoObjeto mina) 5) (posicaoMinhoca m)
       ) (zip [0..] (minhocasEstado est))
+
 
 -- | verifica se uma posicao esta na area de explosao
 estaNaAreaExplosao :: Posicao -> Posicao -> Int -> Bool
