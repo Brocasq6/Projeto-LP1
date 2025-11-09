@@ -10,48 +10,6 @@ import Labs2025
 import Tarefa1 hiding (terrenoNaPosicao) 
  
 
-
-{-
-
-avancaEstado
- |
- |── avancaMinhoca
- |     |── posicaoMinhoca
- |     |── terrenoNaPosicao
- |     |── estaNoArOuAgua
- |     |── posicaoValida
- |     └── aplicaGravidade
- |
- |── avancaObjeto
- |     |── tipoObjeto
- |     |     |── Barril
- |     |     |    |── verificaExplosao
- |     |     |    |── estaNoArOuAgua
- |     |     |
- |     |     |── Disparo
- |     |           |── moveDisparo
- |     |           |── verificaColisao
- |     |           |── contaTempo
- |     |           |── ativaMina
- |     |           └── geraExplosao
- |     |
- |     └── criaListaDanos
- |
- └── aplicaDanos
-       |── calculaDanoMinhocas
-       |     |── verificaPosicaoAfetada
-       |     └── reduzVidaOuMata
-       |
-       |── atualizaMapa
-       |     |── removeTerrenoAtingido
-       |
-       └── atualizaObjetos
-             |── removeExplodidos
-             |── propagaExplosao
-
--}
-
-
 -- | Tipo de dado para representar danos em posições.
 type Dano = Int
 -- | Tipo de dado para representar uma lista de danos em várias posições.
@@ -59,23 +17,12 @@ type Danos = [(Posicao,Dano)]
 
 -- | Função principal da Tarefa 3. Avanço o estado do jogo um tick.
 avancaEstado :: Estado -> Estado
-avancaEstado e@(Estado _ objetos minhocas) =
-  let
-    -- 1) atualizar minhocas
-    minhocas' =
-      map (uncurry (avancaMinhoca e)) (zip [0..] minhocas)
+avancaEstado e@(Estado mapa objetos minhocas) = foldr aplicaDanos e' danoss
+    where
+    minhocas' = map (uncurry $ avancaMinhoca e) (zip [0..] minhocas)
+    (objetos',danoss) = partitionEithers $ map (uncurry $ avancaObjeto $ e { minhocasEstado = minhocas' }) (zip [0..] objetos)
+    e' = Estado mapa objetos' minhocas'
 
-    -- 2) avançar objetos com as novas minhocas já no estado
-    eComMinhocas = e { minhocasEstado = minhocas' }
-
-    (objetos', danosLists) =
-      unzip (map (uncurry (avancaObjeto eComMinhocas)) (zip [0..] objetos))
-
-    -- 3) aplicar todos os danos
-    danos = concat danosLists
-    eFinal = eComMinhocas {objetosEstado = objetos'}
-  in
-    aplicaDanos danos eFinal
 
 -- | Para um dado estado, dado o índice de uma minhoca na lista de minhocas e o estado dessa minhoca, retorna o novo estado da minhoca no próximo tick.
 avancaMinhoca :: Estado -> NumMinhoca -> Minhoca -> Minhoca
@@ -426,5 +373,6 @@ atualizaCel mapa (l, c) novoTerreno =
   take l mapa ++
   [take c (mapa !! l) ++ [novoTerreno] ++ drop (c + 1) (mapa !! l)] ++
   drop (l + 1) mapa
+
 
 
