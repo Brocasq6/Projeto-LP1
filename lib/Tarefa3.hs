@@ -188,13 +188,15 @@ avancaDisparo estado objeto =
     Escavadora -> (objeto, [])
 
 -- | move APENAS a minhoca idx segundo as regras dos testes
+avancaBazuca :: Estado -> Objeto -> (Objeto, Danos)
 avancaBazuca estado objeto =
   let mapa   = mapaEstado estado
+      objs   = objetosEstado estado
       pos0   = posicaoDisparo objeto
       nova   = moveDisparo (direcaoDisparo objeto) pos0
-  in if verificaColisao nova mapa
-       then (objeto { posicaoDisparo = (-1,-1) }, geraExplosao nova 5)
-       else (objeto { posicaoDisparo = nova      }, [])
+  in if verificaColisao nova mapa objs
+        then (objeto { posicaoDisparo = (-1,-1) }, geraExplosao nova 5)
+        else (objeto { posicaoDisparo = nova      }, [])
 
 -- | Avança o estado de uma Mina.
 avancaMina :: Estado -> Objeto -> (Objeto, Danos)
