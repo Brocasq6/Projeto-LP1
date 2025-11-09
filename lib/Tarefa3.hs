@@ -300,21 +300,32 @@ estaNaAreaExplosao (x1,y1) (x2,y2) diametro =
 
 -- | gera uma explsao numa posicao com um dado dano
 geraExplosao :: Posicao -> Dano -> Danos
-geraExplosao (cx, cy) diam =
-  concatMap (camada (cx,cy)) [0 .. raio]
+geraExplosao (cx, cy) d =
+    centro
+ <> ortogonais
+ <> diagonais
   where
-    raio = diam `div` 2
+    centro = [((cx, cy), d * 10)]
 
-    camada :: Posicao -> Int -> Danos
-    camada (x0,y0) dist
-      | dist == 0 = [((x0,y0), diam*10)]           -- centro (50 para d=5)
-      | otherwise =
-          [ ((x0+dx, y0+dy), (diam - dist)*10)
-          | dx <- [-dist .. dist]
-          , dy <- [-dist .. dist]
-          , abs dx == dist || abs dy == dist      -- **periferia** apenas
-          , (diam - dist) * 10 > 0
-          ]
+    -- quantos passos ainda geram dano positivo
+    kMaxOrt = (d - 1) `div` 2   -- porque (d - 2*k) > 0
+    kMaxDiag = (d - 1) `div` 3  -- porque (d - 3*k) > 0
+
+    ortogonais =
+      [ ((cx + k, cy), v) , ((cx - k, cy), v)
+      , ((cx, cy + k), v) , ((cx, cy - k), v)
+      | k <- [1..kMaxOrt]
+      , let v = (d - 2*k) * 10
+      , v > 0
+      ]
+
+    diagonais =
+      [ ((cx + k, cy + k), v) , ((cx + k, cy - k), v)
+      , ((cx - k, cy + k), v) , ((cx - k, cy - k), v)
+      | k <- [1..kMaxDiag]
+      , let v = (d - 3*k) * 10
+      , v > 0
+      ]
 
 -- | cria uma lista de danos para uma dada posicao e dano
 criaListaDanos :: Posicao -> Dano -> Danos
@@ -396,9 +407,12 @@ atualizaMapa danos mapa =
 -- | funcao que atualiza os objetos
 atualizaObjetos :: Danos -> [Objeto] -> [Objeto]
 atualizaObjetos danos =
-  let atingiu pos = any (\(p,d) -> p == pos && d > 0) danos
-      valido o    = posicaoObjeto o /= (-1,-1)   -- marcados para remoção
-  in filter (\o -> valido o && not (atingiu (posicaoObjeto o)))
+  filter manter
+  where
+    atingiu p = any (\(q,d) -> q == p && d > 0) danos
+    manter o =
+      let p = posicaoObjeto o
+      in p /= (-1,-1) && not (atingiu p)
 
 -- | funcao que remove as partes do terreno que foram atingido
 removeTerrenoAtingido :: Posicao -> Mapa -> Mapa
