@@ -24,6 +24,7 @@ avancaEstado e@(Estado mapa objetos minhocas) = foldr aplicaDanos e' danoss
     e' = Estado mapa objetos' minhocas'
 
 
+
 -- | Para um dado estado, dado o índice de uma minhoca na lista de minhocas e o estado dessa minhoca, retorna o novo estado da minhoca no próximo tick.
 avancaMinhoca :: Estado -> NumMinhoca -> Minhoca -> Minhoca
 avancaMinhoca estado _ minhoca
