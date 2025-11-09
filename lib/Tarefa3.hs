@@ -280,17 +280,21 @@ estaNaAreaExplosao (x1,y1) (x2,y2) diametro =
 
 -- | gera uma explsao numa posicao com um dado dano
 geraExplosao :: Posicao -> Dano -> Danos
-geraExplosao (cx, cy) diametro =
-  [ ((x, y), dano)
-  | x <- [cx - raio .. cx + raio]
-  , y <- [cy - raio .. cy + raio]
-  , let distancia :: Int
-        distancia = round (sqrt (fromIntegral (((x - cx)*(x-cx)) + (y - cy)*(y-cy)) :: Double))
-        dano = max 0 ((diametro - distancia) * 10)
-  , dano > 0
-  ]
+geraExplosao (cx, cy) diam =
+  concatMap (camada (cx,cy)) [0 .. raio]
   where
-    raio = diametro `div` 2
+    raio = diam `div` 2
+
+    camada :: Posicao -> Int -> Danos
+    camada (x0,y0) dist
+      | dist == 0 = [((x0,y0), diam*10)]           -- centro (50 para d=5)
+      | otherwise =
+          [ ((x0+dx, y0+dy), (diam - dist)*10)
+          | dx <- [-dist .. dist]
+          , dy <- [-dist .. dist]
+          , abs dx == dist || abs dy == dist      -- **periferia** apenas
+          , (diam - dist) * 10 > 0
+          ]
 
 -- | cria uma lista de danos para uma dada posicao e dano
 criaListaDanos :: Posicao -> Dano -> Danos
