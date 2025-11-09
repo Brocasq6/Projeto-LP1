@@ -307,21 +307,25 @@ geraExplosao (cx, cy) d =
   where
     centro = [((cx, cy), d * 10)]
 
-    -- quantos passos ainda geram dano positivo
-    kMaxOrt = (d - 1) `div` 2   -- porque (d - 2*k) > 0
-    kMaxDiag = (d - 1) `div` 3  -- porque (d - 3*k) > 0
+    -- até onde vai cada tipo de raio
+    kMaxOrt  = (d - 1) `div` 2
+    kMaxDiag = (d - 1) `div` 3
 
     ortogonais =
-      [ ((cx + k, cy), v) , ((cx - k, cy), v)
-      , ((cx, cy + k), v) , ((cx, cy - k), v)
+      [ ((cx + k, cy), v)
+      , ((cx - k, cy), v)
+      , ((cx, cy + k), v)
+      , ((cx, cy - k), v)
       | k <- [1..kMaxOrt]
       , let v = (d - 2*k) * 10
       , v > 0
       ]
 
     diagonais =
-      [ ((cx + k, cy + k), v) , ((cx + k, cy - k), v)
-      , ((cx - k, cy + k), v) , ((cx - k, cy - k), v)
+      [ ((cx + k, cy + k), v)
+      , ((cx + k, cy - k), v)
+      , ((cx - k, cy + k), v)
+      , ((cx - k, cy - k), v)
       | k <- [1..kMaxDiag]
       , let v = (d - 3*k) * 10
       , v > 0
