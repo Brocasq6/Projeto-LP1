@@ -316,8 +316,8 @@ geraExplosao (cx, cy) d =
       , ((cx - k, cy), v)
       , ((cx, cy + k), v)
       , ((cx, cy - k), v)
-      | k <- [1..kMaxOrt]
-      , let v = (d - 2*k) * 10
+      | k <- [1 .. kMaxOrt]
+      , let v = (d - 2 * k) * 10
       , v > 0
       ]
 
@@ -326,8 +326,8 @@ geraExplosao (cx, cy) d =
       , ((cx + k, cy - k), v)
       , ((cx - k, cy + k), v)
       , ((cx - k, cy - k), v)
-      | k <- [1..kMaxDiag]
-      , let v = (d - 3*k) * 10
+      | k <- [1 .. kMaxDiag]
+      , let v = (d - 3 * k) * 10
       , v > 0
       ]
 
