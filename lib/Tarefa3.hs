@@ -8,7 +8,7 @@ Módulo para a realização da Tarefa 3 de LI1\/LP1 em 2025\/26.
 module Tarefa3 where 
 import Labs2025
 import Tarefa1 hiding (terrenoNaPosicao) 
- 
+import Data.Either
 
 -- | Tipo de dado para representar danos em posições.
 type Dano = Int
@@ -22,7 +22,6 @@ avancaEstado e@(Estado mapa objetos minhocas) = foldr aplicaDanos e' danoss
     minhocas' = map (uncurry $ avancaMinhoca e) (zip [0..] minhocas)
     (objetos',danoss) = partitionEithers $ map (uncurry $ avancaObjeto $ e { minhocasEstado = minhocas' }) (zip [0..] objetos)
     e' = Estado mapa objetos' minhocas'
-
 
 
 -- | Para um dado estado, dado o índice de uma minhoca na lista de minhocas e o estado dessa minhoca, retorna o novo estado da minhoca no próximo tick.
@@ -111,29 +110,29 @@ aplicaGravidade (linha, coluna) mapa
 
 
 -- | Para um dado estado, dado o índice de um objeto na lista de objetos e o estado desse objeto, retorna o novo estado do objeto no próximo tick ou, caso o objeto expluda, uma lista de posições afetadas com o dano associado.
-avancaObjeto :: Estado -> NumObjeto -> Objeto -> (Objeto, Danos)
+avancaObjeto :: Estado -> NumObjeto -> Objeto -> Either Objeto Danos
 avancaObjeto estado _ objeto =
   case tipoObjeto objeto of
-    OBarril -> avancaBarril  estado objeto
+    OBarril  -> avancaBarril  estado objeto
     ODisparo -> avancaDisparo estado objeto
 
 -- | move APENAS a minhoca idx segundo as regras dos testes
-avancaBarril :: Estado -> Objeto -> (Objeto, Danos)
-avancaBarril estado (Barril posicao explodir)
-  | explodir = (Barril (-1,-1) False, geraExplosao posicao 5)
-  | estaNoArOuAgua posicao (mapaEstado estado) = (Barril posicao True, [])
-  | otherwise = (Barril posicao explodir, [])
-avancaBarril _ objeto = (objeto, [])
+avancaBarril :: Estado -> Objeto -> Either Objeto Danos
+avancaBarril estado (Barril pos explodir)
+  | explodir                                   = Right (geraExplosao pos 5)
+  | estaNoArOuAgua pos (mapaEstado estado)     = Left  (Barril pos True)
+  | otherwise                                  = Left  (Barril pos explodir)
+avancaBarril _ o = Left o
 
 -- | move APENAS a minhoca idx segundo as regras dos testes
-avancaDisparo :: Estado -> Objeto -> (Objeto, Danos)
-avancaDisparo estado objeto =
-  case tipoDisparo objeto of
-    Bazuca -> avancaBazuca   estado objeto
-    Mina -> avancaMina     estado objeto
-    Dinamite -> avancaDinamite estado objeto
-    Jetpack -> (objeto, [])
-    Escavadora -> (objeto, [])
+avancaDisparo :: Estado -> Objeto -> Either Objeto Danos
+avancaDisparo estado obj =
+  case tipoDisparo obj of
+    Bazuca    -> avancaBazuca   estado obj
+    Mina      -> avancaMina     estado obj
+    Dinamite  -> avancaDinamite estado obj
+    Jetpack   -> Left obj
+    Escavadora-> Left obj
 
 data Hit = Livre | Bate | Fora
   deriving (Eq, Show)
@@ -153,43 +152,41 @@ colisaoBazuca p mapa objs
     opaco _            = False
 
 -- | move APENAS a minhoca idx segundo as regras dos testes
-avancaBazuca :: Estado -> Objeto -> (Objeto, Danos)
-avancaBazuca estado objeto =
-  let mapa     = mapaEstado estado
-      -- opcional: não considerar o próprio disparo na lista de colisões
-      objs     = filter (/= objeto) (objetosEstado estado)
-      pos0     = posicaoDisparo objeto
-      nova     = moveDisparo (direcaoDisparo objeto) pos0
-      removido = objeto { posicaoDisparo = (-1,-1) }
-  in case colisaoBazuca nova mapa objs of
-       Fora  -> (removido, [])
-       Bate  -> (removido, geraExplosao nova 5)
-       Livre -> (objeto { posicaoDisparo = nova }, [])
+avancaBazuca :: Estado -> Objeto -> Either Objeto Danos
+avancaBazuca estado obj =
+  let mapa    = mapaEstado estado
+      pos0    = posicaoDisparo obj
+      novaPos = moveDisparo (direcaoDisparo obj) pos0
+  in if verificaColisao novaPos mapa
+        then Right (geraExplosao novaPos 5)          -- remove o disparo
+        else Left  (obj { posicaoDisparo = novaPos })
 
 -- | Avança o estado de uma Mina.
-avancaMina :: Estado -> Objeto -> (Objeto, Danos)
-avancaMina estado objeto =
-  case tempoDisparo objeto of
-    Just 0 -> (objeto {posicaoDisparo = (-1,-1)}, geraExplosao (posicaoObjeto objeto) 3)
+avancaMina :: Estado -> Objeto -> Either Objeto Danos
+avancaMina estado obj =
+  case tempoDisparo obj of
+    Just 0 -> Right (geraExplosao (posicaoObjeto obj) 5)
     _ ->
-      let ativada   = ativaMina estado objeto
+      let ativada   = ativaMina estado obj
           novaPos   = aplicaGravidade (posicaoObjeto ativada) (mapaEstado estado)
           novoTempo = contaTempo ativada
       in case novoTempo of
-           Just 0 -> (ativada {posicaoDisparo = (-1,-1)}, geraExplosao novaPos 3)
-           _      -> (ativada {posicaoDisparo = novaPos , tempoDisparo = novoTempo} , [])
+           Just 0 -> Right (geraExplosao novaPos 5)
+           _      -> Left  (ativada { posicaoDisparo = novaPos
+                                    , tempoDisparo  = novoTempo })
 
 -- | move APENAS a minhoca idx segundo as regras dos testes
-avancaDinamite :: Estado -> Objeto -> (Objeto, Danos)
-avancaDinamite estado objeto =
-  case tempoDisparo objeto of
-    Just 0 -> (objeto { posicaoDisparo = (-1,-1) }, geraExplosao (posicaoObjeto objeto) 7)
+avancaDinamite :: Estado -> Objeto -> Either Objeto Danos
+avancaDinamite estado obj =
+  case tempoDisparo obj of
+    Just 0 -> Right (geraExplosao (posicaoObjeto obj) 7)
     _ ->
-      let novaPos = aplicaGravidade (posicaoObjeto objeto) (mapaEstado estado)
-          novoTempo = contaTempo objeto
+      let novaPos   = aplicaGravidade (posicaoObjeto obj) (mapaEstado estado)
+          novoTempo = contaTempo obj
       in case novoTempo of
-           Just 0 -> (objeto { posicaoDisparo = (-1,-1) }, geraExplosao novaPos 7)
-           _ -> (objeto { posicaoDisparo = novaPos, tempoDisparo = novoTempo }, [])
+           Just 0 -> Right (geraExplosao novaPos 7)
+           _      -> Left  (obj { posicaoDisparo = novaPos
+                                , tempoDisparo  = novoTempo })
 
 -- | move APENAS a minhoca idx segundo as regras dos testes
 moveDisparo :: Direcao -> Posicao -> Posicao
@@ -280,10 +277,8 @@ criaListaDanos :: Posicao -> Dano -> Danos
 criaListaDanos posicao dano = [(posicao,dano)]
 
 -- | definicao do data type TipoObjeto
-data TipoObjeto = OBarril | ODisparo
-  deriving (Eq, Show)
+data TipoObjeto = OBarril | ODisparo deriving (Eq, Show)
 
--- | retorna o tipo de objeto
 tipoObjeto :: Objeto -> TipoObjeto
 tipoObjeto (Barril {})  = OBarril
 tipoObjeto (Disparo {}) = ODisparo
