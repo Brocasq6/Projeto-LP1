@@ -301,9 +301,9 @@ estaNaAreaExplosao (x1,y1) (x2,y2) diametro =
 -- | gera uma explsao numa posicao com um dado dano
 geraExplosao :: Posicao -> Dano -> Danos
 geraExplosao (cx, cy) d =
-    centro
- <> ortogonais
- <> diagonais
+  centro
+  <> ortogonais
+  <> diagonais
   where
     centro = [((cx, cy), d * 10)]
 
@@ -330,6 +330,7 @@ geraExplosao (cx, cy) d =
       , let v = (d - 3*k) * 10
       , v > 0
       ]
+
 
 -- | cria uma lista de danos para uma dada posicao e dano
 criaListaDanos :: Posicao -> Dano -> Danos
