@@ -7,173 +7,159 @@ import Magic
 -- ─────────────────────────────
 -- Mapas simples de apoio
 -- ─────────────────────────────
-mapaBase :: Mapa
-mapaBase =
-  [ [Ar,   Ar,   Ar  ]
-  , [Ar,   Terra,Ar  ]
-  , [Agua, Ar,   Pedra]
+mBase :: Mapa
+mBase =
+  [ replicate 10 Ar
+  , replicate 10 Ar
+  , replicate 10 Ar
+  , replicate 10 Ar
+  , [Terra,Terra,Terra,Terra,Terra,Ar,Ar,Ar,Ar,Ar]
+  , [Terra,Terra,Terra,Terra,Terra,Pedra,Pedra,Agua,Agua,Agua]
   ]
 
-mapaChao :: Mapa
-mapaChao =
-  [ [Ar, Ar, Ar]
-  , [Ar, Ar, Ar]
-  , [Terra,Terra,Terra]
-  ]
+-- Posições convenientes (colunas 0..9, linhas 0..5)
+p x y = (x,y)  -- (linha, coluna)
 
-mapaComTerraAoLado :: Mapa
-mapaComTerraAoLado =
-  [ [Ar, Ar, Ar]
-  , [Terra,Ar, Terra]
-  , [Ar, Ar, Ar]
-  ]
+-- Minhocas "completas"
+vivaFull :: Posicao -> Minhoca
+vivaFull pos =
+  Minhoca { posicaoMinhoca = Just pos
+          , vidaMinhoca = Viva 100
+          , jetpackMinhoca = 3
+          , escavadoraMinhoca = 3
+          , bazucaMinhoca = 3
+          , minaMinhoca = 3
+          , dinamiteMinhoca = 3
+          }
 
--- ─────────────────────────────
--- Minhocas “base”
--- ─────────────────────────────
-wFull :: Minhoca
-wFull = Minhoca (Just (1,1)) (Viva 100) 3 3 3 3 3
+viva1, viva2 :: Posicao -> Minhoca
+viva1 = vivaFull
+viva2 = vivaFull
 
-wNoAmmo :: Minhoca
-wNoAmmo = Minhoca (Just (1,1)) (Viva 100) 0 0 0 0 0
+-- Minhoca sem munições (para testar falhas de disparo)
+semMuns :: Posicao -> Minhoca
+semMuns pos =
+  Minhoca { posicaoMinhoca = Just pos
+          , vidaMinhoca = Viva 100
+          , jetpackMinhoca = 0
+          , escavadoraMinhoca = 0
+          , bazucaMinhoca = 0
+          , minaMinhoca = 0
+          , dinamiteMinhoca = 0
+          }
 
-wAir :: Minhoca
-wAir = wFull { posicaoMinhoca = Just (0,1) }
+-- Minhoca morta (para validar regras)
+morta :: Posicao -> Minhoca
+morta pos =
+  Minhoca { posicaoMinhoca = Just pos
+          , vidaMinhoca = Morta
+          , jetpackMinhoca = 1
+          , escavadoraMinhoca = 1
+          , bazucaMinhoca = 1
+          , minaMinhoca = 1
+          , dinamiteMinhoca = 1
+          }
 
-wWater :: Minhoca
-wWater = wFull { posicaoMinhoca = Just (2,0) }
+-- Estado "limpo": sem objetos
+estado0 :: [Minhoca] -> Estado
+estado0 ws = Estado { mapaEstado = mBase, objetosEstado = [], minhocasEstado = ws }
 
-wEdge :: Minhoca
-wEdge = wFull { posicaoMinhoca = Just (0,0) }
+-- Estado com um barril numa borda do chão
+estadoBarril :: [Minhoca] -> Estado
+estadoBarril ws =
+  Estado { mapaEstado = mBase
+         , objetosEstado = [ Barril { posicaoBarril = p 4 0, explodeBarril = False } ]
+         , minhocasEstado = ws
+         }
 
-wTopCenter :: Minhoca
-wTopCenter = wFull { posicaoMinhoca = Just (0,1) }
+-- Estado com uma bazuca já em voo do dono 0 (para testar restrição de disparos simultâneos)
+estadoComBazucaDo0 :: [Minhoca] -> Estado
+estadoComBazucaDo0 ws =
+  Estado { mapaEstado = mBase
+         , objetosEstado = [ Disparo { posicaoDisparo = p 3 3
+                                     , direcaoDisparo = Oeste
+                                     , tipoDisparo = Bazuca
+                                     , tempoDisparo = Nothing
+                                     , donoDisparo = 0 } ]
+         , minhocasEstado = ws
+         }
 
-wLeft :: Minhoca
-wLeft = wFull { posicaoMinhoca = Just (1,0) }
+-- Estado com uma mina do dono 1
+estadoComMinaDo1 :: [Minhoca] -> Estado
+estadoComMinaDo1 ws =
+  Estado { mapaEstado = mBase
+         , objetosEstado = [ Disparo { posicaoDisparo = p 4 6
+                                     , direcaoDisparo = Sul
+                                     , tipoDisparo = Mina
+                                     , tempoDisparo = Nothing
+                                     , donoDisparo = 1 } ]
+         , minhocasEstado = ws
+         }
 
-wRight :: Minhoca
-wRight = wFull { posicaoMinhoca = Just (1,2) }
+-- Construções frequentes de pares de minhocas
+wA  = viva1 (p 4 5)
+wAChao = viva1 (p 3 5)
+wChao = viva1 (p 3 4)
+wTopo = viva1 (p 0 0)
+wDireitaChao = viva1 (p 3 3)
+wAgua = viva1 (p 5 8)
+wB = viva2 (p 3 7)
 
-wDead :: Minhoca
-wDead = wFull { vidaMinhoca = Morta }
+-- Estados base utilizados nos testes
+eChao      = estado0 [wChao, wB]
+eAr        = estado0 [wA, wB]
+eTopo      = estado0 [wTopo, wB]
+eAgua      = estado0 [wAgua, wB]
+eSemMuns   = estado0 [semMuns (p 3 4), wB]
+eMorta     = estado0 [morta (p 3 4), wB]
+eComBarril = estadoBarril [wChao, wB]
+eBazuca0   = estadoComBazucaDo0 [wChao, wB]
+eMina1     = estadoComMinaDo1 [wChao, wB]
 
--- ─────────────────────────────
--- Estados “one-worm”
--- ─────────────────────────────
-eBase      = Estado mapaBase [] [wFull]
-eAr        = Estado mapaBase [] [wAir]
-eAgua      = Estado mapaBase [] [wWater]
-eBorda     = Estado mapaBase [] [wEdge]
-eTopo      = Estado mapaBase [] [wTopCenter]
-eEsq       = Estado mapaBase [] [wLeft]
-eDir       = Estado mapaBase [] [wRight]
-eChao      = Estado mapaChao [] [wFull]
-eSemMun    = Estado mapaBase [] [wNoAmmo]
-eMorta     = Estado mapaBase [] [wDead]
-eTerraLado = Estado mapaComTerraAoLado [] [wFull]
+-- Para alguns casos, colocamos a minhoca 0 num canto para testar limites
+eLimiteOeste = estado0 [viva1 (p 3 0), wB]
+eLimiteNorte = estado0 [viva1 (p 0 5), wB]
+eLimiteSul   = estado0 [viva1 (p 5 2), wB]
+eLimiteLeste = estado0 [viva1 (p 3 9), wB]
 
--- Já existe um disparo igual (Bazuca do dono 0)
-eComBazucaIgual = Estado mapaBase [Disparo (1,2) Este Bazuca Nothing 0] [wFull]
+-- Jogadas curtas convenientes
+mvN  = Move Norte
+mvNE = Move Nordeste
+mvE  = Move Este
+mvS  = Move Sul
+mvO  = Move Oeste
 
--- Posição de destino ocupada por barril
-eBarrilADireita = Estado mapaBase [Barril (1,2) False] [wFull]
+jpN  = Dispara Jetpack Norte
+escE = Dispara Escavadora Este
+bzE  = Dispara Bazuca Este
+mnS  = Dispara Mina Sul
+dnO  = Dispara Dinamite Oeste
 
--- Posição de destino ocupada por minhoca
-eOutraMinhocaADireita =
-  Estado mapaBase [] [ wFull, wFull { posicaoMinhoca = Just (1,2) } ]
-
--- Para testar Mina/Dinamite quando destino não livre
-eDestinoBloqueadoPorPedraTopo =
-  Estado
-    [ [Pedra,Pedra,Pedra]
-    , [Ar,   Ar,   Ar   ]
-    , [Ar,   Ar,   Ar   ]
-    ]
-    []
-    [wTopCenter]
-
--- ─────────────────────────────
--- TESTES – cada um cobre uma regra do enunciado
--- ─────────────────────────────
+-- | Lista de testes para Tarefa 2
+-- Cada tuplo: (indice da minhoca, jogada, estado inicial)
 testesT2 :: [(NumMinhoca, Jogada, Estado)]
 testesT2 =
-  [
-  -- MOVIMENTO
-    -- 1) Qualquer movimentação inválida → fica na mesma
-    (0, Move Oeste, eEsq)                           -- destino fora do mapa
-  , (0, Move Este,  eBarrilADireita)                -- destino ocupado por objeto
-  , (0, Move Este,  eOutraMinhocaADireita)          -- destino ocupado por minhoca
-
-    -- 2) Só se move se estiver viva
-  , (0, Move Este,  eMorta)
-
-    -- 3) Chão tem de estar livre
-  , (0, Move Norte, eTerraLado)                     -- acima é Terra à esquerda/direita
-
-    -- 4) Mover para cima só se estiver no chão (salto)
-  , (0, Move Norte, eAr)                            -- no ar, não pode
-  , (0, Move Nordeste, eAr)
-  , (0, Move Noroeste, eAr)
-
-    -- 5) No ar não se move
-  , (0, Move Este,  eAr)
-
-    -- 6) Se se move para fora do mapa → morre e fica sem posição
-  , (0, Move Norte, eBorda)
-
-    -- 7) Se se move para água → morre e fica na nova posição
-  , (0, Move Sul,   Estado mapaBase [] [wTopCenter])  -- (1,1) é Terra; força test depois com outro mapa
-  , (0, Move Sul,   Estado
-                      [ [Ar, Ar, Ar]
-                      , [Agua,Ar, Ar]
-                      , [Ar, Ar, Ar]
-                      ]
-                      []
-                      [wEdge { posicaoMinhoca = Just (0,0) }])
-
-  -- DISPARO
-    -- 8) Para disparar tem de estar viva e ter munição (>0); consome 1
-  , (0, Dispara Bazuca Este,    eBase)
-  , (0, Dispara Mina Este,      eBase)
-  , (0, Dispara Dinamite Este,  eBase)
-  , (0, Dispara Jetpack Este,   eBase)
-  , (0, Dispara Escavadora Este,eBase)
-
-    -- 9) Sem munição → não dispara
-  , (0, Dispara Bazuca Este,   eSemMun)
-  , (0, Dispara Mina Este,     eSemMun)
-  , (0, Dispara Dinamite Este, eSemMun)
-  , (0, Dispara Jetpack Este,  eSemMun)
-  , (0, Dispara Escavadora Este,eSemMun)
-
-    -- 10) Não pode existir já um disparo do mesmo tipo para a mesma minhoca
-  , (0, Dispara Bazuca Este,   eComBazucaIgual)
-
-    -- 11) Jetpack: permite mover em qualquer direção se destino livre
-  , (0, Dispara Jetpack Norte, eChao)
-  , (0, Dispara Jetpack Nordeste, eChao)
-  , (0, Dispara Jetpack Oeste, eChao)
-
-    -- 12) Escavadora: destrói Terra no destino e move a minhoca para lá
-  , (0, Dispara Escavadora Oeste, eTerraLado)       -- há Terra em (1,0)
-
-    -- 13) Bazuca: colocado na posição de destino (ou na atual se bloqueado)
-  , (0, Dispara Bazuca Este, eBase)                 -- destino livre
-  , (0, Dispara Bazuca Norte, eDestinoBloqueadoPorPedraTopo) -- destino bloqueado → fica na atual
-
-    -- 14) Mina: se destino livre vai para lá, se não livre fica na posição atual
-  , (0, Dispara Mina Este,   eBase)
-  , (0, Dispara Mina Norte,  eDestinoBloqueadoPorPedraTopo)
-
-    -- 15) Dinamite: se destino livre vai para lá, senão fica na posição atual, tempo=4
-  , (0, Dispara Dinamite Este,  eBase)
-  , (0, Dispara Dinamite Norte, eDestinoBloqueadoPorPedraTopo)
-
-    -- 16) Objetos colocados fora do mapa são eliminados (destino fora)
-  , (0, Dispara Bazuca Oeste,  eEsq)                -- tentar colocar a Oeste do (1,0)
+  [ (0, mvNE, eChao)
+  , (0, mvN , eChao)
+  , (0, mvE , eChao)
+  , (0, mvN , eAr)
+  , (0, mvS , eTopo)
+  , (0, mvO , eLimiteOeste)
+  , (0, mvN , eLimiteNorte)
+  , (0, mvE , eLimiteLeste)
+  , (0, mvS , eLimiteSul)
+  , (0, mvE , eAgua)
+  , (0, jpN , eChao)
+  , (0, escE, eChao)
+  , (0, bzE , eChao)
+  , (0, mnS , eChao)
+  , (0, dnO , eChao)
+  , (0, bzE , eBazuca0)
+  , (1, mnS , eMina1)
+  , (0, bzE , eSemMuns)
+  , (0, jpN , eMorta)
+  , (0, escE, eComBarril)
   ]
-
 -- ─────────────────────────────
 -- Runner de feedback
 -- ─────────────────────────────
