@@ -163,18 +163,22 @@ avancaBazuca estado obj =
         else Left  (obj { posicaoDisparo = novaPos })
 
 -- | Avança o estado de uma Mina.
-avancaMina :: Estado -> Objeto -> Either Objeto Danos
-avancaMina estado obj =
-  case tempoDisparo obj of
-    Just 0 -> Right (geraExplosao (posicaoObjeto obj) 5)
-    _ ->
-      let ativada   = ativaMina estado obj
-          novaPos   = aplicaGravidade (posicaoObjeto ativada) (mapaEstado estado)
-          novoTempo = contaTempo ativada
-      in case novoTempo of
-           Just 0 -> Right (geraExplosao novaPos 5)
-           _      -> Left  (ativada { posicaoDisparo = novaPos
-                                    , tempoDisparo  = novoTempo })
+avancaMina :: Estado -> Objeto -> (Objeto, Danos)
+avancaMina est o0 =
+  case tempoDisparo o0 of
+    Just 0 ->
+      (o0 { posicaoDisparo = (-1,-1) }, geraExplosao (posicaoObjeto o0) 5)
+
+    Just t ->
+      let o1 = quedaMina est o0
+      in (o1 { tempoDisparo = Just (t-1) }, [])
+
+    Nothing ->
+      let o1 = quedaMina est o0
+          o2 = if deveAtivarMina est o1
+                 then o1 { tempoDisparo = Just 2 }   -- ativa agora, sem decramentar
+                 else o1
+      in (o2, [])
 
 -- | move APENAS a minhoca idx segundo as regras dos testes
 avancaDinamite :: Estado -> Objeto -> Either Objeto Danos
@@ -234,6 +238,22 @@ ativaMina estado mina@(Disparo p _ Mina t dono) =
         then mina { tempoDisparo = Just 2 }
         else mina
 ativaMina _ o = o
+
+quedaMina :: Estado -> Objeto -> Objeto
+quedaMina est o =
+  let m   = mapaEstado est
+      pos = posicaoObjeto o
+  in case terrenoNaPosicao pos m of
+       Just Ar   -> o { posicaoDisparo = aplicaGravidade pos m, direcaoDisparo = Norte }
+       Just Agua -> o { posicaoDisparo = aplicaGravidade pos m, direcaoDisparo = Norte }
+       _         -> o
+
+deveAtivarMina :: Estado -> Objeto -> Bool
+deveAtivarMina est mina =
+  any (\(i,m) ->
+        i /= donoDisparo mina &&
+        maybe False (\p -> estaNaAreaExplosao p (posicaoObjeto mina) 5) (posicaoMinhoca m)
+      ) (zip [0..] (minhocasEstado est))
 
 -- | verifica se uma posicao esta na area de explosao
 estaNaAreaExplosao :: Posicao -> Posicao -> Int -> Bool
