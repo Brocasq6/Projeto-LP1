@@ -187,16 +187,36 @@ avancaDisparo estado objeto =
     Jetpack -> (objeto, [])
     Escavadora -> (objeto, [])
 
+data Hit = Livre | Bate | Fora
+  deriving (Eq, Show)
+
+colisaoBazuca :: Posicao -> Mapa -> [Objeto] -> Hit
+colisaoBazuca p mapa objs
+  | not (dentroMapa p mapa) = Fora
+  | opaco terreno           = Bate
+  | any ((== p) . posicaoObjeto) objs = Bate
+  | otherwise               = Livre
+  where
+    terreno = terrenoNaPosicao p mapa
+    opaco (Just Terra) = True
+    opaco (Just Pedra) = True
+    -- se o teu terrenoNaPosicao devolve Nothing apenas fora do mapa,
+    -- já tratámos acima com Fora; aqui fica False.
+    opaco _            = False
+
 -- | move APENAS a minhoca idx segundo as regras dos testes
 avancaBazuca :: Estado -> Objeto -> (Objeto, Danos)
 avancaBazuca estado objeto =
-  let mapa   = mapaEstado estado
-      objs   = objetosEstado estado
-      pos0   = posicaoDisparo objeto
-      nova   = moveDisparo (direcaoDisparo objeto) pos0
-  in if verificaColisao nova mapa objs
-        then (objeto { posicaoDisparo = (-1,-1) }, geraExplosao nova 5)
-        else (objeto { posicaoDisparo = nova      }, [])
+  let mapa     = mapaEstado estado
+      -- opcional: não considerar o próprio disparo na lista de colisões
+      objs     = filter (/= objeto) (objetosEstado estado)
+      pos0     = posicaoDisparo objeto
+      nova     = moveDisparo (direcaoDisparo objeto) pos0
+      removido = objeto { posicaoDisparo = (-1,-1) }
+  in case colisaoBazuca nova mapa objs of
+       Fora  -> (removido, [])
+       Bate  -> (removido, geraExplosao nova 5)
+       Livre -> (objeto { posicaoDisparo = nova }, [])
 
 -- | Avança o estado de uma Mina.
 avancaMina :: Estado -> Objeto -> (Objeto, Danos)
