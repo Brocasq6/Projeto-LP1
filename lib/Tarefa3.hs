@@ -301,35 +301,30 @@ estaNaAreaExplosao (x1,y1) (x2,y2) diametro =
 -- | gera uma explsao numa posicao com um dado dano
 geraExplosao :: Posicao -> Dano -> Danos
 geraExplosao (cx, cy) d =
-  centro
-  <> ortogonais
-  <> diagonais
+  centro <> ortogonais <> diagonais
   where
     centro = [((cx, cy), d * 10)]
 
-    -- até onde vai cada tipo de raio
     kMaxOrt  = (d - 1) `div` 2
     kMaxDiag = (d - 1) `div` 3
 
+    -- cruz (N, S, E, O)
     ortogonais =
-      [ ((cx + k, cy), v)
-      , ((cx - k, cy), v)
-      , ((cx, cy + k), v)
-      , ((cx, cy - k), v)
+      [ ((cx + dx * k, cy + dy * k), v)
       | k <- [1 .. kMaxOrt]
+      , (dx,dy) <- [(1,0), (-1,0), (0,1), (0,-1)]
       , let v = (d - 2 * k) * 10
       , v > 0
       ]
 
+    -- diagonais (NE, NO, SE, SO)
     diagonais =
-      [ ((cx + k, cy + k), v)
-      , ((cx + k, cy - k), v)
-      , ((cx - k, cy + k), v)
-      , ((cx - k, cy - k), v)
+      [ ((cx + dx * k, cy + dy * k), v)
       | k <- [1 .. kMaxDiag]
+      , (dx,dy) <- [(1,1), (1,-1), (-1,1), (-1,-1)]
       , let v = (d - 3 * k) * 10
       , v > 0
-      ] 
+      ]
 
 
 -- | cria uma lista de danos para uma dada posicao e dano
