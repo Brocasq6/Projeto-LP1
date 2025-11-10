@@ -160,9 +160,9 @@ avancaBazuca estado obj =
   let mapa    = mapaEstado estado
       pos0    = posicaoDisparo obj
       novaPos = moveDisparo (direcaoDisparo obj) pos0
-  in if verificaColisao novaPos mapa
-        then Right (geraExplosao novaPos 5)
-        else Left  (obj { posicaoDisparo = novaPos })
+  in if colideTerreno novaPos mapa
+       then Right (geraExplosao novaPos 5)
+       else Left  (obj { posicaoDisparo = novaPos })
 
 -- | Avança o estado de uma Mina.
 avancaMina :: Estado -> Objeto -> Either Objeto Danos
@@ -209,13 +209,13 @@ moveDisparo direcao (l,c) =
         Sudoeste -> (l+1,c-1)
 
 -- | verifica se ha uma colisao na posicao dada
-verificaColisao :: Posicao -> Mapa -> [Objeto] -> Bool
-verificaColisao p mapa objs =
-  case terrenoNaPosicao p mapa of
-    Nothing    -> True
+colideTerreno :: Posicao -> Mapa -> Bool
+colideTerreno p m =
+  case terrenoNaPosicao p m of
+    Nothing   -> True        -- fora do mapa
     Just Pedra -> True
     Just Terra -> True
-    _          -> any ((== p) . posicaoObjeto) objs
+    _          -> False
 
 -- | faz a contagem decrescente do tempo de vida do disparo
 contaTempo :: Objeto -> Maybe Int
