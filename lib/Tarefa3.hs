@@ -131,26 +131,11 @@ avancaBarril _ o = Left o
 avancaDisparo :: Estado -> Objeto -> Either Objeto Danos
 avancaDisparo estado obj =
   case tipoDisparo obj of
-    Bazuca    -> avancaBazuca   estado obj
-    Mina      -> avancaMavancaMina :: Estado -> Objeto -> (Objeto, Danos)
-avancaMina est o0 =
-  case tempoDisparo o0 of
-    Just 0 ->
-      (o0 { posicaoDisparo = (-1,-1) }, geraExplosao (posicaoObjeto o0) 5)
-
-    Just t ->
-      let o1 = quedaMina est o0
-      in (o1 { tempoDisparo = Just (t-1) }, [])
-
-    Nothing ->
-      let o1 = quedaMina est o0
-          o2 = if deveAtivarMina est o1
-                 then o1 { tempoDisparo = Just 2 }   -- ativa agora, sem decramentar
-                 else o1
-      in (o2, [])ina     estado obj
-    Dinamite  -> avancaDinamite estado obj
-    Jetpack   -> Left obj
-    Escavadora-> Left obj
+    Bazuca     -> avancaBazuca   estado obj
+    Mina       -> avancaMina     estado obj
+    Dinamite   -> avancaDinamite estado obj
+    Jetpack    -> Left obj
+    Escavadora -> Left obj
 
 data Hit = Livre | Bate | Fora
   deriving (Eq, Show)
