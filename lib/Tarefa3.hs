@@ -112,20 +112,26 @@ aplicaGravidade (linha, coluna) mapa
 -- | Para um dado estado, dado o índice de um objeto na lista de objetos e o estado desse objeto, retorna o novo estado do objeto no próximo tick ou, caso o objeto expluda, uma lista de posições afetadas com o dano associado.
 avancaObjeto :: Estado -> NumObjeto -> Objeto -> Either Objeto Danos
 avancaObjeto estado _ obj =
-  case tipoDisparo obj of
-    Bazuca     -> avancaBazuca   estado obj
-    Mina       -> avancaMina     estado obj
-    Dinamite   -> avancaDinamite estado obj
-    Jetpack    -> Left obj
-    Escavadora -> Left obj
+  case obj of
+    -- Barril: nunca tocar em campos de Disparo aqui
+    Barril{}   -> avancaBarril estado obj
+
+    -- Disparo: agora sim podemos olhar para tipoDisparo
+    Disparo{}  ->
+      case tipoDisparo obj of
+        Bazuca   -> avancaBazuca   estado obj
+        Mina     -> avancaMina     estado obj
+        Dinamite -> avancaDinamite estado obj
+        Jetpack  -> Left obj
+        Escavadora -> Left obj
 
 -- | move APENAS a minhoca idx segundo as regras dos testes
 avancaBarril :: Estado -> Objeto -> Either Objeto Danos
-avancaBarril est (Barril p True)  = Right (geraExplosao p 5)
-avancaBarril est (Barril p flag)
-  | estaNoArOuAgua p (mapaEstado est) = Left (Barril p True)
-  | otherwise                         = Left (Barril p flag)
-avancaBarril _ o = Left o
+avancaBarril estado (Barril p prestes) 
+  | prestes                                   = Right (geraExplosao p 5)
+  | estaNoArOuAgua p (mapaEstado estado)      = Left  (Barril p True)
+  | otherwise                                  = Left  (Barril p prestes)
+avancaBarril _ obj = Left obj  -- fallback seguro
 
 -- | move APENAS a minhoca idx segundo as regras dos testes
 avancaDisparo :: Estado -> Objeto -> Either Objeto Danos
