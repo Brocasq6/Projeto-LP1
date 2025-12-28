@@ -7,6 +7,25 @@ import Eventos
 import Worms
 import Tempo
 
+{-
+Main.hs
+ │
+ |- janela :: Display
+ |- fundo  :: Color
+ |- fr     :: Int
+ |
+ |- it :: Worms
+ |    |- criaEstadoInicial :: Estado          (vossas tarefas / setup)
+ |    |- Worms { jogo = criaEstadoInicial
+ |             , selW = 0
+ |            , selJ = minBound (ou default)
+ |            , ... }
+ |
+ |- main :: IO ()
+      |- play janela fundo fr it desenha reageEventos reageTempo
+
+-}
+
 janela :: Display
 janela = InWindow "Worms" (1920, 1080) (0, 0)
 

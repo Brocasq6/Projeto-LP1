@@ -2,6 +2,17 @@ module Tempo where
 
 import Worms
 
+{-
+Tempo.hs
+ |- type Segundos = Float
+ |
+ |- reageTempo :: Segundos -> Worms -> Worms
+ │    |- avancaJogo :: Worms -> Worms
+ │    |    |- jogo' = avancaEstado jogo         (T3)
+
+
+-}
+
 -- | Tempo em segundos.
 type Segundos = Float
 
