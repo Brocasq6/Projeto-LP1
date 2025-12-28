@@ -42,6 +42,60 @@ avancaObjetoJogada e objetos (i,objeto') = if elem objeto' objetos
     then avancaObjeto e i objeto'
     else Left objeto'
 
+
+
+
+
+
+
+
+
+
+
 -- | Para um número de ticks desde o início da tática, dado um estado, determina a próxima jogada.
 jogadaTatica :: Ticks -> Estado -> (NumMinhoca,Jogada)
-jogadaTatica t e = undefined
+jogadaTatica t e =
+  let i = escolheMinhoca t e
+      j = decideJogada t i e
+  in (i,j)
+
+-- Se houver minhocas vivas, alterna entre elas; senão devolve 0
+escolheMinhoca :: Ticks -> Estado -> NumMinhoca
+escolheMinhoca t e =
+  case [ i | (i,_,_) <- minhocasVivasComPos e ] of
+    [] -> 0
+    is -> is !! (t `mod` length is)
+
+-- Minhocas "usáveis": vivas e com posição
+minhocasVivasComPos :: Estado -> [(NumMinhoca, Minhoca, Posicao)]
+minhocasVivasComPos (Estado _ _ ms) =
+  [ (i,m,p)
+  | (i,m) <- zip [0..] ms
+  , estaViva m
+  , Just p <- [posicaoMinhoca m]
+  ]
+
+-- Decide a jogada para a minhoca escolhida
+decideJogada :: Ticks -> NumMinhoca -> Estado -> Jogada
+decideJogada t i e@(Estado _ objs ms)
+  | i < 0 || i >= length ms = Move (dirCiclo t)
+  | otherwise =
+      case posicaoMinhoca (ms !! i) of
+        Nothing -> Move (dirCiclo t)
+        Just p  ->
+          case alvoMaisProximo i p e of
+            Nothing ->
+              -- Sem alvo: tenta mexer um bocado para não ficar sempre igual
+              Move (dirCiclo t)
+            Just (pAlvo, dir) ->
+              -- Prioridade: disparar se "puder agir" e tiver munição e não houver disparo igual ativo
+              if podeDisparar i e Bazuca
+                 then Dispara Bazuca dir
+              else if podeDisparar i e Dinamite
+                 then Dispara Dinamite dir
+              else if podeDisparar i e Mina
+                 then Dispara Mina dir
+              else
+                -- Caso não dispare, tenta mover-se na direção do alvo
+                Move dir
+
