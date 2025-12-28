@@ -29,9 +29,11 @@ data Worms = Worms
     , selJ :: SelJogada
     }
 
--- | Tipo que representa a seleção de jogada (ação/arma).
+-- | Função que avança para a próxima jogada selecionada.
 nextSelJogada :: SelJogada -> SelJogada
-nextSelJogada j = undefined
+nextSelJogada j
+  | j == maxBound = minBound
+  | otherwise     = succ j
 
 -- | Seleciona a jogada anterior na lista de jogadas possíveis.
 prevSelJogada :: SelJogada -> SelJogada
@@ -41,9 +43,14 @@ prevSelJogada j = undefined
 defaultWorms :: Estado -> Worms
 defaultWorms e = undefined
 
--- | Retorna a lista de índices de worms válidas (não mortos).
-wormsValida :: Estado -> [Int]
-wormsValida e = undefined
+-- | Função que retorna as minhocas válidas no estado do jogo.
+wormsValidas :: Estado -> [Int]
+wormsValidas e =
+  [ i
+  | (i,m) <- zip [0..] (minhocasEstado e)
+  , posicaoMinhoca m /= Nothing
+  , vidaMinhoca m /= Morta
+  ]
 
 -- Cicla a seleção de worm para a próxima worm válida.
 cycleSel :: Estado -> Int -> Int
