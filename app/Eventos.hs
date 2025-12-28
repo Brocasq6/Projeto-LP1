@@ -34,9 +34,6 @@ Eventos.hs
 reageEventos :: Event -> Worms -> Worms
 reageEventos _ it = it
 
-reageEventos :: Event -> Worms -> Worms
-reageEventos e w = undefined
-
 selecionaMinhocaSeguinte :: Worms -> Worms
 selecionaMinhocaSeguinte w = undefined
 
@@ -62,7 +59,7 @@ jogadaFromSel :: SelJogada -> Direcao -> Jogada
 jogadaFromSel j d = undefined
 
 aplicaEfetua :: Int -> Jogada -> Estado -> Estado
-aplicaEfetua x j e = undefined
+aplicaEfetua x j e = efetuaJogada x j e
 
 wormsValidas :: Estado -> [Int]
 wormsValidas e = undefined
