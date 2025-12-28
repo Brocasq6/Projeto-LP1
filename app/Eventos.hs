@@ -67,7 +67,14 @@ wormsValidas e =
 
 -- | Função que avança para a próxima minhoca selecionada.
 cycleSelW :: Estado -> Int -> Int
-cycleSelW e x = undefined
+cycleSelW e atual =
+  case wormsValidas e of
+    [] -> 0
+    ws ->
+      let k = case elemIndex atual ws of
+                Nothing -> 0
+                Just j  -> (j + 1) `mod` length ws
+      in ws !! k
 
 -- | Função que avança para a próxima minhoca selecionada.
 selecionaJogadaSeguinte :: Worms -> Worms
@@ -78,6 +85,7 @@ nextSelJogada :: SelJogada -> SelJogada
 nextSelJogada j
   | j == maxBound = minBound
   | otherwise     = succ j
+
 -- | Função que converte uma tecla em direção.
 dirFromKey :: Char -> Maybe Direcao
 dirFromKey c =
