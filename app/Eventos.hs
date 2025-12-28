@@ -30,37 +30,48 @@ Eventos.hs
 
 -}
 
+
 -- | Função que altera o estado do jogo no Gloss.
 reageEventos :: Event -> Worms -> Worms
 reageEventos _ it = it
 
+-- | Função que avança para a próxima minhoca selecionada.
 selecionaMinhocaSeguinte :: Worms -> Worms
 selecionaMinhocaSeguinte w = undefined
 
+-- | Função que retorna as minhocas válidas no estado do jogo.
 wormsValida :: Estado -> [Int]
 wormsValida e = undefined
 
+-- | Função que avança para a próxima minhoca selecionada.
 cycleSelW :: Estado -> Int -> Int
 cycleSelW e x = undefined
 
+-- | Função que avança para a próxima minhoca selecionada.
 selecionaJogadaSeguinte :: Worms -> Worms
 selecionaJogadaSeguinte w = undefined
 
+-- | Função que avança para a próxima jogada selecionada.
 nextSelJogada :: SelJogada -> SelJogada
 nextSelJogada j = undefined
 
+-- | Função que aplica uma jogada direcional ao estado do jogo.
 aplicaJogadaDirecional :: Char -> Worms -> Worms
 aplicaJogadaDirecional c w = undefined
 
+-- | Função que converte uma tecla em direção.
 dirFromKey :: Char -> Maybe Direcao
 dirFromKey c = undefined
 
+-- | Função que converte uma seleção de jogada e direção em jogada.
 jogadaFromSel :: SelJogada -> Direcao -> Jogada
 jogadaFromSel j d = undefined
 
+-- | Função que aplica uma jogada ao estado do jogo.
 aplicaEfetua :: Int -> Jogada -> Estado -> Estado
 aplicaEfetua x j e = efetuaJogada x j e
 
+-- | Função que retorna as minhocas válidas no estado do jogo.
 wormsValidas :: Estado -> [Int]
 wormsValidas e = undefined
 
