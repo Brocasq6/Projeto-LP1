@@ -32,13 +32,13 @@ avancaJogada (i,j) e@(Estado _ objetos minhocas) = foldr aplicaDanos e'' danoss'
 
 -- | Avança o tempo para o estado de uma minhoca, se não efetuou a última jogada.
 avancaMinhocaJogada :: Estado -> (NumMinhoca,Minhoca,Minhoca) -> Minhoca
-avancaMinhocaJogada e (i,minhoca,minhoca') =
+avancaMinhocaJogada e (i,minhoca,minhoca')
     | posicaoMinhoca minhoca == posicaoMinhoca minhoca' = avancaMinhoca e i minhoca'
     | otherwise = minhoca'
 
 -- | Avança o tempo para o estado de um objeto, se não foi criado pela última jogada.
 avancaObjetoJogada :: Estado -> [Objeto] -> (NumObjeto,Objeto) -> Either Objeto Danos
-avancaObjetoJogada e objetos (i,objeto') = 
+avancaObjetoJogada e objetos (i,objeto')
   | elem objeto' (objetosEstado e) = avancaObjeto e i objeto'
   | otherwise = Left objeto'
 
