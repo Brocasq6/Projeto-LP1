@@ -75,6 +75,12 @@ minhocasVivasComPos (Estado _ _ ms) =
   , Just p <- [posicaoMinhoca m]
   ]
 
+estaViva :: Minhoca -> Bool
+estaViva m =
+  case vidaMinhoca m of
+    Viva _ -> True
+    Morta  -> False
+
 -- Decide a jogada para a minhoca escolhida
 decideJogada :: Ticks -> NumMinhoca -> Estado -> Jogada
 decideJogada t i e@(Estado _ objs ms)
@@ -98,4 +104,70 @@ decideJogada t i e@(Estado _ objs ms)
               else
                 -- Caso não dispare, tenta mover-se na direção do alvo
                 Move dir
+
+-- Alvo: minhoca viva mais próxima (diferente da atual)
+alvoMaisProximo :: NumMinhoca -> Posicao -> Estado -> Maybe (Posicao, Direcao)
+alvoMaisProximo i p e =
+  let candidatos =
+        [ p2
+        | (j,_,p2) <- minhocasVivasComPos e
+        , j /= i
+        ]
+  in case candidatos of
+       [] -> Nothing
+       ps ->
+         let pAlvo = minimoPor (distManhattan p) ps
+             dir   = direcaoPara p pAlvo
+         in Just (pAlvo, dir)
+
+distManhattan :: Posicao -> Posicao -> Int
+distManhattan (x1,y1) (x2,y2) = abs (x2 - x1) + abs (y2 - y1)
+
+minimoPor :: Ord b => (a -> b) -> [a] -> a
+minimoPor f (x:xs) = foldl (\best a -> if f a < f best then a else best) x xs
+minimoPor _ []     = error "minimoPor: lista vazia"
+
+-- Verifica se a minhoca i pode disparar a arma (segundo as regras da vossa T2)
+podeDisparar :: NumMinhoca -> Estado -> TipoArma -> Bool
+podeDisparar i e@(Estado _ objs ms) arma
+  | i < 0 || i >= length ms = False
+  | not (estaViva (ms !! i)) = False
+  | not (podeAgir e (ms !! i)) = False
+  | not (temMunicao arma (ms !! i)) = False
+  | existeMesmoDisparo arma i objs = False
+  | otherwise = True
+
+-- Direção "boa o suficiente" para ir de p -> q (8 direções)
+direcaoPara :: Posicao -> Posicao -> Direcao
+direcaoPara (x1,y1) (x2,y2) =
+  let dx = sinal (x2 - x1)
+      dy = sinal (y2 - y1)
+  in case (dx,dy) of
+       (-1, 0) -> Norte
+       ( 1, 0) -> Sul
+       ( 0, 1) -> Este
+       ( 0,-1) -> Oeste
+       (-1, 1) -> Nordeste
+       (-1,-1) -> Noroeste
+       ( 1, 1) -> Sudeste
+       ( 1,-1) -> Sudoeste
+       ( 0, 0) -> Este
+
+sinal :: Int -> Int
+sinal n | n < 0     = -1
+        | n > 0     =  1
+        | otherwise =  0
+
+-- Direção cíclica para quando não há alvos / fallback
+dirCiclo :: Ticks -> Direcao
+dirCiclo t =
+  case t `mod` 8 of
+    0 -> Este
+    1 -> Oeste
+    2 -> Norte
+    3 -> Sul
+    4 -> Nordeste
+    5 -> Noroeste
+    6 -> Sudeste
+    _ -> Sudoeste
 
