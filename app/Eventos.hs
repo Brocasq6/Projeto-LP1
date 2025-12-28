@@ -33,3 +33,37 @@ Eventos.hs
 -- | Função que altera o estado do jogo no Gloss.
 reageEventos :: Event -> Worms -> Worms
 reageEventos _ it = it
+
+reageEventos :: Event -> Worms -> Worms
+reageEventos e w = undefined
+
+selecionaMinhocaSeguinte :: Worms -> Worms
+selecionaMinhocaSeguinte w = undefined
+
+wormsValida :: Estado -> [Int]
+wormsValida e = undefined
+
+cycleSelW :: Estado -> Int -> Int
+cycleSelW e x = undefined
+
+selecionaJogadaSeguinte :: Worms -> Worms
+selecionaJogadaSeguinte w = undefined
+
+nextSelJogada :: SelJogada -> SelJogada
+nextSelJogada j = undefined
+
+aplicaJogadaDirecional :: Char -> Worms -> Worms
+aplicaJogadaDirecional c w = undefined
+
+dirFromKey :: Char -> Maybe Direcao
+dirFromKey c = undefined
+
+jogadaFromSel :: SelJogada -> Direcao -> Jogada
+jogadaFromSel j d = undefined
+
+aplicaEfetua :: Int -> Jogada -> Estado -> Estado
+aplicaEfetua x j e = undefined
+
+wormsValidas :: Estado -> [Int]
+wormsValidas e = undefined
+
