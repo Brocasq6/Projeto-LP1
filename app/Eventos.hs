@@ -47,7 +47,7 @@ reageEventos evento w =
         'D' -> 'd'
         _   -> ch
 
-        
+
 -- | Função que avança para a próxima minhoca selecionada.
 selecionaMinhocaSeguinte :: Worms -> Worms
 selecionaMinhocaSeguinte w = 
@@ -57,8 +57,13 @@ selecionaMinhocaSeguinte w =
     in w { selW = novaSel }
 
 -- | Função que retorna as minhocas válidas no estado do jogo.
-wormsValida :: Estado -> [Int]
-wormsValida e = undefined
+wormsValidas :: Estado -> [Int]
+wormsValidas e =
+  [ i
+  | (i,m) <- zip [0..] (minhocasEstado e)
+  , posicaoMinhoca m /= Nothing
+  , vidaMinhoca m /= Morta
+  ]
 
 -- | Função que avança para a próxima minhoca selecionada.
 cycleSelW :: Estado -> Int -> Int
@@ -115,7 +120,4 @@ jogadaFromSel j d =
 aplicaEfetua :: Int -> Jogada -> Estado -> Estado
 aplicaEfetua x j e = efetuaJogada x j e
 
--- | Função que retorna as minhocas válidas no estado do jogo.
-wormsValidas :: Estado -> [Int]
-wormsValidas e = undefined
 
