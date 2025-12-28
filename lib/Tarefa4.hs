@@ -38,7 +38,7 @@ avancaMinhocaJogada e (i,minhoca,minhoca')
 
 -- | Avança o tempo para o estado de um objeto, se não foi criado pela última jogada.
 avancaObjetoJogada :: Estado -> [Objeto] -> (NumObjeto,Objeto) -> Either Objeto Danos
-avancaObjetoJogada e objetos (i,objeto')
+avancaObjetoJogada e _ (i,objeto')
   | elem objeto' (objetosEstado e) = avancaObjeto e i objeto'
   | otherwise = Left objeto'
 
@@ -84,7 +84,7 @@ estaViva m =
 
 -- | Decide a jogada para a minhoca escolhida
 decideJogada :: Ticks -> NumMinhoca -> Estado -> Jogada
-decideJogada t i e@(Estado _ objs ms)
+decideJogada t i e@(Estado _ _ ms)
   | i < 0 || i >= length ms = Move (dirCiclo t)
   | otherwise =
       case posicaoMinhoca (ms !! i) of
@@ -94,7 +94,7 @@ decideJogada t i e@(Estado _ objs ms)
             Nothing ->
               -- Sem alvo: tenta mexer um bocado para não ficar sempre igual
               Move (dirCiclo t)
-            Just (pAlvo, dir) ->
+            Just (_, dir) ->
               -- Prioridade: disparar se "puder agir" e tiver munição e não houver disparo igual ativo
               if podeDisparar i e Bazuca
                  then Dispara Bazuca dir
