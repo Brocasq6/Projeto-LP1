@@ -75,8 +75,9 @@ selecionaJogadaSeguinte w = w { selJ = nextSelJogada (selJ w) }
 
 -- | Função que avança para a próxima jogada selecionada.
 nextSelJogada :: SelJogada -> SelJogada
-nextSelJogada j = undefined
-
+nextSelJogada j
+  | j == maxBound = minBound
+  | otherwise     = succ j
 -- | Função que converte uma tecla em direção.
 dirFromKey :: Char -> Maybe Direcao
 dirFromKey c =
@@ -103,16 +104,21 @@ aplicaJogadaDirecional c w =
 
 -- | Função que converte uma seleção de jogada e direção em jogada.
 jogadaFromSel :: SelJogada -> Direcao -> Jogada
-jogadaFromSel j d = 
-    case j of
-        MoveUp -> Move 
-        MoveDown -> Move
-        MoveLeft -> Move
-        MoveRight -> Move
+jogadaFromSel j d =
+  case j of
+    -- movimento (ignora o d recebido e usa a direção “fixa” do seletor)
+    MoveUp    -> Movimenta Norte
+    MoveDown  -> Movimenta Sul
+    MoveRight -> Movimenta Este
+    MoveLeft  -> Movimenta Oeste
 
-        DisparaBazooka      -> Dispara Bazooka d
-        LargaMina           -> Dispara Mina d
-        LargaDinamite       -> Dispara Dinamite d
+    -- armas existentes
+    UsaJetpack    -> UsaJetpack d
+    UsaEscavadora -> UsaEscavadora d
+    DisparaBazuca -> Dispara Bazuca d
+    LargaMina     -> Dispara Mina d
+    LargaDinamite -> Dispara Dinamite d
+
          
 
 
