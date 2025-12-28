@@ -85,7 +85,18 @@ aplicaJogadaDirecional c w =
 
 -- | Função que converte uma seleção de jogada e direção em jogada.
 jogadaFromSel :: SelJogada -> Direcao -> Jogada
-jogadaFromSel j d = undefined
+jogadaFromSel j d = 
+    case j of
+        MoveUp -> Move 
+        MoveDown -> Move
+        MoveLeft -> Move
+        MoveRight -> Move
+
+        DisparaBazooka      -> Dispara Bazooka d
+        LargaMina           -> Dispara Mina d
+        LargaDinamite       -> Dispara Dinamite d
+        -- resto das armas 
+
 
 -- | Função que aplica uma jogada ao estado do jogo.
 aplicaEfetua :: Int -> Jogada -> Estado -> Estado
