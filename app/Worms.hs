@@ -43,11 +43,17 @@ prevSelJogada j = undefined
 defaultWorms :: Estado -> Worms
 defaultWorms e = undefined
 
+-- | Retorna o índice da primeira minhoca válida no estado do jogo.
+primeiraMinhocaValida :: Estado -> Int
+primeiraMinhocaValida e =
+  case wormsValidas e of
+    []    -> 0
+    (x:_) -> x
+
 -- | Função que retorna as minhocas válidas no estado do jogo.
 wormsValidas :: Estado -> [Int]
 wormsValidas e =
-  [ i
-  | (i,m) <- zip [0..] (minhocasEstado e)
+  [ i | (i,m) <- zip [0..] (minhocasEstado e)
   , posicaoMinhoca m /= Nothing
   , vidaMinhoca m /= Morta
   ]
