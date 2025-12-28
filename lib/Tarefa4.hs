@@ -32,15 +32,15 @@ avancaJogada (i,j) e@(Estado _ objetos minhocas) = foldr aplicaDanos e'' danoss'
 
 -- | Avança o tempo para o estado de uma minhoca, se não efetuou a última jogada.
 avancaMinhocaJogada :: Estado -> (NumMinhoca,Minhoca,Minhoca) -> Minhoca
-avancaMinhocaJogada e (i,minhoca,minhoca') = if posicaoMinhoca minhoca == posicaoMinhoca minhoca'
-    then avancaMinhoca e i minhoca'
-    else minhoca'
+avancaMinhocaJogada e (i,minhoca,minhoca') =
+    | posicaoMinhoca minhoca == posicaoMinhoca minhoca' = avancaMinhoca e i minhoca'
+    | otherwise = minhoca'
 
 -- | Avança o tempo para o estado de um objeto, se não foi criado pela última jogada.
 avancaObjetoJogada :: Estado -> [Objeto] -> (NumObjeto,Objeto) -> Either Objeto Danos
-avancaObjetoJogada e objetos (i,objeto') = if elem objeto' objetos
-    then avancaObjeto e i objeto'
-    else Left objeto'
+avancaObjetoJogada e objetos (i,objeto') = 
+  | elem objeto' (objetosEstado e) = avancaObjeto e i objeto'
+  | otherwise = Left objeto'
 
 
 
@@ -59,14 +59,14 @@ jogadaTatica t e =
       j = decideJogada t i e
   in (i,j)
 
--- Se houver minhocas vivas, alterna entre elas; senão devolve 0
+-- | Se houver minhocas vivas, alterna entre elas; senão devolve 0
 escolheMinhoca :: Ticks -> Estado -> NumMinhoca
 escolheMinhoca t e =
   case [ i | (i,_,_) <- minhocasVivasComPos e ] of
     [] -> 0
     is -> is !! (t `mod` length is)
 
--- Minhocas "usáveis": vivas e com posição
+-- | Minhocas "usáveis": vivas e com posição
 minhocasVivasComPos :: Estado -> [(NumMinhoca, Minhoca, Posicao)]
 minhocasVivasComPos (Estado _ _ ms) =
   [ (i,m,p)
@@ -75,13 +75,14 @@ minhocasVivasComPos (Estado _ _ ms) =
   , Just p <- [posicaoMinhoca m]
   ]
 
+-- | Verifica se a minhoca está viva.
 estaViva :: Minhoca -> Bool
 estaViva m =
   case vidaMinhoca m of
     Viva _ -> True
     Morta  -> False
 
--- Decide a jogada para a minhoca escolhida
+-- | Decide a jogada para a minhoca escolhida
 decideJogada :: Ticks -> NumMinhoca -> Estado -> Jogada
 decideJogada t i e@(Estado _ objs ms)
   | i < 0 || i >= length ms = Move (dirCiclo t)
@@ -105,7 +106,7 @@ decideJogada t i e@(Estado _ objs ms)
                 -- Caso não dispare, tenta mover-se na direção do alvo
                 Move dir
 
--- Alvo: minhoca viva mais próxima (diferente da atual)
+-- | Alvo: minhoca viva mais próxima (diferente da atual)
 alvoMaisProximo :: NumMinhoca -> Posicao -> Estado -> Maybe (Posicao, Direcao)
 alvoMaisProximo i p e =
   let candidatos =
@@ -120,14 +121,16 @@ alvoMaisProximo i p e =
              dir   = direcaoPara p pAlvo
          in Just (pAlvo, dir)
 
+-- | Distância Manhattan entre duas posições.
 distManhattan :: Posicao -> Posicao -> Int
 distManhattan (x1,y1) (x2,y2) = abs (x2 - x1) + abs (y2 - y1)
 
+-- | Retorna o mínimo de uma lista segundo uma função de ordenação.
 minimoPor :: Ord b => (a -> b) -> [a] -> a
 minimoPor f (x:xs) = foldl (\best a -> if f a < f best then a else best) x xs
 minimoPor _ []     = error "minimoPor: lista vazia"
 
--- Verifica se a minhoca i pode disparar a arma (segundo as regras da vossa T2)
+-- | Verifica se a minhoca i pode disparar a arma (segundo as regras da vossa T2)
 podeDisparar :: NumMinhoca -> Estado -> TipoArma -> Bool
 podeDisparar i e@(Estado _ objs ms) arma
   | i < 0 || i >= length ms = False
@@ -137,7 +140,7 @@ podeDisparar i e@(Estado _ objs ms) arma
   | existeMesmoDisparo arma i objs = False
   | otherwise = True
 
--- Direção "boa o suficiente" para ir de p -> q (8 direções)
+-- | Direção "boa o suficiente" para ir de p -> q (8 direções)
 direcaoPara :: Posicao -> Posicao -> Direcao
 direcaoPara (x1,y1) (x2,y2) =
   let dx = sinal (x2 - x1)
@@ -153,12 +156,13 @@ direcaoPara (x1,y1) (x2,y2) =
        ( 1,-1) -> Sudoeste
        ( 0, 0) -> Este
 
+-- | Sinal de um número inteiro
 sinal :: Int -> Int
 sinal n | n < 0     = -1
         | n > 0     =  1
         | otherwise =  0
 
--- Direção cíclica para quando não há alvos / fallback
+-- | Direção cíclica para quando não há alvos / fallback
 dirCiclo :: Ticks -> Direcao
 dirCiclo t =
   case t `mod` 8 of
