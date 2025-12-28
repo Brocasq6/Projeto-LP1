@@ -109,7 +109,7 @@ efetuaJogadaMove n dir est =
   let m' = moveMinhoca dir est n
   in est { minhocasEstado = atualizaLista n m' (minhocasEstado est) }
 
--- A posição está livre para pisar? (Ar e sem objetos/minhocas)
+-- | A posição está livre para pisar? (Ar e sem objetos/minhocas)
 posicaoLivre :: Posicao -> Estado -> Bool
 posicaoLivre p (Estado m objs mins) =
   case terrenoNaPosicao m p of
@@ -119,12 +119,17 @@ posicaoLivre p (Estado m objs mins) =
     _ -> False
 
 
+-- | Verifica se uma posição está no ar.
 estaNoAr :: Posicao -> Mapa -> Bool
 estaNoAr p m = terrenoNaPosicao m p == Just Ar
 
+
+-- | Verifica se uma posição está na água.
 estaNaAgua :: Posicao -> Mapa -> Bool
 estaNaAgua p m = terrenoNaPosicao m p == Just Agua
 
+
+-- | Verifica se há solo (Terra ou Pedra) imediatamente abaixo da posição dada.
 temSoloAbaixo :: Posicao -> Mapa -> Bool
 temSoloAbaixo (l,c) m =
   case terrenoNaPosicao m (l+1,c) of
@@ -132,17 +137,20 @@ temSoloAbaixo (l,c) m =
     Just Pedra -> True
     _ -> False
 
+
+-- | Verifica se uma minhoca pode agir (disparar ou mover).
 podeAgir :: Estado -> Minhoca -> Bool
 podeAgir est m =
   case posicaoMinhoca m of
     Just p -> estaNoAr p (mapaEstado est) && temSoloAbaixo p (mapaEstado est)
     _ -> False
   
+-- | Substitui um elemento numa lista no índice dado.
 substitui :: Int -> a -> [a] -> [a]
 substitui idx novo xs =
   take idx xs ++ [novo] ++ drop (idx + 1) xs
 
--- Move a minhoca i na direção dada, se as regras permitirem.
+-- | Move a minhoca i na direção dada, se as regras permitirem.
 moveSeDer :: NumMinhoca -> Direcao -> Estado -> Estado
 moveSeDer i dir e@(Estado mapa _ mins)
   | i < 0 || i >= length mins = e
@@ -219,12 +227,16 @@ criaDisparo est arma dir dono m =
   let p0 = posInicialDisparo est dir m
   in Disparo p0 dir arma (tempoDisparoDefault arma) dono
 
+
+-- | Efetua a jogada de disparo, criando o objeto disparo e atualizando a minhoca.
 setTerreno :: Posicao -> Terreno -> Mapa -> Mapa
 setTerreno (l,c) t m =
   let linha = m !! l
       linha' = take c linha ++ [t] ++ drop (c+1) linha
   in  take l m ++ [linha'] ++ drop (l+1) m
 
+
+-- | Atualiza uma minhoca numa lista no índice dado.
 atualizaMinhocaIdx :: Int -> Minhoca -> [Minhoca] -> [Minhoca]
 atualizaMinhocaIdx i w ws = take i ws ++ [w] ++ drop (i+1) ws
 
@@ -232,6 +244,8 @@ atualizaMinhocaIdx i w ws = take i ws ++ [w] ++ drop (i+1) ws
 atualizaLista :: Int -> a -> [a] -> [a]
 atualizaLista i novo l = take i l ++ [novo] ++ drop (i + 1) l 
 
+
+-- | Verifica se o terreno numa dada posição é bloqueado (Terra ou Pedra).
 terrenoBloqueado :: Posicao -> Mapa -> Bool
 terrenoBloqueado p mapa =
   case terrenoNaPosicao mapa p of  -- <- troca a ordem aqui
@@ -239,6 +253,7 @@ terrenoBloqueado p mapa =
     Just Pedra -> True
     _ -> False
 
+-- | Efetua uma jogada de jetpack por parte de uma minhoca, atualizando o estado.
 jogaJetpack :: NumMinhoca -> Direcao -> Estado -> Estado
 jogaJetpack i dir e@(Estado m _ mins)
   | i < 0 || i >= length mins = e
@@ -256,6 +271,7 @@ jogaJetpack i dir e@(Estado m _ mins)
     Just p = posicaoMinhoca w
     p' = proximaPosicao dir p
 
+-- | Efetua uma jogada de escavação por parte de uma minhoca, atualizando o estado.
 jogaEscavadora :: NumMinhoca -> Direcao -> Estado -> Estado
 jogaEscavadora i dir e@(Estado m objs mins)
   | i < 0 || i >= length mins = e
