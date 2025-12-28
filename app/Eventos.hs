@@ -33,8 +33,21 @@ Eventos.hs
 
 -- | Função que altera o estado do jogo no Gloss.
 reageEventos :: Event -> Worms -> Worms
-reageEventos _ it = it
+reageEventos evento w =
+  case evento of
+    EventKey (Char '1') Down modifiers mousePos -> selecionaMinhocaSeguinte w
+    EventKey (Char '2') Down modifiers mousePos -> selecionaJogadaSeguinte w
+    EventKey (Char c)   Down modifiers mousePos | c `elem` "wasdWASD" -> aplicaJogadaDirecional (toLowerASCIISafe c) w
+    _ -> w
+  where
+    toLowerASCIISafe ch = case ch of
+        'W' -> 'w';
+        'A' -> 'a';
+        'S' -> 's';
+        'D' -> 'd'
+        _   -> ch
 
+        
 -- | Função que avança para a próxima minhoca selecionada.
 selecionaMinhocaSeguinte :: Worms -> Worms
 selecionaMinhocaSeguinte w = 
@@ -95,7 +108,7 @@ jogadaFromSel j d =
         DisparaBazooka      -> Dispara Bazooka d
         LargaMina           -> Dispara Mina d
         LargaDinamite       -> Dispara Dinamite d
-        -- resto das armas 
+         
 
 
 -- | Função que aplica uma jogada ao estado do jogo.
