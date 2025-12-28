@@ -53,19 +53,35 @@ cycleSelW e x = undefined
 
 -- | Função que avança para a próxima minhoca selecionada.
 selecionaJogadaSeguinte :: Worms -> Worms
-selecionaJogadaSeguinte w = undefined
+selecionaJogadaSeguinte w = w { selJ = nextSelJogada (selJ w) }
 
 -- | Função que avança para a próxima jogada selecionada.
 nextSelJogada :: SelJogada -> SelJogada
 nextSelJogada j = undefined
 
--- | Função que aplica uma jogada direcional ao estado do jogo.
-aplicaJogadaDirecional :: Char -> Worms -> Worms
-aplicaJogadaDirecional c w = undefined
-
 -- | Função que converte uma tecla em direção.
 dirFromKey :: Char -> Maybe Direcao
-dirFromKey c = undefined
+dirFromKey c =
+    case c of
+        'w' -> Just Cima
+        'a' -> Just Esquerda
+        's' -> Just Baixo
+        'd' -> Just Direita
+        _   -> Nothing
+
+-- | Função que aplica uma jogada direcional ao estado do jogo.
+aplicaJogadaDirecional :: Char -> Worms -> Worms
+aplicaJogadaDirecional c w = 
+    case dirFromKey c of
+        Nothing -> w
+        Just d  ->
+            let n = selW w
+                j = selJ w 
+                e = jogo w
+                e' = aplicaEfetua n j e
+            in w { jogo = e' }
+
+
 
 -- | Função que converte uma seleção de jogada e direção em jogada.
 jogadaFromSel :: SelJogada -> Direcao -> Jogada
