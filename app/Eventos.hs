@@ -37,7 +37,11 @@ reageEventos _ it = it
 
 -- | Função que avança para a próxima minhoca selecionada.
 selecionaMinhocaSeguinte :: Worms -> Worms
-selecionaMinhocaSeguinte w = undefined
+selecionaMinhocaSeguinte w = 
+    let e = jogo w
+        x = selW w
+        novaSel = cycleSelW e x
+    in w { selW = novaSel }
 
 -- | Função que retorna as minhocas válidas no estado do jogo.
 wormsValida :: Estado -> [Int]
