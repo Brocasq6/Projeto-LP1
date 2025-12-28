@@ -29,17 +29,22 @@ data Worms = Worms
     , selJ 
     }
 
+-- | Tipo que representa a seleção de jogada (ação/arma).
 nextSelJogada :: SelJogada -> SelJogada
 nextSelJogada j = undefined
 
+-- | Seleciona a jogada anterior na lista de jogadas possíveis.
 prevSelJogada :: SelJogada -> SelJogada
 prevSelJogada j = undefined
 
+-- | Cria o estado inicial do jogo Worms a partir de um Estado.
 defaultWorms :: Estado -> Worms
 defaultWorms e = undefined
 
+-- | Retorna a lista de índices de worms válidas (não mortos).
 wormsValida :: Estado -> [Int]
 wormsValida e = undefined
 
+-- Cicla a seleção de worm para a próxima worm válida.
 cycleSel :: Estado -> Int -> Int
 cycleSel e = undefined
