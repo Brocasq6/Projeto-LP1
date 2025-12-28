@@ -24,9 +24,9 @@ Worms.hs
 
 -- | Estado do jogo no Gloss.
 data Worms = Worms 
-    { jogo
-    , selW 
-    , selJ 
+    { jogo :: Estado
+    , selW :: Int
+    , selJ :: SelJogada
     }
 
 -- | Tipo que representa a seleção de jogada (ação/arma).
