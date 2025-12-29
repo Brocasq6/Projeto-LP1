@@ -74,21 +74,18 @@ desenhaMapa mapa =
     (offX, offY) = mapOffset mapa
 
 
-
-desenhaMinhoca :: Mapa -> Bool -> Posicao -> Picture
-desenhaMinhoca mapa selecionada (xGrid, yGrid) =
-  Translate (offX + x) (offY + y)
-    (Pictures
-      [ if selecionada
-          then Color (rgb 255 215 0) (circleSolid (wormRadius + 3))
-          else Blank
-      , Color (rgb 60 170 90) (circleSolid wormRadius)
-      ])
+desenhaMinhocas :: Estado -> Int -> Picture
+desenhaMinhocas e sel =
+  Pictures
+    [ desenhaMinhoca mapa (i == sel) pos
+    | (i, m) <- zip [0..] (minhocasEstado e)
+    , Just pos <- [posicaoMinhoca m]
+    , vidaMinhoca m /= Morta
+    ]
   where
-    (offX, offY) = mapOffset mapa
-    x = fromIntegral xGrid * tileSize + tileSize/2
-    y = - (fromIntegral yGrid * tileSize + tileSize/2
-          )
+    mapa = mapaEstado e
+
+
 wormRadius :: Float
 wormRadius = tileSize * 0.35
 
