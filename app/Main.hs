@@ -78,18 +78,9 @@ minhoca1 =
   Minhoca
     { posicaoMinhoca = Just (32, 18)
     , vidaMinhoca    = Viva
-    , armasMinhoca   = armasIniciais
     }
 
-armasIniciais :: Armas
-armasIniciais =
-  Armas
-    { jetpack    = 1
-    , escavadora = 1
-    , bazuca     = 1
-    , mina       = 1
-    , dinamite   = 1
-    }
+
 
 
 estadoInicial :: Estado
