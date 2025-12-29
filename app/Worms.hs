@@ -1,6 +1,13 @@
 module Worms where
 import Data.List 
 import Labs2025
+import Tarefa0_2025
+import Tarefa0_geral
+import Tarefa1
+import Tarefa2
+import Tarefa3
+import Tarefa4
+
 
 
 {-

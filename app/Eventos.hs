@@ -3,6 +3,14 @@ module Eventos where
 import Graphics.Gloss.Interface.Pure.Game
 
 import Worms
+import Labs2025
+import Tarefa0_2025
+import Tarefa0_geral
+import Tarefa1
+import Tarefa2
+import Tarefa3
+import Tarefa4
+
 {-
 Eventos.hs
  |- reageEventos :: Event -> Worms -> Worms
