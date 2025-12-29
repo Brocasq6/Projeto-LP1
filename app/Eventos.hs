@@ -89,6 +89,7 @@ aplicaJogadaDirecional c w =
 
 
 
+
 -- | Função que converte uma seleção de jogada e direção em jogada.
 jogadaFromSel :: SelJogada -> Direcao -> Jogada
 jogadaFromSel j d =
