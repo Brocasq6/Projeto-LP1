@@ -97,10 +97,10 @@ jogadaFromSel :: SelJogada -> Direcao -> Jogada
 jogadaFromSel j d =
   case j of
     -- movimento (ignora o d recebido e usa a direção “fixa” do seletor)
-    MoveUp    -> Movimenta Norte
-    MoveDown  -> Movimenta Sul
-    MoveRight -> Movimenta Este
-    MoveLeft  -> Movimenta Oeste
+    MoveUp    -> Move Norte
+    MoveDown  -> Move Sul
+    MoveRight -> Move Este
+    MoveLeft  -> Move Oeste
 
     -- armas existentes
     UsaJetpack    -> UsaJetpack d
