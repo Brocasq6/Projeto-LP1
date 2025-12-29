@@ -14,11 +14,12 @@ import Worms
 
 -- | Tamanho de cada tile no mapa (em pixels).
 tileSize :: Float
-tileSize = undefined
+tileSize = 20.0 -- valor inicial, pode ser ajustado conforme necessário
 
 -- | Função que desenha o estado do jogo no Gloss.
 desenha :: Worms -> Picture
-desenha _ = Translate (-450) 0 $ Scale 0.5 0.5 $ Text "Welcome to Worms!"
+desenha w = undefined -- vai ser implementada depois de todas as outras funcoes serem feitas
+
 
 -- | funcao que desenha o mapa
 desenhaMapa :: Mapa -> Picture
@@ -29,12 +30,20 @@ desenhaMinhocas :: Estado -> Int -> Picture
 desenhaMinhocas = undefined
 
 -- | Funcao que desenha o terreno 
+
 desenhaTerreno :: Terreno -> Picture
-desenhaTerreno = undefined
+desenhaTerreno t =
+  Color (corTerreno t) $
+    rectangleSolid tileSize tileSize
 
 -- | Funcao que determina a cor do terreno
 corTerreno :: Terreno -> Color
-corTerreno = undefined
+corTerreno t = 
+    case t of
+        Agua    -> undefined
+        Ar      -> undefined
+        Terra   -> undefined
+        Pedra   -> undefined
 
 -- | Funcao que desenha o HUD
 desenhaHUD :: Worms -> Picture
