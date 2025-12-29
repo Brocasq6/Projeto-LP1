@@ -1,4 +1,6 @@
 module Worms where
+import Data.List 
+
 
 {-
 Worms.hs
@@ -29,6 +31,19 @@ data Worms = Worms
     , selJ :: SelJogada
     }
 
+-- | Jogadas possíveis selecionáveis pelo jogador
+data SelJogada
+  = MoveUp
+  | MoveDown
+  | MoveLeft
+  | MoveRight
+  | UsaJetpack
+  | UsaEscavadora
+  | DisparaBazuca
+  | LargaMina
+  | LargaDinamite
+  deriving (Eq, Enum, Bounded, Show)
+
 -- | Função que avança para a próxima jogada selecionada.
 nextSelJogada :: SelJogada -> SelJogada
 nextSelJogada j
@@ -38,7 +53,7 @@ nextSelJogada j
 -- | Seleciona a jogada anterior na lista de jogadas possíveis.
 prevSelJogada :: SelJogada -> SelJogada
 prevSelJogada j = 
-  | j == minbound = maxBound
+  | j == minBound = maxBound
   | otherwise     = pred j
 
 -- | Cria o estado inicial do jogo Worms a partir de um Estado.
