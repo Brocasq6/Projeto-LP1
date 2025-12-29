@@ -36,6 +36,16 @@ desenhaTerreno t =
   Color (corTerreno t) $
     rectangleSolid tileSize tileSize
 
+
+-- | Funcao que converte valores RGB para o formato Color do Gloss (auxiliar para corTerreno)
+rgb :: Int -> Int -> Int -> Color
+rgb r g b =
+  makeColor
+    (fromIntegral r / 255)
+    (fromIntegral g / 255)
+    (fromIntegral b / 255)
+    1
+
 -- | Funcao que determina a cor do terreno
 corTerreno :: Terreno -> Color
 corTerreno t = 
