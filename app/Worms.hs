@@ -52,7 +52,7 @@ nextSelJogada j
 
 -- | Seleciona a jogada anterior na lista de jogadas possíveis.
 prevSelJogada :: SelJogada -> SelJogada
-prevSelJogada j = 
+prevSelJogada j 
   | j == minBound = maxBound
   | otherwise     = pred j
 
