@@ -1,5 +1,5 @@
 module Worms where
-import Data.List 
+import Data.List (elemIndex)
 import Labs2025
 import Tarefa0_2025
 import Tarefa0_geral
