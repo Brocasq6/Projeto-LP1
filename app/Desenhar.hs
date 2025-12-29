@@ -23,7 +23,13 @@ desenha w = undefined -- vai ser implementada depois de todas as outras funcoes 
 
 -- | funcao que desenha o mapa
 desenhaMapa :: Mapa -> Picture
-desenhaMapa = undefined
+desenhaMapa mapa =
+  Pictures
+    [ Translate x y (desenhaTerreno t)
+    | (linha, y) <- zip mapa [0, -tileSize ..]
+    , (t, x)     <- zip linha [0, tileSize ..]
+    ]
+
 
 -- | Funcao que desenha as minhocas
 desenhaMinhocas :: Estado -> Int -> Picture
@@ -63,8 +69,11 @@ corTerreno t =
 
 -- | Funcao que desenha o HUD
 desenhaHUD :: Worms -> Picture
-desenhaHUD = undefined
-
+desenhaHUD w =
+  Translate (-600) 400 
+    Scale 0.15 0.15 
+      Color black 
+        Text ("Minhoca: " ++ show (selW w))
 
 
 
