@@ -41,7 +41,12 @@ prevSelJogada j = undefined
 
 -- | Cria o estado inicial do jogo Worms a partir de um Estado.
 defaultWorms :: Estado -> Worms
-defaultWorms e = undefined
+defaultWorms e = 
+    Worms 
+      { jogo = e
+      , selW = primeiraMinhocaValida e
+      , selJ = minBound
+      }
 
 -- | Retorna o índice da primeira minhoca válida no estado do jogo.
 primeiraMinhocaValida :: Estado -> Int

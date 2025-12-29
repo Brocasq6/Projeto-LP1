@@ -30,7 +30,7 @@ janela :: Display
 janela = InWindow "Worms" (1920, 1080) (0, 0)
 
 fundo :: Color
-fundo = white
+fundo = black
 
 fr :: Int
 fr = 60
