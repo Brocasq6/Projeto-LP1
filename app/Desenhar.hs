@@ -60,12 +60,36 @@ desenhaMapa mapa =
     , (t, x)     <- zip linha [0, tileSize ..]
     ]
 
+desenhaMinhoca :: Bool -> Posicao -> Picture
+desenhaMinhoca selecionada (xGrid, yGrid) =
+  Translate x y
+    (Pictures
+      [ -- destaque se estiver selecionada
+        if selecionada
+          then Color (rgb 255 215 0)
+                 (circleSolid (wormRadius + 3))
+          else Blank
+
+      , -- corpo da minhoca
+        Color (rgb 60 170 90)
+          (circleSolid wormRadius)
+
+      , -- olho simples (opcional)
+        Translate (wormRadius / 3) (wormRadius / 4)
+          (Color black (circleSolid 2))
+      ])
+  where
+    x = fromIntegral xGrid * tileSize
+    y = - fromIntegral yGrid * tileSize
+
+wormRadius :: Float
+wormRadius = tileSize * 0.35
 
 -- | Funcao que desenha as minhocas
 desenhaMinhocas :: Estado -> Int -> Picture
 desenhaMinhocas e sel =
   Pictures
-    [ desenhaMinhocas (i == sel) pos
+    [ desenhaMinhoca (i == sel) pos
     | (i, m) <- zip [0..] (minhocasEstado e)
     , Just pos <- [posicaoMinhoca m]     -- só desenha se tiver posição
     , vidaMinhoca m /= Morta            -- opcional: ignora mortas
