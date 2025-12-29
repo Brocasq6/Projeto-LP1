@@ -30,6 +30,18 @@ Eventos.hs
 
 -}
 
+-- | Jogadas possíveis selecionáveis pelo jogador
+data SelJogada
+  = MoveUp
+  | MoveDown
+  | MoveLeft
+  | MoveRight
+  | UsaJetpack
+  | UsaEscavadora
+  | DisparaBazuca
+  | LargaMina
+  | LargaDinamite
+  deriving (Eq, Enum, Bounded, Show)
 
 -- | Função que altera o estado do jogo no Gloss.
 reageEventos :: Event -> Worms -> Worms
