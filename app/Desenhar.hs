@@ -75,8 +75,7 @@ desenhaMinhocas e sel =
 
 desenhaTerreno :: Terreno -> Picture
 desenhaTerreno t =
-  Color (corTerreno t) $
-    rectangleSolid tileSize tileSize
+  Color (corTerreno t) (rectangleSolid tileSize tileSize)
 
 
 -- | Funcao que converte valores RGB para o formato Color do Gloss (auxiliar para corTerreno)
@@ -101,9 +100,9 @@ corTerreno t =
 desenhaHUD :: Worms -> Picture
 desenhaHUD w =
   Translate (-600) 400 
-    Scale 0.15 0.15 
-      Color black 
-        Text ("Minhoca: " ++ show (selW w))
+    (Scale 0.15 0.15 
+      (Color black 
+        (Text ("Minhoca: " ++ show (selW w)))))
 
 
 
