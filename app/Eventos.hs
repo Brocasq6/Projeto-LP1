@@ -75,17 +75,13 @@ dirFromKey c =
         _   -> Nothing
 
 -- | Função que aplica uma jogada direcional ao estado do jogo.
-aplicaJogadaDirecional :: Char -> Worms -> Worms
 aplicaJogadaDirecional c w =
   case dirFromKey c of
     Nothing -> w
     Just d  ->
-      let n  = selW w
-          sj = selJ w
-          j  = jogadaFromSel sj d
-          e  = jogo w
-          e' = aplicaEfetua n j e
+      let e' = efetuaJogada (selW w) (Move d) (jogo w)
       in w { jogo = e' }
+
 
 
 
