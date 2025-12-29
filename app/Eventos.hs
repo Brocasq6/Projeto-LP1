@@ -75,16 +75,16 @@ dirFromKey c =
 
 -- | Função que aplica uma jogada direcional ao estado do jogo.
 aplicaJogadaDirecional :: Char -> Worms -> Worms
-aplicaJogadaDirecional c w = 
-    case dirFromKey c of
-        Nothing -> w
-        Just d  ->
-            let n = selW w
-                sj = selJ w 
-                j = jogadaFromSel sj d
-                e = jogo w
-                e' = aplicaEfetua n j e
-            in w { jogo = e' }
+aplicaJogadaDirecional c w =
+  case dirFromKey c of
+    Nothing -> w
+    Just d  ->
+      let n  = selW w
+          sj = selJ w
+          j  = jogadaFromSel sj d
+          e  = jogo w
+          e' = aplicaEfetua n j e
+      in w { jogo = e' }
 
 
 
@@ -93,10 +93,11 @@ jogadaFromSel :: SelJogada -> Direcao -> Jogada
 jogadaFromSel j d =
   case j of
     -- movimento (ignora o d recebido e usa a direção “fixa” do seletor)
-    MoveUp    -> Move Norte
-    MoveDown  -> Move Sul
-    MoveRight -> Move Este
-    MoveLeft  -> Move Oeste
+    MoveUp    -> Move Cima
+    MoveDown  -> Move Baixo
+    MoveRight -> Move Direita
+    MoveLeft  -> Move Esquerda
+
 
     -- armas existentes
     UsaJetpack    -> Dispara Jetpack d
