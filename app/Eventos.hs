@@ -4,12 +4,8 @@ import Graphics.Gloss.Interface.Pure.Game
 
 import Worms
 import Labs2025
-import Tarefa0_2025
-import Tarefa0_geral
-import Tarefa1
 import Tarefa2
-import Tarefa3
-import Tarefa4
+
 
 {-
 Eventos.hs
@@ -42,9 +38,9 @@ Eventos.hs
 reageEventos :: Event -> Worms -> Worms
 reageEventos evento w =
   case evento of
-    EventKey (Char '1') Down modifiers mousePos -> selecionaMinhocaSeguinte w
-    EventKey (Char '2') Down modifiers mousePos -> selecionaJogadaSeguinte w
-    EventKey (Char c)   Down modifiers mousePos | c `elem` "wasdWASD" -> aplicaJogadaDirecional (toLowerASCIISafe c) w
+    EventKey (Char '1') Down _ _ -> selecionaMinhocaSeguinte w
+    EventKey (Char '2') Down _ _ -> selecionaJogadaSeguinte w
+    EventKey (Char c)   Down _ _ | c `elem` "wasdWASD" -> aplicaJogadaDirecional (toLowerASCIISafe c) w
     _ -> w
   where
     toLowerASCIISafe ch = case ch of
