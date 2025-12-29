@@ -46,16 +46,9 @@ desenha w = -- vai ser implementada depois de todas as outras funcoes serem feit
                 
         hudPic = desenhaHUD w 
 
--- | funcao que desenha o mapa
-desenhaMapa :: Mapa -> Picture
-desenhaMapa mapa =
-  Pictures
-    [ Translate (offX + x) (offY + y) (desenhaTerreno t)
-    | (linha, row) <- zip mapa [0..]
-    , (t, col)     <- zip linha [0..]
-    , let x = fromIntegral col * tileSize + tileSize/2
-    , let y = - (fromIntegral row * tileSize + tileSize/2)
-    ]
+-- | funcao que calcula o offset do mapa para o centro da janela
+mapOffset :: Mapa -> (Float, Float)
+mapOffset mapa = (offX, offY)
   where
     h = fromIntegral (length mapa) * tileSize
     w =
@@ -67,30 +60,38 @@ desenhaMapa mapa =
     offY =  h / 2
 
 
-desenhaMinhoca :: Bool -> Posicao -> Picture
-desenhaMinhoca selecionada (xGrid, yGrid) =
-  Translate x y
+-- | funcao que desenha o mapa
+desenhaMapa :: Mapa -> Picture
+desenhaMapa mapa =
+  Pictures
+    [ Translate (offX + x) (offY + y) (desenhaTerreno t)
+    | (linha, row) <- zip mapa [0..]
+    , (t, col)     <- zip linha [0..]
+    , let x = fromIntegral col * tileSize + tileSize/2
+    , let y = - (fromIntegral row * tileSize + tileSize/2)
+    ]
+  where
+    (offX, offY) = mapOffset mapa
+
+
+
+desenhaMinhoca :: Mapa -> Bool -> Posicao -> Picture
+desenhaMinhoca mapa selecionada (xGrid, yGrid) =
+  Translate (offX + x) (offY + y)
     (Pictures
-      [ -- destaque se estiver selecionada
-        if selecionada
-          then Color (rgb 255 215 0)
-                 (circleSolid (wormRadius + 3))
+      [ if selecionada
+          then Color (rgb 255 215 0) (circleSolid (wormRadius + 3))
           else Blank
-
-      , -- corpo da minhoca
-        Color (rgb 60 170 90)
-          (circleSolid wormRadius)
-
-      , -- olho simples (opcional)
-        Translate (wormRadius / 3) (wormRadius / 4)
-          (Color black (circleSolid 2))
+      , Color (rgb 60 170 90) (circleSolid wormRadius)
       ])
   where
-    x = fromIntegral xGrid * tileSize
-    y = - fromIntegral yGrid * tileSize
-
+    (offX, offY) = mapOffset mapa
+    x = fromIntegral xGrid * tileSize + tileSize/2
+    y = - (fromIntegral yGrid * tileSize + tileSize/2
+          )
 wormRadius :: Float
 wormRadius = tileSize * 0.35
+
 
 -- | Funcao que desenha as minhocas
 desenhaMinhocas :: Estado -> Int -> Picture
