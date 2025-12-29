@@ -50,10 +50,10 @@ rgb r g b =
 corTerreno :: Terreno -> Color
 corTerreno t = 
     case t of
-        Agua    -> undefined
-        Ar      -> undefined
-        Terra   -> undefined
-        Pedra   -> undefined
+        Ar          -> makeColor 0 0 0 0
+        Agua        -> rgb 118 213 254 -- azul claro
+        Terra       -> rgb 99 45 0 -- castanho claro
+        Pedra       -> rgb 154 153 150 -- cinza escuro
 
 -- | Funcao que desenha o HUD
 desenhaHUD :: Worms -> Picture
