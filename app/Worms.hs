@@ -66,8 +66,8 @@ wormsValidas e =
   ]
 
 -- Cicla a seleção de worm para a próxima worm válida.
-cycleSel :: Estado -> Int -> Int
-cycleSel e atual = 
+cycleSelW :: Estado -> Int -> Int
+cycleSelW e atual = 
   case wormsValidas e of 
     [] -> atual
     ws -> 
