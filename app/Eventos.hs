@@ -71,10 +71,10 @@ selecionaJogadaSeguinte w = w { selJ = nextSelJogada (selJ w) }
 dirFromKey :: Char -> Maybe Direcao
 dirFromKey c =
     case c of
-        'w' -> Just Cima
-        'a' -> Just Esquerda
-        's' -> Just Baixo
-        'd' -> Just Direita
+        'w' -> Just Norte
+        'a' -> Just Oeste
+        's' -> Just Sul
+        'd' -> Just Este
         _   -> Nothing
 
 -- | Função que aplica uma jogada direcional ao estado do jogo.
