@@ -18,7 +18,7 @@ import Labs2025
 
 -- | Tamanho de cada tile no mapa (em pixels).
 tileSize :: Float
-tileSize = 50.0 -- valor inicial, pode ser ajustado conforme necessário
+tileSize = 30.0 -- valor inicial, pode ser ajustado conforme necessário
 
 -- | Função que desenha o estado do jogo no Gloss.
 desenha :: Worms -> Picture
