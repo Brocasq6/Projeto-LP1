@@ -21,22 +21,24 @@ desenha :: Worms -> Picture
 desenha w = -- vai ser implementada depois de todas as outras funcoes serem feitas
     Pictures [mapaPic, wormsPic, hudPic]
     where
+        e = jogo w
+        mapa = mapaEstado e
 
-         alturaMapa = fromIntegral (length mapaEstado (jogo w)) * tileSize
+        alturaMapa = fromIntegral (length mapa) * tileSize
 
         -- funcao que determina a largura do mapa
         larguraMapa = 
-            case mapaEstado (jogo w) of
+            case mapa of
                 [] -> 0
                 (linha:_) -> fromIntegral (length linha) * tileSize
 
         mapaPic =
-            Translate (larguraMapa/2) (alturaMapa / 2) -- map width 
-                (desenhaMapa (mapaEstado (jogo w)))
+            Translate ( larguraMapa / 2 ) ( alturaMapa / 2 ) -- map width 
+                (desenhaMapa mapa)
 
         wormsPic =
-            Translate (larguraMapa/2) (alturaMapa / 2) -- map width 
-                (desenhaMinhocas (jogo w) (selW w)) 
+            Translate ( larguraMapa / 2 ) ( alturaMapa / 2 ) -- map width 
+                (desenhaMinhocas e (selW w)) 
                 
         hudPic = desenhaHUD w 
 
