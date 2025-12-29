@@ -35,11 +35,66 @@ fundo = black
 fr :: Int
 fr = 60
 
+-- Exemplo: mapa 40x25
+mapaInicial :: Mapa
+mapaInicial =
+  [ [ tile x y | x <- [0..w-1] ] | y <- [0..h-1] ]
+  where
+    w = 40
+    h = 25
+
+    tile x y
+      -- “borda” em pedra
+      | x == 0 || x == w-1 || y == 0 || y == h-1 = Pedra
+
+      -- chão: últimas 5 linhas em Terra
+      | y >= h-6 = Terra
+
+      -- um “bloco” de pedra no meio (obstáculo)
+      | x >= 18 && x <= 22 && y >= 12 && y <= 14 = Pedra
+
+      -- resto é ar
+      | otherwise = Ar
+
+
+minhoca0 :: Minhoca
+minhoca0 =
+  Minhoca
+    { posicaoMinhoca = Just (6, 18)
+    , vidaMinhoca    = Viva       -- ou 100 / ou outro construtor
+    , armasMinhoca   = armasIniciais
+    }
+
+minhoca1 :: Minhoca
+minhoca1 =
+  Minhoca
+    { posicaoMinhoca = Just (32, 18)
+    , vidaMinhoca    = Viva
+    , armasMinhoca   = armasIniciais
+    }
+
+armasIniciais :: Armas
+armasIniciais =
+  Armas
+    { jetpack    = 1
+    , escavadora = 1
+    , bazuca     = 1
+    , mina       = 1
+    , dinamite   = 1
+    }
+
+
+estadoInicial :: Estado
+estadoInicial =
+  Estado
+    { mapaEstado     = mapaInicial
+    , minhocasEstado = [minhoca0, minhhoca1]
+    , objetosEstado  = []
+    }
+
 -- | Função principal que invoca o Gloss para correr o jogo.
 main :: IO ()
 main = do
-  putStrLn "Hello from Worms!"
-
   play janela fundo fr it desenha reageEventos reageTempo
   where
-    it = Worms {}
+    it = defaultWorms estadoInicial
