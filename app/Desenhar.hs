@@ -85,9 +85,38 @@ desenhaMinhocas e sel =
   where
     mapa = mapaEstado e
 
+desenhaMinhoca :: Mapa -> Bool -> Posicao -> Picture
+desenhaMinhoca mapa selecionada (xGrid, yGrid) =
+  Translate (offX + x) (offY + y)
+    (Pictures
+      [ -- destaque (anel) se estiver selecionada
+        if selecionada
+          then Color (rgb 255 215 0)
+                 (circleSolid (wormRadius + 3))
+          else Blank
+
+      , -- corpo da minhoca
+        Color (rgb 60 170 90)
+          (circleSolid wormRadius)
+      ])
+  where
+    -- offset para centrar o mapa
+    offX = -w / 2
+    offY =  h / 2
+
+    h = fromIntegral (length mapa) * tileSize
+    w =
+      case mapa of
+        []      -> 0
+        (l : _) -> fromIntegral (length l) * tileSize
+
+    -- posição da minhoca no ecrã (centro do tile)
+    x = fromIntegral xGrid * tileSize + tileSize / 2
+    y = - (fromIntegral yGrid * tileSize + tileSize / 2)
 
 wormRadius :: Float
 wormRadius = tileSize * 0.35
+
 
 
 -- | Funcao que desenha o terreno 
