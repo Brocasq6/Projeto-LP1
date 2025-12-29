@@ -5,6 +5,7 @@ import Graphics.Gloss.Interface.Pure.Game
 import Worms
 import Labs2025
 import Tarefa2
+import Tarefa0_geral
 
 
 {-
@@ -67,10 +68,10 @@ selecionaJogadaSeguinte w = w { selJ = nextSelJogada (selJ w) }
 dirFromKey :: Char -> Maybe Direcao
 dirFromKey c =
     case c of
-        'w' -> Just Cima
-        'a' -> Just Esquerda
-        's' -> Just Baixo
-        'd' -> Just Direita
+        'w' -> Just Norte
+        'a' -> Just Oeste
+        's' -> Just Sul
+        'd' -> Just Este
         _   -> Nothing
 
 -- | Função que aplica uma jogada direcional ao estado do jogo.
@@ -93,10 +94,10 @@ jogadaFromSel :: SelJogada -> Direcao -> Jogada
 jogadaFromSel j d =
   case j of
     -- movimento (ignora o d recebido e usa a direção “fixa” do seletor)
-    MoveUp    -> Move Cima
-    MoveDown  -> Move Baixo
-    MoveRight -> Move Direita
-    MoveLeft  -> Move Esquerda
+    MoveUp    -> Move Norte
+    MoveDown  -> Move Sul
+    MoveRight -> Move Este
+    MoveLeft  -> Move Oeste
 
 
     -- armas existentes
