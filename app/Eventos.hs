@@ -103,8 +103,8 @@ jogadaFromSel j d =
     MoveLeft  -> Move Oeste
 
     -- armas existentes
-    UsaJetpack    -> UsaJetpack d
-    UsaEscavadora -> UsaEscavadora d
+    UsaJetpack    -> Dispara Jetpack d
+    UsaEscavadora -> Dispara Escavadora d
     DisparaBazuca -> Dispara Bazuca d
     LargaMina     -> Dispara Mina d
     LargaDinamite -> Dispara Dinamite d
