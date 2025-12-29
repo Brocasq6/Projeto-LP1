@@ -7,7 +7,6 @@ import Eventos
 import Worms
 import Tempo
 import Labs2025
-import Tarefa0_2025
 import Tarefa0_geral
 import Tarefa1
 import Tarefa2
