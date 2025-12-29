@@ -20,44 +20,36 @@ import Labs2025
 tileSize :: Float
 tileSize = 30.0 -- valor inicial, pode ser ajustado conforme necessário
 
+-- | Dimensões da janela do jogo
+screenW, screenH :: Float
+screenW = 1920
+screenH = 1080
+
+
+
 -- | Função que desenha o estado do jogo no Gloss.
 desenha :: Worms -> Picture
-desenha w = -- vai ser implementada depois de todas as outras funcoes serem feitas
-    Pictures [mapaPic, wormsPic, hudPic]
-    where
-        e = jogo w
-        mapa = mapaEstado e
+desenha w =
+  Pictures
+    [ desenhaMapa mapa
+    , desenhaMinhocas e (selW w)
+    , desenhaHUD w
+    ]
+  where
+    e    = jogo w
+    mapa = mapaEstado e
 
-        alturaMapa = fromIntegral (length mapa) * tileSize
-
-        -- funcao que determina a largura do mapa
-        larguraMapa = 
-            case mapa of
-                [] -> 0
-                (linha:_) -> fromIntegral (length linha) * tileSize
-
-        mapaPic =
-            Translate ( larguraMapa / 2 ) ( alturaMapa / 2 ) -- map width 
-                (desenhaMapa mapa)
-
-        wormsPic =
-            Translate ( larguraMapa / 2 ) ( alturaMapa / 2 ) -- map width 
-                (desenhaMinhocas e (selW w)) 
-                
-        hudPic = desenhaHUD w 
 
 -- | funcao que calcula o offset do mapa para o centro da janela
 mapOffset :: Mapa -> (Float, Float)
-mapOffset mapa = (offX, offY)
+mapOffset mapa = (-mapW / 2, mapH / 2)
   where
-    h = fromIntegral (length mapa) * tileSize
-    w =
+    mapH = fromIntegral (length mapa) * tileSize
+    mapW =
       case mapa of
         []      -> 0
         (l : _) -> fromIntegral (length l) * tileSize
 
-    offX = -w / 2
-    offY =  h / 2
 
 
 -- | funcao que desenha o mapa
@@ -72,6 +64,7 @@ desenhaMapa mapa =
     ]
   where
     (offX, offY) = mapOffset mapa
+
 
 
 desenhaMinhocas :: Estado -> Int -> Picture
