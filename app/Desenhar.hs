@@ -50,10 +50,22 @@ desenha w = -- vai ser implementada depois de todas as outras funcoes serem feit
 desenhaMapa :: Mapa -> Picture
 desenhaMapa mapa =
   Pictures
-    [ Translate x y (desenhaTerreno t)
-    | (linha, y) <- zip mapa [0, -tileSize ..]
-    , (t, x)     <- zip linha [0, tileSize ..]
+    [ Translate (offX + x) (offY + y) (desenhaTerreno t)
+    | (linha, row) <- zip mapa [0..]
+    , (t, col)     <- zip linha [0..]
+    , let x = fromIntegral col * tileSize + tileSize/2
+    , let y = - (fromIntegral row * tileSize + tileSize/2)
     ]
+  where
+    h = fromIntegral (length mapa) * tileSize
+    w =
+      case mapa of
+        []      -> 0
+        (l : _) -> fromIntegral (length l) * tileSize
+
+    offX = -w / 2
+    offY =  h / 2
+
 
 desenhaMinhoca :: Bool -> Posicao -> Picture
 desenhaMinhoca selecionada (xGrid, yGrid) =
