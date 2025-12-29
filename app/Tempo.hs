@@ -18,4 +18,7 @@ type Segundos = Float
 
 -- | Função que avança o tempo no estado do jogo no Gloss.
 reageTempo :: Segundos -> Worms -> Worms
-reageTempo _ it = it
+reageTempo _ it =
+    let e' = avancaEstado (jogo it)
+        it' = it { jogo = e' }
+    in it' { selW = cycleSelW e' (selW it') }
