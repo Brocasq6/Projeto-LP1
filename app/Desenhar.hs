@@ -90,18 +90,7 @@ wormRadius :: Float
 wormRadius = tileSize * 0.35
 
 
--- | Funcao que desenha as minhocas
-desenhaMinhocas :: Estado -> Int -> Picture
-desenhaMinhocas e sel =
-  Pictures
-    [ desenhaMinhoca (i == sel) pos
-    | (i, m) <- zip [0..] (minhocasEstado e)
-    , Just pos <- [posicaoMinhoca m]     -- só desenha se tiver posição
-    , vidaMinhoca m /= Morta            -- opcional: ignora mortas
-    ]
-
 -- | Funcao que desenha o terreno 
-
 desenhaTerreno :: Terreno -> Picture
 desenhaTerreno t =
   Color (corTerreno t) (rectangleSolid tileSize tileSize)
