@@ -70,7 +70,6 @@ minhoca0 =
   Minhoca
     { posicaoMinhoca = Just (6, 18)
     , vidaMinhoca    = Viva       -- ou 100 / ou outro construtor
-    , armasMinhoca   = armasIniciais
     }
 
 minhoca1 :: Minhoca
