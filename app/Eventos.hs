@@ -67,12 +67,12 @@ selecionaJogadaSeguinte w = w { selJ = nextSelJogada (selJ w) }
 -- | Função que converte uma tecla em direção.
 dirFromKey :: Char -> Maybe Direcao
 dirFromKey c =
-case c of
-    'w' -> Just Norte
-    'a' -> Just Oeste
-    's' -> Just Sul
-    'd' -> Just Este
-    _   -> Nothing
+    case c of
+        'w' -> Just Norte
+        'a' -> Just Oeste
+        's' -> Just Sul
+        'd' -> Just Este
+        _   -> Nothing
 
 
 
