@@ -19,11 +19,20 @@ tileSize = 20.0 -- valor inicial, pode ser ajustado conforme necessário
 -- | Função que desenha o estado do jogo no Gloss.
 desenha :: Worms -> Picture
 desenha w = -- vai ser implementada depois de todas as outras funcoes serem feitas
-    Pictures [mapaPic, minhocasPic, hudPic]
+    Pictures [mapaPic, wormsPic, hudPic]
     where
-        mapaPic = undefined
-        minhocasPic = undefined
-        hudPic = undefined 
+
+         h = fromIntegral (length mapa) * tileSize
+
+        mapaPic =
+            Translate _ (h / 2) -- map width 
+                (desenhaMapa (mapaEstado (jogo w)))
+
+        wormsPic =
+            Translate _ (h / 2) -- map width 
+                (desenhaMinhocas (jogo w) (selW w)) 
+                
+        hudPic = desenhaHUD w 
 
 -- | funcao que desenha o mapa
 desenhaMapa :: Mapa -> Picture
