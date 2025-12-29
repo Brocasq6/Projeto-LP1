@@ -68,14 +68,14 @@ minhoca0 :: Minhoca
 minhoca0 =
   Minhoca
     { posicaoMinhoca = Just (6, 18)
-    , vidaMinhoca    = Viva       -- ou 100 / ou outro construtor
+    , vidaMinhoca    = Viva 100 -- ou 100 / ou outro construtor
     }
 
 minhoca1 :: Minhoca
 minhoca1 =
   Minhoca
     { posicaoMinhoca = Just (32, 18)
-    , vidaMinhoca    = Viva
+    , vidaMinhoca    = Viva 100
     }
 
 
