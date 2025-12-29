@@ -38,19 +38,6 @@ Eventos.hs
 
 -}
 
--- | Jogadas possíveis selecionáveis pelo jogador
-data SelJogada
-  = MoveUp
-  | MoveDown
-  | MoveLeft
-  | MoveRight
-  | UsaJetpack
-  | UsaEscavadora
-  | DisparaBazuca
-  | LargaMina
-  | LargaDinamite
-  deriving (Eq, Enum, Bounded, Show)
-
 -- | Função que altera o estado do jogo no Gloss.
 reageEventos :: Event -> Worms -> Worms
 reageEventos evento w =
@@ -76,35 +63,9 @@ selecionaMinhocaSeguinte w =
         novaSel = cycleSelW e x
     in w { selW = novaSel }
 
--- | Função que retorna as minhocas válidas no estado do jogo.
-wormsValidas :: Estado -> [Int]
-wormsValidas e =
-  [ i
-  | (i,m) <- zip [0..] (minhocasEstado e)
-  , posicaoMinhoca m /= Nothing
-  , vidaMinhoca m /= Morta
-  ]
-
--- | Função que avança para a próxima minhoca selecionada.
-cycleSelW :: Estado -> Int -> Int
-cycleSelW e atual =
-  case wormsValidas e of
-    [] -> 0
-    ws ->
-      let k = case elemIndex atual ws of
-                Nothing -> 0
-                Just j  -> (j + 1) `mod` length ws
-      in ws !! k
-
 -- | Função que avança para a próxima minhoca selecionada.
 selecionaJogadaSeguinte :: Worms -> Worms
 selecionaJogadaSeguinte w = w { selJ = nextSelJogada (selJ w) }
-
--- | Função que avança para a próxima jogada selecionada.
-nextSelJogada :: SelJogada -> SelJogada
-nextSelJogada j
-  | j == maxBound = minBound
-  | otherwise     = succ j
 
 -- | Função que converte uma tecla em direção.
 dirFromKey :: Char -> Maybe Direcao
@@ -123,7 +84,8 @@ aplicaJogadaDirecional c w =
         Nothing -> w
         Just d  ->
             let n = selW w
-                j = selJ w 
+                sj = selJ w 
+                j = jogadaFromSel sj d
                 e = jogo w
                 e' = aplicaEfetua n j e
             in w { jogo = e' }
