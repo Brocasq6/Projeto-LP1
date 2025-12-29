@@ -67,20 +67,23 @@ selecionaJogadaSeguinte w = w { selJ = nextSelJogada (selJ w) }
 -- | Função que converte uma tecla em direção.
 dirFromKey :: Char -> Maybe Direcao
 dirFromKey c =
-    case c of
-        'w' -> Just Norte
-        'a' -> Just Oeste
-        's' -> Just Sul
-        'd' -> Just Este
-        _   -> Nothing
+case c of
+    'w' -> Just Norte
+    'a' -> Just Oeste
+    's' -> Just Sul
+    'd' -> Just Este
+    _   -> Nothing
+
+
 
 -- | Função que aplica uma jogada direcional ao estado do jogo.
+aplicaJogadaDirecional :: Char -> Worms -> Worms
 aplicaJogadaDirecional c w =
   case dirFromKey c of
     Nothing -> w
     Just d  ->
-      let e' = efetuaJogada (selW w) (Move d) (jogo w)
-      in w { jogo = e' }
+      w { jogo = efetuaJogada (selW w) (Move d) (jogo w) }
+
 
 
 
