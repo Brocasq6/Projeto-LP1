@@ -77,7 +77,7 @@ desenhaMapa mapa =
 desenhaMinhocas :: Estado -> Int -> Picture
 desenhaMinhocas e sel =
   Pictures
-    [ desenhaMinhoca mapa (i == sel) pos
+    [ desenhaMinhocas mapa (i == sel) pos
     | (i, m) <- zip [0..] (minhocasEstado e)
     , Just pos <- [posicaoMinhoca m]
     , vidaMinhoca m /= Morta
