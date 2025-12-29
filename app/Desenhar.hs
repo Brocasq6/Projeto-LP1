@@ -22,14 +22,20 @@ desenha w = -- vai ser implementada depois de todas as outras funcoes serem feit
     Pictures [mapaPic, wormsPic, hudPic]
     where
 
-         h = fromIntegral (length mapa) * tileSize
+         alturaMapa = fromIntegral (length mapaEstado (jogo w)) * tileSize
+
+        -- funcao que determina a largura do mapa
+        larguraMapa = 
+            case mapaEstado (jogo w) of
+                [] -> 0
+                (linha:_) -> fromIntegral (length linha) * tileSize
 
         mapaPic =
-            Translate _ (h / 2) -- map width 
+            Translate (larguraMapa/2) (alturaMapa / 2) -- map width 
                 (desenhaMapa (mapaEstado (jogo w)))
 
         wormsPic =
-            Translate _ (h / 2) -- map width 
+            Translate (larguraMapa/2) (alturaMapa / 2) -- map width 
                 (desenhaMinhocas (jogo w) (selW w)) 
                 
         hudPic = desenhaHUD w 
