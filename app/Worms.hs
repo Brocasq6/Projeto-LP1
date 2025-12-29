@@ -37,7 +37,9 @@ nextSelJogada j
 
 -- | Seleciona a jogada anterior na lista de jogadas possíveis.
 prevSelJogada :: SelJogada -> SelJogada
-prevSelJogada j = undefined
+prevSelJogada j = 
+  | j == minbound = maxBound
+  | otherwise     = pred j
 
 -- | Cria o estado inicial do jogo Worms a partir de um Estado.
 defaultWorms :: Estado -> Worms
@@ -65,4 +67,12 @@ wormsValidas e =
 
 -- Cicla a seleção de worm para a próxima worm válida.
 cycleSel :: Estado -> Int -> Int
-cycleSel e = undefined
+cycleSel e atual = 
+  case wormsValidas e of 
+    [] -> atual
+    ws -> 
+      let k = case elemIndex atual ws of
+                Just i  -> (i + 1) `mod` length ws
+                Nothing -> 0
+      in ws !! k
+
