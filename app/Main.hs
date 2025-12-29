@@ -86,7 +86,7 @@ estadoInicial :: Estado
 estadoInicial =
   Estado
     { mapaEstado     = mapaInicial
-    , minhocasEstado = [minhoca0, minhhoca1]
+    , minhocasEstado = [minhoca0, minhoca1]
     , objetosEstado  = []
     }
 
