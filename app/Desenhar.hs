@@ -30,11 +30,7 @@ screenH = 1080
 -- | Função que desenha o estado do jogo no Gloss.
 desenha :: Worms -> Picture
 desenha w =
-  Pictures
-    [ desenhaMapa mapa
-    , desenhaMinhocas e (selW w)
-    , desenhaHUD w
-    ]
+  Pictures [desenhaMapa mapa, desenhaMinhocas e (selW w), desenhaHUD w]
   where
     e    = jogo w
     mapa = mapaEstado e
@@ -139,10 +135,17 @@ corTerreno t =
 -- | Funcao que desenha o HUD
 desenhaHUD :: Worms -> Picture
 desenhaHUD w =
-  Translate (-600) 400 
-    (Scale 0.15 0.15 
-      (Color black 
-        (Text ("Minhoca: " ++ show (selW w)))))
+  Translate (-900) 480
+    (Scale 0.18 0.18
+      (Color black
+        (Text ("Sel=" ++ show (selW w) ++ "  Pos=" ++ show pos))))
+  where
+    e   = jogo w
+    ms  = minhocasEstado e
+    pos =
+      if null ms then Nothing
+      else posicaoMinhoca (ms !! selW w)
+
 
 
 
