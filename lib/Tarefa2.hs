@@ -150,29 +150,27 @@ substitui idx novo xs =
   take idx xs ++ [novo] ++ drop (idx + 1) xs
 
 
-dentroMapa :: Posicao -> Mapa -> Bool
-dentroMapa (l,c) mapa =
-  l >= 0 && c >= 0 &&
-  l < length mapa &&
-  (not (null mapa) && c < length (head mapa))
-
-
 -- | Move a minhoca i na direção dada, se as regras permitirem.
 moveSeDer :: NumMinhoca -> Direcao -> Estado -> Estado
 moveSeDer i dir e =
   case getMinhoca i e of
     Nothing -> e
-    Just m ->
+    Just m  ->
       case posicaoMinhoca m of
         Nothing -> e
         Just p  ->
-          let p'   = proximaPos dir p
-              mapa = mapaEstado e
-          in if not (dentroMapa p' mapa)
-               then e
-               else
-                 -- aqui entra a tua regra de colisão (Terra/Pedra/etc.)
-                 if bloqueado p' mapa then e else setMinhocaPos i p' e
+          let
+            mapa = mapaEstado e
+            p'   = proximaPosicao dir p
+          in
+            if not (dentroMapa p' mapa)
+              then e
+              else
+                case encontraPosicaoMatriz p' mapa of
+                  Just Terra -> e
+                  Just Pedra -> e
+                  _          -> setMinhocaPos i p' e
+
 
 
 
