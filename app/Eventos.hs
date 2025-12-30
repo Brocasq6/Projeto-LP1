@@ -67,9 +67,9 @@ dirFromKey :: Char -> Maybe Direcao
 dirFromKey c =
   case c of
     'd' -> Just Norte
-    'w' -> Just Oeste
+    's' -> Just Oeste
     'a' -> Just Sul
-    's' -> Just Este
+    'w' -> Just Este
     _   -> Nothing
 
 
