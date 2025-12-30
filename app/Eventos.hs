@@ -66,10 +66,10 @@ selecionaJogadaSeguinte w = w { selJ = nextSelJogada (selJ w) }
 dirFromKey :: Char -> Maybe Direcao
 dirFromKey c =
   case c of
-    'd' -> Just Norte
-    's' -> Just Oeste
-    'a' -> Just Sul
-    'w' -> Just Este
+    'w' -> Just Sul
+    'a' -> Just Oeste
+    's' -> Just Norte
+    'd' -> Just Este
     _   -> Nothing
 
 
