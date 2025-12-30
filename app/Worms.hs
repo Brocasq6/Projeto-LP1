@@ -83,7 +83,7 @@ wormsValidas e =
   , vidaMinhoca m /= Morta
   ]
 
--- Cicla a seleção de worm para a próxima worm válida.
+-- | Cicla a seleção de worm para a próxima worm válida.
 cycleSelW :: Estado -> Int -> Int
 cycleSelW e atual = 
   case wormsValidas e of 
@@ -93,4 +93,3 @@ cycleSelW e atual =
                 Just i  -> (i + 1) `mod` length ws
                 Nothing -> 0
       in ws !! k
-
