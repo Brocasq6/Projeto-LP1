@@ -44,10 +44,8 @@ proximaPosicao dir (l,c) =
     Sul -> (l+1, c)
     Este -> (l, c+1)      
     Oeste -> (l, c-1)
-    Nordeste -> (l-1, c+1)
-    Noroeste -> (l-1, c-1)
-    Sudeste -> (l+1, c+1)
-    Sudoeste -> (l+1, c-1)
+    _ -> (l, c)  -- caso de segurança
+
 
 -- tenta mover a minhoca n, respeitando mapa/colisões/terreno
 -- | move APENAS a minhoca idx segundo as regras dos testes
@@ -159,14 +157,13 @@ moveSeDer i dir e =
       case posicaoMinhoca m of
         Nothing -> e
         Just p  ->
-          let p'   = somaDir dir p
+          let p'   = proximaPosicao dir p
               mapa = mapaEstado e
-          in case encontraPosicaoMatriz p' mapa of
-               Nothing -> e                      -- fora do mapa
-               Just t  ->
-                 if t == Terra || t == Pedra
-                   then e                        -- bloqueado
-                   else setMinhocaPos i p' e     -- move
+          in
+            if ePosicaoMapaLivre p' (mapaEstado e)
+               && ePosicaoEstadoLivre p' e
+              then setMinhocaPos i p' e
+              else e
   where
     somaDir d (x,y) =
       case d of
