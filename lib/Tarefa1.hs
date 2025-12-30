@@ -251,3 +251,4 @@ eTerrenoOpaco terreno =
         Terra -> True
         Pedra -> True
         _ -> False
+------------------------------------------------------

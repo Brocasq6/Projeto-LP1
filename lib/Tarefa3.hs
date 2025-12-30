@@ -30,17 +30,17 @@ avancaMinhoca estado _ minhoca
   | minhocaMorta minhoca = minhoca
   | otherwise =
       case posicaoMinhoca minhoca of
-        Nothing -> minhoca
-        Just posicao -> atualizaPosicaoGravidade estado minhoca posicao
+        Nothing       -> minhoca
+        Just posicao  -> atualizaPosicaoGravidade estado minhoca posicao
 
 -- | Atualiza a posição de uma minhoca aplicando a gravidade.
 atualizaPosicaoGravidade :: Estado -> Minhoca -> Posicao -> Minhoca
 atualizaPosicaoGravidade estado minhoca posicao = 
   case terrenoNaPosicao abaixo mapa of 
-    Nothing -> mataMinhoca minhoca Nothing
-    Just Agua -> mataMinhoca minhoca (Just abaixo)
-    Just Ar -> minhoca { posicaoMinhoca = Just (aplicaGravidade abaixo mapa)}
-    _ -> minhoca
+    Nothing       -> mataMinhoca minhoca Nothing
+    Just Agua     -> mataMinhoca minhoca (Just abaixo)
+    Just Ar       -> minhoca { posicaoMinhoca = Just (aplicaGravidade abaixo mapa)}
+    _             -> minhoca
   where
     mapa = mapaEstado estado
     abaixo = (fst posicao + 1 , snd posicao)
@@ -49,7 +49,7 @@ atualizaPosicaoGravidade estado minhoca posicao =
 minhocaMorta :: Minhoca -> Bool
 minhocaMorta minhoca =
     case vidaMinhoca minhoca of
-       Morta -> True
+       Morta  -> True
        Viva _ -> False
 
 -- | mata uma minhoca, definindo a sua vida como Morta e a sua posição como Nothing
@@ -60,8 +60,8 @@ mataMinhoca minhoca pos = minhoca { vidaMinhoca = Morta, posicaoMinhoca = pos }
 
 -- | Posição de um objeto
 posicaoObjeto :: Objeto -> Posicao
-posicaoObjeto (Barril  p _) = p
-posicaoObjeto (Disparo p _ _ _ _)  = p
+posicaoObjeto (Barril  p _)         = p
+posicaoObjeto (Disparo p _ _ _ _)   = p
 
 -- | Retorna o terreno na posição dada do mapa.
 terrenoNaPosicao :: Posicao -> Mapa -> Maybe Terreno
@@ -74,18 +74,18 @@ terrenoNaPosicao (l,c) m
 estaNoArOuAgua :: Posicao -> Mapa -> Bool   
 estaNoArOuAgua posicao mapa =
     case terrenoNaPosicao posicao mapa of
-        Just Agua -> True
-        Just Ar -> True
-        _ -> False
+        Just Agua     -> True
+        Just Ar       -> True
+        _             -> False
 
 -- | Verifica se uma posição é válida (dentro do mapa e não ocupada por terreno opaco).
 posicaoValida :: Posicao -> Mapa -> Bool    
 posicaoValida posicao mapa =
     case terrenoNaPosicao posicao mapa of
-        Just Pedra -> False
-        Just Terra -> False
-        Nothing -> False
-        _ -> True
+        Just Pedra    -> False
+        Just Terra    -> False
+        Nothing       -> False
+        _             -> True
   
 -- | Aplica a gravidade a uma posição, retornando a nova posição após a aplicação da gravidade.
 aplicaGravidade :: Posicao -> Mapa -> Posicao   
@@ -119,18 +119,18 @@ avancaObjeto estado _ obj =
     -- Disparo: agora sim podemos olhar para tipoDisparo
     Disparo{}  ->
       case tipoDisparo obj of
-        Bazuca   -> avancaBazuca   estado obj
-        Mina     -> avancaMina     estado obj
-        Dinamite -> avancaDinamite estado obj
-        Jetpack  -> Left obj
-        Escavadora -> Left obj
+        Bazuca      -> avancaBazuca   estado obj
+        Mina        -> avancaMina     estado obj
+        Dinamite    -> avancaDinamite estado obj
+        Jetpack     -> Left obj
+        Escavadora  -> Left obj
 
 -- | move APENAS a minhoca idx segundo as regras dos testes
 avancaBarril :: Estado -> Objeto -> Either Objeto Danos
 avancaBarril estado (Barril p prestes) 
   | prestes                                   = Right (geraExplosao p 5)
   | estaNoArOuAgua p (mapaEstado estado)      = Left  (Barril p True)
-  | otherwise                                  = Left  (Barril p prestes)
+  | otherwise                                 = Left  (Barril p prestes)
 avancaBarril _ obj = Left obj  -- fallback seguro
 
 -- | move APENAS a minhoca idx segundo as regras dos testes
@@ -148,16 +148,14 @@ data Hit = Livre | Bate | Fora
 
 colisaoBazuca :: Posicao -> Mapa -> [Objeto] -> Hit
 colisaoBazuca p mapa objs
-  | not (dentroMapa p mapa) = Fora
-  | opaco terreno           = Bate
+  | not (dentroMapa p mapa)           = Fora
+  | opaco terreno                     = Bate
   | any ((== p) . posicaoObjeto) objs = Bate
-  | otherwise               = Livre
+  | otherwise                         = Livre
   where
     terreno = terrenoNaPosicao p mapa
     opaco (Just Terra) = True
     opaco (Just Pedra) = True
-    -- se o teu terrenoNaPosicao devolve Nothing apenas fora do mapa,
-    -- já tratámos acima com Fora; aqui fica False.
     opaco _            = False
 
 -- | move APENAS a minhoca idx segundo as regras dos testes
@@ -197,7 +195,6 @@ avancaDinamite est obj =
       let nova = aplicaGravidade (posicaoObjeto obj) (mapaEstado est)
       in Left (obj { posicaoDisparo = nova, tempoDisparo = Just (t-1) })
     Nothing ->
-      -- se dinâmite “armada” sem tempo, mantém/ajusta (se não usas este caso, podes deixar como Left obj)
       let nova = aplicaGravidade (posicaoObjeto obj) (mapaEstado est)
       in Left (obj { posicaoDisparo = nova })
 
@@ -218,7 +215,7 @@ moveDisparo direcao (l,c) =
 colideTerreno :: Posicao -> Mapa -> Bool
 colideTerreno p m =
   case terrenoNaPosicao p m of
-    Nothing   -> True        -- fora do mapa
+    Nothing     -> True        -- fora do mapa
     Just Pedra -> True
     Just Terra -> True
     _          -> False
@@ -347,10 +344,10 @@ calculaDanoMinhocas danos = map aplica
     aplica :: Minhoca -> Minhoca
     aplica m =
       case posicaoMinhoca m of
-        Nothing -> m
-        Just pos ->
+        Nothing   -> m
+        Just pos  ->
           case verificaPosicaoAfetada pos danos of
-            Nothing -> m
+            Nothing   -> m
             Just dano -> reduzVidaOuMata m dano
 
 -- | devolve o total de dano naquela posição, se existir
@@ -363,7 +360,7 @@ verificaPosicaoAfetada pos ds =
 reduzVidaOuMata :: Minhoca -> Dano -> Minhoca
 reduzVidaOuMata m d =
   case vidaMinhoca m of
-    Morta -> m
+    Morta   -> m
     Viva hp -> if d >= hp
                then m { vidaMinhoca = Morta }
                else m { vidaMinhoca = Viva (hp - d) }
@@ -381,9 +378,9 @@ atualizaObjetos danos =
   filter manter
   where
     atingiu p = any (\(q,d) -> q == p && d > 0) danos
-    manter o =
+    manter o  =
       let p = posicaoObjeto o
-      in p /= (-1,-1) && not (atingiu p)
+      in p  /= (-1,-1) && not (atingiu p)
 
 -- | funcao que remove as partes do terreno que foram atingido
 removeTerrenoAtingido :: Posicao -> Mapa -> Mapa
