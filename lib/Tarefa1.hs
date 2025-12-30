@@ -23,7 +23,7 @@ livreDeMinhocas posicao estado = livre posicao (minhocasEstado estado)
     livre _ [] = True
     livre posAtual (minhoca:minhocas)
         | posicaoMinhoca minhoca == Just posAtual = False
-        | otherwise = livre posAtual minhocas
+        | otherwise                               = livre posAtual minhocas
 
 
 -- | Verifica se uma posição está livre de barris num dado estado.
@@ -65,8 +65,8 @@ verificaMinhocas (minhoca:minhocas) estado =
 verificaBarris :: [Objeto] -> Estado -> Bool
 verificaBarris [] _ = True
 verificaBarris (barril:barris) estado
-    | livreDeBarris (posicaoBarril barril) (estado { objetosEstado = barris }) = verificaBarris barris estado
-    | otherwise = False
+    | livreDeBarris (posicaoBarril barril) (estado { objetosEstado = barris })  = verificaBarris barris estado
+    | otherwise                                                                 = False
 
 
 
@@ -135,11 +135,11 @@ tipoDisparoValido arma tempo dono estado =
   && dono < length (minhocasEstado estado)
   && not (minhocaTemDisparo arma dono (objetosEstado estado))
   && case arma of
-       Jetpack -> False
-       Escavadora -> False
-       Bazuca -> tempo == Nothing
-       Mina -> tempo == Nothing || tempo == Just 2
-       Dinamite -> tempo == Just 3
+       Jetpack          -> False
+       Escavadora       -> False
+       Bazuca           -> tempo == Nothing
+       Mina             -> tempo == Nothing || tempo == Just 2
+       Dinamite         -> tempo == Just 3
 
 -- | Verifica se o estado é válido
 validaEstado :: Estado -> Bool
@@ -177,8 +177,8 @@ vidaMorta minhoca =
 vidaValida :: Minhoca -> Bool
 vidaValida minhoca =
     case vidaMinhoca minhoca of
-        Viva n -> n >= 0 && n <= 100
-        Morta -> True
+        Viva n  -> n >= 0 && n <= 100
+        Morta   -> True
 
 -- | função que verifica se as munições da minhoca são válidas
 municoesValidas :: Minhoca -> Bool
@@ -241,8 +241,8 @@ dentroMapa (l, c) mapa =
 -- | Obtém o terreno existente numa posição (se for válida)
 terrenoNaPosicao :: Posicao -> Mapa -> Maybe Terreno
 terrenoNaPosicao (l,c) m
-  | dentroMapa (l,c) m = Just ((m !! l) !! c)
-  | otherwise = Nothing
+  | dentroMapa (l,c) m  = Just ((m !! l) !! c)
+  | otherwise           = Nothing
 
 -- | Determina se o terreno é opaco (não atravessável) 
 eTerrenoOpaco :: Terreno -> Bool --(retirada do ficheiro: Tarefa0_2025.hs)
