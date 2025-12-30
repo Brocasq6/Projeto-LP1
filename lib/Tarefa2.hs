@@ -152,20 +152,29 @@ substitui idx novo xs =
 
 -- | Move a minhoca i na direção dada, se as regras permitirem.
 moveSeDer :: NumMinhoca -> Direcao -> Estado -> Estado
-moveSeDer i dir e@(Estado mapa _ mins)
-  | i < 0 || i >= length mins = e
-  | Nothing <- posicaoMinhoca w = e
-  | Just p <- posicaoMinhoca w
-  , not (dentroMapa p mapa) = e
-  | Just p <- posicaoMinhoca w
-  , not (estaNoAr p mapa && temSoloAbaixo p mapa) = e   
-  | Nothing <- dest = e
-  | Just q <- dest, not (dentroMapa q mapa) = e
-  | Just q <- dest, not (posicaoLivre q e) = e
-  | Just q <- dest = e { minhocasEstado = substitui i (w { posicaoMinhoca = Just q }) mins }
+moveSeDer i dir e =
+  case getMinhoca i e of
+    Nothing -> e
+    Just m  ->
+      case posicaoMinhoca m of
+        Nothing -> e
+        Just p  ->
+          let p'   = somaDir dir p
+              mapa = mapaEstado e
+          in case encontraPosicaoMatriz p' mapa of
+               Nothing -> e                      -- fora do mapa
+               Just t  ->
+                 if t == Terra || t == Pedra
+                   then e                        -- bloqueado
+                   else setMinhocaPos i p' e     -- move
   where
-    w = mins !! i
-    dest = (\p -> Just (proximaPosicao dir p)) =<< posicaoMinhoca w
+    somaDir d (x,y) =
+      case d of
+        Norte -> (x, y-1)
+        Sul   -> (x, y+1)
+        Oeste -> (x-1, y)
+        Este  -> (x+1, y)
+
 
 
 
