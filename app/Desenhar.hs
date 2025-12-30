@@ -62,7 +62,7 @@ desenhaMapa mapa =
     (offX, offY) = mapOffset mapa
 
 
-
+-- | funcao que desenha as minhocas
 desenhaMinhocas :: Estado -> Int -> Picture
 desenhaMinhocas e sel =
   Pictures
@@ -74,6 +74,7 @@ desenhaMinhocas e sel =
   where
     mapa = mapaEstado e
 
+-- | funcao que desenha uma minhoca
 desenhaMinhoca :: Mapa -> Bool -> Posicao -> Picture
 desenhaMinhoca mapa selecionada (xGrid, yGrid) =
   Translate (offX + x) (offY + y)
@@ -103,6 +104,8 @@ desenhaMinhoca mapa selecionada (xGrid, yGrid) =
     x = fromIntegral xGrid * tileSize + tileSize / 2
     y = - (fromIntegral yGrid * tileSize + tileSize / 2)
 
+
+-- | raio da minhoca (em pixels)
 wormRadius :: Float
 wormRadius = tileSize * 0.35
 

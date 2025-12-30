@@ -81,11 +81,6 @@ aplicaJogadaDirecional c w =
     Just d  ->
       w { jogo = efetuaJogada (selW w) (Move d) (jogo w) }
 
-
-
-
-
-
 -- | Função que converte uma seleção de jogada e direção em jogada.
 jogadaFromSel :: SelJogada -> Direcao -> Jogada
 jogadaFromSel j d =
@@ -102,9 +97,6 @@ jogadaFromSel j d =
     DisparaBazuca -> Dispara Bazuca d
     LargaMina     -> Dispara Mina d
     LargaDinamite -> Dispara Dinamite d
-
-         
-
 
 -- | Função que aplica uma jogada ao estado do jogo.
 aplicaEfetua :: Int -> Jogada -> Estado -> Estado

@@ -37,6 +37,7 @@ fr :: Int
 fr = 60
 
 -- Exemplo: mapa 40x25
+
 mapaInicial :: Mapa
 mapaInicial =
   [ [ tile x y | x <- [0..w-1] ] | y <- [0..h-1] ]
@@ -57,7 +58,7 @@ mapaInicial =
       -- resto é ar
       | otherwise = Ar
 
-
+-- Exemplo: duas minhocas
 minhoca0 :: Minhoca
 minhoca0 =
   Minhoca
@@ -68,13 +69,13 @@ minhoca0 =
 minhoca1 :: Minhoca
 minhoca1 =
   Minhoca
-    { posicaoMinhoca = Just (32, 18)
+    { posicaoMinhoca = Just (7, 18)
     , vidaMinhoca    = Viva 100
     }
 
 
 
-
+-- | Função que cria o estado inicial do jogo.
 estadoInicial :: Estado
 estadoInicial =
   Estado
