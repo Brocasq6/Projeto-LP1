@@ -176,6 +176,19 @@ moveSeDer i dir e =
         Este  -> (x+1, y)
 
 
+getMinhoca :: NumMinhoca -> Estado -> Maybe Minhoca
+getMinhoca i e = encontraIndiceLista i (minhocasEstado e)
+
+
+setMinhocaPos :: NumMinhoca -> Posicao -> Estado -> Estado
+setMinhocaPos i p e =
+  case getMinhoca i e of
+    Nothing -> e
+    Just m  ->
+      let m'  = m { posicaoMinhoca = Just p }
+          ms' = atualizaIndiceLista i m' (minhocasEstado e)
+      in e { minhocasEstado = ms' }
+
 
 
 --------------------------------------- funcoes relacionadas com a funcao efetuaJogadaDisparo -------------------------------------------------
