@@ -57,23 +57,23 @@ ePosicaoMatrizValida (a,b) l = a <= length l && b <= length (head l)
 movePosicao :: Direcao -> Posicao -> Posicao
 movePosicao direcao (l,c) = 
     case direcao of
-        Norte -> (l, c-1)
-        Nordeste -> (l-1, c+1)
-        Este -> (l, c+1)
-        Sudeste -> (l+1, c+1)
-        Sul -> (l+1, c)
-        Sudoeste -> (l+1, c-1)
-        Oeste -> (l, c-1)
-        Noroeste -> (l-1, c-1)
+        Norte       -> (l, c-1)
+        Nordeste    -> (l-1, c+1)
+        Este        -> (l, c+1)
+        Sudeste     -> (l+1, c+1)
+        Sul         -> (l+1, c)
+        Sudoeste    -> (l+1, c-1)
+        Oeste       -> (l, c-1)
+        Noroeste    -> (l-1, c-1)
 
 
 -- | Versão da função 'movePosicao' que garante que o movimento não se desloca para fora de uma janela.
 
 movePosicaoJanela :: Dimensao -> Direcao -> Posicao -> Posicao
 movePosicaoJanela (d1,d2) d (l,c)
-    | movePosicao d (l,c) > (d1,d2) = (l,c)
-    | movePosicao d (l,c) < (d1,d2) = (l,c)
-    | otherwise = movePosicao d (l,c)
+    | movePosicao d (l,c) > (d1,d2)     = (l,c)
+    | movePosicao d (l,c) < (d1,d2)     = (l,c)
+    | otherwise                         = movePosicao d (l,c)
 
 -- | Converte uma posição no referencial em que a origem é no canto superior esquerdo da janela numa posição em que a origem passa a estar no centro da janela.
 
@@ -85,14 +85,14 @@ origemAoCentro (d1,d2) (l,c)  = (l - ((d1 - 1) `div` 2), c - ((d2 - 1) `div` 2))
 rodaPosicaoDirecao :: (Posicao, Direcao) -> (Posicao, Direcao)
 rodaPosicaoDirecao (pos, direcao) = 
     case direcao of
-        Norte -> (movePosicao Norte pos, Nordeste)
-        Nordeste -> (movePosicao Nordeste pos, Este)
-        Este -> (movePosicao Este pos, Sudeste)
-        Sudeste -> (movePosicao Sudeste pos, Sul)
-        Sul -> (movePosicao Sul pos, Sudoeste)
-        Sudoeste -> (movePosicao Sudoeste pos, Oeste)
-        Oeste -> (movePosicao Oeste pos, Noroeste)
-        Noroeste -> (movePosicao Noroeste pos, Norte)
+        Norte           -> (movePosicao Norte pos, Nordeste)
+        Nordeste        -> (movePosicao Nordeste pos, Este)
+        Este            -> (movePosicao Este pos, Sudeste)
+        Sudeste         -> (movePosicao Sudeste pos, Sul)
+        Sul             -> (movePosicao Sul pos, Sudoeste)
+        Sudoeste        -> (movePosicao Sudoeste pos, Oeste)
+        Oeste           -> (movePosicao Oeste pos, Noroeste)
+        Noroeste        -> (movePosicao Noroeste pos, Norte)
         
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -112,8 +112,8 @@ encontraIndiceLista x (_:t)
 atualizaIndiceLista :: Int -> a -> [a] -> [a]
 atualizaIndiceLista _ _ [] = []
 atualizaIndiceLista n x (h:t)
-    | n < 0 = h:t
-    | n == 0 = x:t
+    | n < 0     = h:t
+    | n == 0    = x:t
     | otherwise = h : atualizaIndiceLista (n-1) x t  -- atualizaIndice 3, para o valor 4, na lista [1,2,2,2]  = [1,2,2,4]
 
 -- | Devolve o elemento numa dada posição de uma matriz.
@@ -121,9 +121,9 @@ atualizaIndiceLista n x (h:t)
 encontraPosicaoMatriz :: Posicao -> Matriz a -> Maybe a
 encontraPosicaoMatriz (_,_) [] = Nothing
 encontraPosicaoMatriz (l,c) m
-    | l >= length m = Nothing
-    | c >= length (head m) = Nothing
-    | otherwise = Just ((m !! l) !! c) -- funcao que acede á primeira sublista de uma matriz e dps á coluna
+    | l >= length m         = Nothing
+    | c >= length (head m)  = Nothing
+    | otherwise             = Just ((m !! l) !! c) -- funcao que acede á primeira sublista de uma matriz e dps á coluna
 
 
 -- | Modifica um elemento numa dada posição de uma matriz.
@@ -146,5 +146,5 @@ moveDirecaoPosicoes d (h:t) = movePosicao d h : moveDirecaoPosicoes d t
 -- | Verifica se uma matriz é válida, no sentido em que modela um rectângulo.
 eMatrizValida :: Matriz a -> Bool
 eMatrizValida m
-    | length (head m) == length m = True
-    | otherwise = False
+    | length (head m) == length m   = True
+    | otherwise                     = False
