@@ -7,6 +7,7 @@ Módulo para a realização da Tarefa 2 de LI1\/LP1 em 2025\/26.
 module Tarefa2 where
 
 import Labs2025
+import Tarefa0_2025 (ePosicaoMapaLivre, ePosicaoEstadoLivre)
 
 
 
