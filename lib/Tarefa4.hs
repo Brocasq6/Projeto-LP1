@@ -130,7 +130,7 @@ minimoPor :: Ord b => (a -> b) -> [a] -> a
 minimoPor f (x:xs) = foldl (\best a -> if f a < f best then a else best) x xs
 minimoPor _ []     = error "minimoPor: lista vazia"
 
--- | Verifica se a minhoca i pode disparar a arma (segundo as regras da vossa T2)
+-- | Verifica se a minhoca i pode disparar a arma 
 podeDisparar :: NumMinhoca -> Estado -> TipoArma -> Bool
 podeDisparar i e@(Estado _ objs ms) arma
   | i < 0 || i >= length ms = False
