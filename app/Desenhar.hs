@@ -1,7 +1,7 @@
 module Desenhar where
 
 import Graphics.Gloss
-import Graphics.Gloss.Juicy
+
 
 import Worms
 import Labs2025
