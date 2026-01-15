@@ -1,6 +1,7 @@
 module Desenhar where
 
 import Graphics.Gloss
+import Graphics.Gloss.Juicy
 
 import Worms
 import Labs2025
@@ -76,7 +77,7 @@ desenhaMinhocas e sel =
 
 -- | funcao que desenha uma minhoca
 desenhaMinhoca :: Mapa -> Bool -> Posicao -> Picture
-desenhaMinhoca mapa selecionada (xGrid, yGrid) =
+desenhaMinhoca mapa selecionada (linha, coluna) =
   Translate (offX + x) (offY + y)
     (Pictures
       [ -- destaque (anel) se estiver selecionada
@@ -101,8 +102,8 @@ desenhaMinhoca mapa selecionada (xGrid, yGrid) =
         (l : _) -> fromIntegral (length l) * tileSize
 
     -- posição da minhoca no ecrã (centro do tile)
-    x = fromIntegral xGrid * tileSize + tileSize / 2
-    y = - (fromIntegral yGrid * tileSize + tileSize / 2)
+    x = fromIntegral coluna * tileSize + tileSize / 2
+    y = - (fromIntegral linha * tileSize + tileSize / 2)
 
 
 -- | raio da minhoca (em pixels)
