@@ -26,15 +26,55 @@ screenW, screenH :: Float
 screenW = 1920
 screenH = 1080
 
+desenhaMenu :: Worms -> Picture
+desenhaMenu w =
+  Pictures
+    [ menuBg (assets w)  -- imagem de fundo
+    , Translate (-250) 120 $ Scale 0.5 0.5 $ Color white $ Text "MENU"
+    , Translate (-250)  20 $ item MenuJogar    "Jogar"    0
+    , Translate (-250) (-60) $ item MenuTutorial "Tutorial" 1
+    , Translate (-250) (-140) $ item MenuCreditos "Creditos" 2
+    , Translate (-250) (-260) $ Scale 0.2 0.2 $ Color white $ Text "W/S ou Setas - escolher | ENTER - confirmar"
+    ]
+  where
+    sel = menuSel w
+    item mi label k =
+      let col = if mi == sel then yellow else white
+      in Translate 0 (fromIntegral (-80*k)) (Scale 0.35 0.35 (Color col (Text label)))
+
+desenhaTutorial :: Worms -> Picture
+desenhaTutorial w =
+  Pictures
+    [ menuBg (assets w)
+    , Translate (-600) 200 $ Scale 0.35 0.35 $ Color white $ Text "TUTORIAL"
+    , Translate (-600) 120 $ Scale 0.22 0.22 $ Color white $ Text "1 - trocar minhoca | 2 - trocar jogada"
+    , Translate (-600)  60 $ Scale 0.22 0.22 $ Color white $ Text "WASD - mover"
+    , Translate (-600) (-40) $ Scale 0.22 0.22 $ Color white $ Text "ESC - voltar ao menu"
+    ]
+
+desenhaCreditos :: Worms -> Picture
+desenhaCreditos w =
+  Pictures
+    [ menuBg (assets w)
+    , Translate (-600) 200 $ Scale 0.35 0.35 $ Color white $ Text "CREDITOS"
+    , Translate (-600) 120 $ Scale 0.22 0.22 $ Color white $ Text "Feito por: (coloca aqui os nomes)"
+    , Translate (-600)  60 $ Scale 0.22 0.22 $ Color white $ Text "UC / Ano / Turma"
+    , Translate (-600) (-40) $ Scale 0.22 0.22 $ Color white $ Text "ESC - voltar ao menu"
+    ]
 
 
 -- | Função que desenha o estado do jogo no Gloss.
 desenha :: Worms -> Picture
 desenha w =
-  Pictures [desenhaMapa mapa, desenhaMinhocas e (selW w), desenhaHUD w]
+  case screen w of
+    Menu     -> desenhaMenu w
+    Tutorial -> desenhaTutorial w
+    Creditos -> desenhaCreditos w
+    EmJogo   -> Pictures [desenhaMapa mapa, desenhaMinhocas e (selW w), desenhaHUD w]
   where
     e    = jogo w
     mapa = mapaEstado e
+
 
 
 -- | funcao que calcula o offset do mapa para o centro da janela

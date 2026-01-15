@@ -4,24 +4,15 @@ import Worms
 import Tarefa3
 
 
-
-{-
-Tempo.hs
- |- type Segundos = Float
- |
- |- reageTempo :: Segundos -> Worms -> Worms
- │    |- avancaJogo :: Worms -> Worms
- │    |    |- jogo' = avancaEstado jogo         (T3)
-
-
--}
-
 -- | Tempo em segundos.
 type Segundos = Float
 
 -- | Função que avança o tempo no estado do jogo no Gloss.
 reageTempo :: Segundos -> Worms -> Worms
-reageTempo _ it =
-    let e' = avancaEstado (jogo it)
-        it' = it { jogo = e' }
-    in it' { selW = cycleSelW e' (selW it') }
+reageTempo _ w =
+  case screen w of
+    EmJogo ->
+      let e'  = avancaEstado (jogo w)
+          w'  = w { jogo = e' }
+      in w' { selW = cycleSelW e' (selW w') }
+    _ -> w

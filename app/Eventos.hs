@@ -6,49 +6,60 @@ import Worms
 import Labs2025
 import Tarefa2
 
-{-
-Eventos.hs
- |- reageEventos :: Event -> Worms -> Worms
- │    |- (tecla '1')  -> selecionaMinhocaSeguinte
- │    |- (tecla '2')  -> selecionaJogadaSeguinte
- │    |- (W/A/S/D)    -> aplicaJogadaDirecional
- │    |- (outras)     -> mantém estado
- │
- |- selecionaMinhocaSeguinte :: Worms -> Worms
- |    |- wormsValidas :: Estado -> [Int]
- |    |- cycleSelW    :: Estado -> Int -> Int
- |
- |- selecionaJogadaSeguinte :: Worms -> Worms
- |    |- nextSelJogada :: SelJogada -> SelJogada
- |
- |- aplicaJogadaDirecional :: Char -> Worms -> Worms
- |    |- dirFromKey     :: Char -> Maybe Direcao
- |    |- jogadaFromSel  :: SelJogada -> Direcao -> Jogada
- |    |- aplicaEfetua   :: Int -> Jogada -> Estado -> Estado
- |         |- efetuaJogada (T2)
- |
- |- dirFromKey :: Char -> Maybe Direcao
- |- jogadaFromSel :: SelJogada -> Direcao -> Jogada
- |- wormsValidas :: Estado -> [Int]
-
--}
-
 -- | Função que altera o estado do jogo no Gloss.
 reageEventos :: Event -> Worms -> Worms
-reageEventos evento w =
+reageEventos ev w =
+  case screen w of
+    Menu     -> eventosMenu ev w
+    Tutorial -> eventosTexto ev w
+    Creditos -> eventosTexto ev w
+    EmJogo   -> eventosJogo ev w
+
+-- | Função que trata os eventos na tela do menu.
+eventosMenu :: Event -> Worms -> Worms
+eventosMenu ev w =
+  case ev of
+    EventKey (SpecialKey KeyUp) Down _ _   -> w { menuSel = prevMenuItem (menuSel w) }
+    EventKey (SpecialKey KeyDown) Down _ _ -> w { menuSel = nextMenuItem (menuSel w) }
+    EventKey (Char 'w') Down _ _           -> w { menuSel = prevMenuItem (menuSel w) }
+    EventKey (Char 's') Down _ _           -> w { menuSel = nextMenuItem (menuSel w) }
+
+    EventKey (SpecialKey KeyEnter) Down _ _ -> confirmaMenu w
+    EventKey (SpecialKey KeySpace) Down _ _ -> confirmaMenu w
+    _ -> w
+
+-- | Função que confirma a seleção do menu e altera a tela.
+confirmaMenu :: Worms -> Worms
+confirmaMenu w =
+  case menuSel w of
+    MenuJogar    -> w { screen = EmJogo }
+    MenuTutorial -> w { screen = Tutorial }
+    MenuCreditos -> w { screen = Creditos }
+
+-- | Função que trata os eventos na tela de texto (tutorial/créditos).
+eventosTexto :: Event -> Worms -> Worms
+eventosTexto ev w =
+  case ev of
+    EventKey (SpecialKey KeyEsc) Down _ _ -> w { screen = Menu }
+    _ -> w
+
+-- | Função que trata os eventos durante o jogo.
+eventosJogo :: Event -> Worms -> Worms
+eventosJogo evento w =
   case evento of
+    EventKey (SpecialKey KeyEsc) Down _ _ -> w { screen = Menu }
+
     EventKey (Char '1') Down _ _ -> selecionaMinhocaSeguinte w
     EventKey (Char '2') Down _ _ -> selecionaJogadaSeguinte w
     EventKey (Char c)   Down _ _ | c `elem` "wasdWASD" -> aplicaJogadaDirecional (toLowerASCIISafe c) w
     _ -> w
   where
     toLowerASCIISafe ch = case ch of
-        'W' -> 'w';
-        'A' -> 'a';
-        'S' -> 's';
-        'D' -> 'd'
-        _   -> ch
-
+      'W' -> 'w'
+      'A' -> 'a'
+      'S' -> 's'
+      'D' -> 'd'
+      _   -> ch
 
 -- | Função que avança para a próxima minhoca selecionada.
 selecionaMinhocaSeguinte :: Worms -> Worms
